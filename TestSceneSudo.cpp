@@ -59,6 +59,7 @@ TestSceneSudo::TestSceneSudo()
 	//　確認用
 	, m_hitCount(0)
 	, m_hitFlag(false)
+	
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -75,6 +76,10 @@ TestSceneSudo::TestSceneSudo()
 	m_startTime = GetNowCount() / 1000;
 	// ステートセット(カウントダウンから)
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
+
+	//背景＠＠＠
+	 m_pos = VGet(0, 0, 0);
+	 MV1SetScale(m_backGraphHandle, VGet(-5.0f, -5.0f, -5.0f));//ステージ小さくしてるよ
 }
 
 TestSceneSudo::~TestSceneSudo()
@@ -84,7 +89,9 @@ TestSceneSudo::~TestSceneSudo()
 	delete m_mark;		//	マークのポインタメンバ変数を消去
 	//	メモリの解放処理
 	StopSoundMem(m_finishSoundHandle);
-	DeleteGraph(m_backGraphHandle);
+	//＠＠＠
+	MV1DeleteModel(m_backGraphHandle);
+	/*DeleteGraph(m_backGraphHandle);*/
 	DeleteGraph(m_finishGraphHandle);
 	DeleteGraph(m_manualGraphHandle);
 	DeleteGraph(m_girlGraphHandle);
@@ -221,6 +228,9 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 	default:
 		break;
 	}
+
+	//背景座標アップデート＠＠＠
+	MV1SetPosition(m_backGraphHandle, m_pos);
 	return this;						//	ゲームシーンを表示し続ける
 }
 
@@ -239,7 +249,9 @@ void TestSceneSudo::Draw()
 			ChangeVolumeSoundMem(m_volumePal + DOOR_VOLUME_PAL, m_doorSoundHandle);
 
 			// グラフィックを描画
-			DrawGraph(0, 0, m_backGraphHandle, TRUE);
+			// ＠＠＠
+			MV1DrawModel(m_backGraphHandle);
+			/*DrawGraph(0, 0, m_backGraphHandle, TRUE);*/
 			DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
 			DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
 			ScreenFlip();
@@ -247,7 +259,9 @@ void TestSceneSudo::Draw()
 		m_fadeInFinishFlag = true;
 	}
 	//	背景
-	DrawGraph(0, 0, m_backGraphHandle, TRUE);
+	// ＠＠＠
+	MV1DrawModel(m_backGraphHandle);
+	//DrawGraph(0, 0, m_backGraphHandle, TRUE);
 	DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
 	//女の子のリアクション描画
 	if (m_girl_hitReactionFlag == true)				// hitしたならば
@@ -319,7 +333,9 @@ void TestSceneSudo::Draw()
 			SetDrawBright(255 - i, 255 - i, 255 - i);
 
 			// グラフィックを描画
-			DrawGraph(0, 0, m_backGraphHandle, FALSE);
+			// ＠＠＠
+			MV1DrawModel(m_backGraphHandle);
+			/*DrawGraph(0, 0, m_backGraphHandle, FALSE);*/
 			DrawGraph(0, 0, m_finishGraphHandle, TRUE);
 			DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
 			DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
@@ -351,7 +367,9 @@ void TestSceneSudo::Load()
 {
 	//	グラフィックハンドルにセット
 	m_finishGraphHandle = LoadGraph("data/img/gameEnd.png");
-	m_backGraphHandle = LoadGraph("data/img/gameBack.png");
+	// 形状情報のみのモデルファイルを読みこみ＠＠＠
+	m_backGraphHandle = MV1LoadModel("data/model/stage/poolModel.mv1");
+	//m_backGraphHandle = LoadGraph("data/img/gameBack.png");
 	m_soundHandle = LoadSoundMem("data/sound/gameBgm.ogg");
 	m_finishSoundHandle = LoadSoundMem("data/sound/gameEnd.wav");
 	m_girlGraphHandle = LoadGraph("data/img/chinaGirl.png");
