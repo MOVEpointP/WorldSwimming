@@ -67,4 +67,11 @@ private:
 	//// 確認用変数
 	int m_hitCount;
 	bool m_hitFlag;
+
+
+	//　モデル確認
+	int AnimHandle[3];
+	int AttachIndex;
+	VECTOR m_pos;
+
 };
