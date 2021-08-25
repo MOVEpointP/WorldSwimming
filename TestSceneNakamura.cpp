@@ -8,7 +8,9 @@
 #include "UI.h"
 #include "Camera.h"
 
+#include "Result_aaa.h"
 #include "DxLib.h"
+
 #include "Effect.h"
 
 static int enemyNum = 10;					//	エネミーの数

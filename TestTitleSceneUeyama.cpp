@@ -60,11 +60,14 @@ TestTitleSceneUeyama::~TestTitleSceneUeyama()
 /// <returns> シーンのポインタ </returns>
 SceneBase* TestTitleSceneUeyama::Update(float _deltaTime)
 {
+	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_BACK);
 
 	// ステートメントごとに処理を変更
 	switch (m_state)
 	{
 	case TITLE_TRANS_STATE::FIRST_ENTER:
+
+
 
 		// ※キー入力重複対策のフラグ
 		// ENTERキーから指を離したら、次のENTERの入力を有効に
@@ -178,6 +181,8 @@ void TestTitleSceneUeyama::Draw()
 			// グラフィックを描画
 			DrawGraph(0, 0, m_backGraphHandle, TRUE);
 			DrawGraph(0, 0, m_logoGraphHandle, TRUE);
+			DrawGraph(0, 0, m_water, TRUE);
+
 			ScreenFlip();
 		}
 		m_fadeInFinishFlag = true;
@@ -187,6 +192,9 @@ void TestTitleSceneUeyama::Draw()
 
 	// バックグラウンド
 	DrawGraph(0, 0, m_backGraphHandle, TRUE);
+	DrawGraph(0, 0, m_water, TRUE);
+
+
 
 	// 選択時にカーソルが見やすいように背景を暗くする
 	if (m_state == TITLE_TRANS_STATE::SECOND_CHOICE)
@@ -278,7 +286,8 @@ void TestTitleSceneUeyama::Draw()
 /// </summary>
 void TestTitleSceneUeyama::Sound()
 {
-	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_BACK, FALSE);
+
+	//PlaySoundFile("data/sound/SwimTitleBgm.mp3", DX_PLAYTYPE_BACK);
 	ChangeVolumeSoundMem(m_volumePal, m_soundHandle);
 }
 
@@ -287,11 +296,13 @@ void TestTitleSceneUeyama::Sound()
 /// </summary>
 void TestTitleSceneUeyama::Load()
 {
-	m_backGraphHandle = LoadGraph("data/img/Title_back.png");			//	グラフィックハンドルにタイトル画面のイメージをセット
+	m_backGraphHandle = LoadGraph("data/img/Title_Back.png");			//	グラフィックハンドルにタイトル画面のイメージをセット
 	m_logoGraphHandle = LoadGraph("data/img/Title_logo.png");			//	グラフィックハンドルにタイトル画面のイメージをセット
 	m_guidanceGraphHandle = LoadGraph("data/img/Title_guidance.png");	//	グラフィックハンドルにタイトル画面のイメージをセット
-	m_soundHandle = LoadSoundMem("data/sound/titleBgm.ogg");
-	m_click_sound_handle = LoadSoundMem("data/sound/EnterToSound.wav");	//	ENTERで進む際のサウンドをロード
+	m_water = LoadGraph("data/img/title_Water.png");                 //グラフィックハンドルにタイトル画面のイメージをセット
+
+	m_soundHandle = LoadSoundMem("data/sound/SwimTitleBgm.wav");
+	m_click_sound_handle = LoadSoundMem("data/sound/SwimTitleSE.wav");	//	ENTERで進む際のサウンドをロード
 }
 
 /// <summary>

@@ -34,10 +34,10 @@ Player::Player()
 	// サウンドの読み込み
 	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
 
-	// ３Ｄモデルの読み込み(飛び込みモーション）
-	modelHandle = MV1LoadModel("data/model/player/tamesi.mv1");
-	// ３Ｄモデルの読み込み(泳ぐモーション）
-	modelHandle = MV1LoadModel("data/model/player/Swimming01.mv1");
+	// ３Ｄモデルの読み込み(飛び込みモーション）テスト
+	modelHandle = MV1LoadModel("data/model/player/result.mv1");
+	// ３Ｄモデルの読み込み(泳ぐモーション）テスト
+	//modelHandle = MV1LoadModel("data/model/player/Swimming01.mv1");
 
 	//３Ｄモデルの０番目のアニメーションをアタッチする
 	AttachIndex = MV1AttachAnim(modelHandle, 0, -1, FALSE);

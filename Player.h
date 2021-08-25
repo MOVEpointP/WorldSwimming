@@ -39,7 +39,6 @@ public:
 
 private:
 	int		modelHandle;	// モデルハンドル.
-	int     divemotion;     // ダイブモーション
 	VECTOR	pos;			// ポジション.
 	VECTOR	velocity;		// 移動力.
 	VECTOR	dir;			// 回転方向.
