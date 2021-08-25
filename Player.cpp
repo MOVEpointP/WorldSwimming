@@ -34,8 +34,21 @@ Player::Player()
 	// サウンドの読み込み
 	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
 
-	// ３Ｄモデルの読み込み
-	modelHandle = MV1LoadModel("data/model/sara/sara.pmx");
+	// ３Ｄモデルの読み込み(飛び込みモーション）テスト
+	modelHandle = MV1LoadModel("data/model/player/result.mv1");
+	// ３Ｄモデルの読み込み(泳ぐモーション）テスト
+	//modelHandle = MV1LoadModel("data/model/player/Swimming01.mv1");
+
+	//３Ｄモデルの０番目のアニメーションをアタッチする
+	AttachIndex = MV1AttachAnim(modelHandle, 0, -1, FALSE);
+
+	//アタッチしたアニメーションの総再生時間を取得する
+	TotalTime = MV1GetAttachAnimTotalTime(modelHandle, AttachIndex);
+
+	//再生時間の初期化
+	PlayTime = 0.0f;
+
+
 
 	// エフェクト読み込み
 	m_playerOrbitEfk = new PlayEffect("data/effects/PlayerLine.efk");
@@ -43,7 +56,7 @@ Player::Player()
 	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 
 	// posはVector型なので、VGetで原点にセット
-	pos = VGet(0, 10, -100);
+	pos = VGet(0, 10, 0);
 	// ３Dモデルのポジション設定
 	MV1SetPosition(modelHandle, pos);
 	// 移動する力を（すべての座標）ゼロにする
@@ -151,6 +164,22 @@ void Player::Update(float _deltaTime)
 	MATRIX rotYMat = MGetRotY(180.0f * (float)(DX_PI / 180.0f));
 	tmpMat = MMult(tmpMat, rotYMat);
 	MV1SetRotationMatrix(modelHandle, tmpMat);*/
+
+	// 再生時間を進める
+	PlayTime += 0.1f;
+
+	// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
+	if (PlayTime >= TotalTime)
+	{
+		PlayTime = 0.0f;
+	}
+
+	// 再生時間をセットする
+	MV1SetAttachAnimTime(modelHandle, AttachIndex, PlayTime);
+
+
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -159,7 +188,7 @@ void Player::Update(float _deltaTime)
 void Player::Draw()
 {
 	// 3Dモデルのスケールを拡大
-	MV1SetScale(modelHandle, VGet(3.0f, 3.0f, 3.0f));
+	MV1SetScale(modelHandle, VGet(10.0f, 10.0f, 10.0f));
 	// ３Ｄモデルの描画
 	MV1DrawModel(modelHandle);
 

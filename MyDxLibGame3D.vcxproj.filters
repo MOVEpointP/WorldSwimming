@@ -97,6 +97,9 @@
     <ClCompile Include="TestSceneNakamura.cpp">
       <Filter>ソース ファイル\work</Filter>
     </ClCompile>
+    <ClCompile Include="Result_aaa.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -177,6 +180,9 @@
     </ClInclude>
     <ClInclude Include="TestSceneNakamura.h">
       <Filter>ソース ファイル\work</Filter>
+    </ClInclude>
+    <ClInclude Include="Result_aaa.h">
+      <Filter>ソース ファイル\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

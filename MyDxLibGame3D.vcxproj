@@ -177,7 +177,10 @@
     <ClCompile Include="ObstructManager.cpp" />
     <ClCompile Include="ObstructStatic.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Result.cpp" />
+    <ClCompile Include="Result.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Result_aaa.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneMgr.cpp" />
     <ClCompile Include="Target.cpp" />
@@ -215,7 +218,10 @@
     <ClInclude Include="ObstructManager.h" />
     <ClInclude Include="ObstructStatic.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Result.h" />
+    <ClInclude Include="Result.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Result_aaa.h" />
     <ClInclude Include="SceneBase.h" />
     <ClInclude Include="SceneMgr.h" />
     <ClInclude Include="Target.h" />

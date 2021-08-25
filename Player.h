@@ -43,6 +43,8 @@ private:
 	VECTOR	velocity;		// 移動力.
 	VECTOR	dir;			// 回転方向.
 	float	hitRadius;		// あたり判定の半径.
+	float TotalTime, PlayTime;//モーションの再生時間
+	int AttachIndex;//モーションの
 
 	// 発射エフェクト
 	class PlayEffect* m_playerOrbitEfk;
