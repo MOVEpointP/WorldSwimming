@@ -14,6 +14,8 @@
 #include "TestScene_fujihara.h"
 #include "EffekseerForDXLib.h"
 #include "TestSceneNakamura.h"
+#include "TestSceneSudo.h"
+
 void InitializeEffekseer();
 
 //-----------------------------------------------------------------------------
@@ -29,7 +31,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	InitializeEffekseer();
 	// 画面モードのセット
 	SetGraphMode(1920, 1080, 16);
-	ChangeWindowMode(TRUE);
+	ChangeWindowMode(FALSE);
 	SetDrawScreen(DX_SCREEN_BACK);		//	裏画面の設定
 
 	//	デルタタイム管理用の変数をセット
@@ -50,7 +52,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//TestSceneUeyama* TestScene = new TestSceneUeyama;
 
 	//	タイトルシーンをセット
-	Scene->SetScene(new TestSceneKoga);
+	Scene->SetScene(new TestSceneSudo);
 
 	// エスケープキーが押されるかウインドウが閉じられるまでループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)

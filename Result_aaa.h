@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _RESULT_H_
+#define _RESULT_H_
 
 #include "SceneBase.h"
 #include "UI.h"
@@ -41,4 +43,5 @@ private:
 	bool m_fadeOutFinishFlag;			//	フェードアウトの終了判定フラグ
 };
 
+#endif // _RESULT_H_
 

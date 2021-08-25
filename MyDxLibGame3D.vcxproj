@@ -178,7 +178,8 @@
     <ClCompile Include="ObstructStatic.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Result.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Result_aaa.cpp" />
     <ClCompile Include="SceneBase.cpp" />
@@ -191,6 +192,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="TestSceneSudo.cpp" />
     <ClCompile Include="TestSceneUeyama.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -219,7 +221,8 @@
     <ClInclude Include="ObstructStatic.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Result.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Result_aaa.h" />
     <ClInclude Include="SceneBase.h" />
@@ -229,6 +232,7 @@
     <ClInclude Include="TestSceneKoga.h" />
     <ClInclude Include="TestSceneNakamura.h" />
     <ClInclude Include="TestSceneOno.h" />
+    <ClInclude Include="TestSceneSudo.h" />
     <ClInclude Include="TestSceneUeyama.h" />
     <ClInclude Include="TestScene_fujihara.h" />
     <ClInclude Include="TestTitleSceneOno.h" />

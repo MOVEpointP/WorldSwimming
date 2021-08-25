@@ -1,4 +1,4 @@
-
+#include "Result.h"
 #include "TestTitleSceneUeyama.h"
 #include "Result_aaa.h"
 
@@ -13,10 +13,6 @@ const int S_P = 10;
 //const int NICE_P = 5;
 //const int PF_P = 10;
 const int VOLUME_PAL_SUP = 90;
-
-const int SCREEN_SIZE_W = 1920;
-const int SCREEN_SIZE_H = 1080;
-
 
 // 最大透過量
 const int defaultTrans = 255;
@@ -43,6 +39,7 @@ Result::Result(const int& _score)
 	{
 		m_checkKeyFlag = TRUE;
 	}
+	
 }
 
 Result::~Result()
@@ -58,7 +55,7 @@ Result::~Result()
 	StopSoundMem(m_bgmSoundHandle);
 	DeleteSoundMem(m_bgmSoundHandle);
 	DeleteSoundMem(m_scoreSoundHandle);
-	DeleteSoundMem(m_numSoundHandle);
+	/*DeleteSoundMem(m_numSoundHandle);*/
 	DeleteSoundMem(m_evaluationSoundHandle[m_evaluation]);
 	DeleteSoundMem(m_click_sound_handle);					//	ENTERで進むときのサウンドメモリを解放
 
@@ -168,12 +165,7 @@ void Result::Draw()
 			ScreenFlip();
 		}
 		m_fadeOutFinishFlag = true;
-	
 	}
-	int tamesi = 3;
-	//スコアの数表示
-	DrawExtendFormatString(SCREEN_SIZE_W / 3 - GetFontSize(), SCREEN_SIZE_H / 2 - GetFontSize()-70, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_score);
-
 }
 
 void Result::Sound()
@@ -185,21 +177,22 @@ void Result::Sound()
 		ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_scoreSoundHandle);
 		break;
 	case 2:
-		PlaySoundMem(m_numSoundHandle, DX_PLAYTYPE_BACK, TRUE);
-		ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_numSoundHandle);
+		PlaySoundMem(m_scoreSoundHandle, DX_PLAYTYPE_BACK, TRUE);
+		ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_scoreSoundHandle);
 		break;
 	case 3:
-		PlaySoundMem(m_evaluationSoundHandle[m_evaluation], DX_PLAYTYPE_BACK, TRUE);
-		ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_evaluationSoundHandle[m_evaluation]);
+		PlaySoundMem(m_scoreSoundHandle, DX_PLAYTYPE_BACK, TRUE);
+		ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_scoreSoundHandle);
 		break;
 	}
-	PlaySoundMem(m_bgmSoundHandle, DX_PLAYTYPE_LOOP, TRUE);
+	PlaySoundMem(m_bgmSoundHandle, DX_PLAYTYPE_BACK, FALSE);
 	ChangeVolumeSoundMem(m_volumePal, m_bgmSoundHandle);
+	
 }
 
 void Result::Load()
 {
-	m_click_sound_handle = LoadSoundMem("data/sound/EnterToSound.wav");	//	ENTERで進む際のサウンドをロード
+	m_click_sound_handle = LoadSoundMem("data/sound/SwimEnterToSound.mp3");	//	ENTERで進む際のサウンドをロード
 	if (m_score > B_P)
 	{
 		m_evaluation = 0;
@@ -232,21 +225,7 @@ void Result::Load()
 	m_logoGraphHandle = LoadGraph("data/img/result_02_png/Result _01_backGround.png");				//	グラフィックハンドルにリザルト画面のイメージをセット
 	// m_scoreGraphHandle = LoadGraph("data/img/Result_score.png");			//	グラフィックハンドルにリザルト画面のイメージをセット
 	m_guidanceGraphHandle = LoadGraph("data/img/result_02_png/Result _Exitword.png");		//	@@@@グラフィックハンドルにリザルト画面のイメージをセット
-	
-																								
-	//アイスの表示																							
-	/*m_numGraphHandle[0] = LoadGraph("data/img/result_02_png/Result.png");
-	m_numGraphHandle[1] = LoadGraph("data/img/result_02_png/Result_01_ice02.png");
-	m_numGraphHandle[2] = LoadGraph("data/img/result_02_png/Result_01_ice03.png");
-	m_numGraphHandle[3] = LoadGraph("data/img/result_02_png/Result_01_ice04.png");
-	m_numGraphHandle[4] = LoadGraph("data/img/result_02_png/Result_01_ice05.png");
-	m_numGraphHandle[5] = LoadGraph("data/img/result_02_png/Result_01_ice06.png");
-	m_numGraphHandle[6] = LoadGraph("data/img/result_02_png/Result_01_ice07.png");
-	m_numGraphHandle[7] = LoadGraph("data/img/result_02_png/Result_01_ice08.png");
-	m_numGraphHandle[8] = LoadGraph("data/img/result_02_png/Result_01_ice09.png");
-	m_numGraphHandle[9] = LoadGraph("data/img/result_02_png/Result_01_ice10.png");
-	m_numGraphHandle[10] = LoadGraph("data/img/result_02_png/Result_01_ice11.png");*/
-	m_bgmSoundHandle = LoadSoundMem("data/sound/ResultBGM.mp3");									//	サウンドハンドルにリザルト画面のBGMをセット
+	m_bgmSoundHandle = LoadSoundMem("data/sound/SwimResultBGM.mp3");			//	サウンドハンドルにリザルト画面のBGMをセット
 	m_scoreSoundHandle = LoadSoundMem("data/sound/score.mp3");				//	サウンドハンドルにリザルト画面の効果音をセット
-	m_numSoundHandle = LoadSoundMem("data/sound/num.mp3");					//	サウンドハンドルにリザルト画面の効果音をセット
+	//m_numSoundHandle = LoadSoundMem("data/sound/num.mp3");					//	サウンドハンドルにリザルト画面の効果音をセット
 }
