@@ -178,10 +178,9 @@
     <ClCompile Include="ObstructStatic.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Result.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Result_aaa.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneMgr.cpp" />
     <ClCompile Include="Target.cpp" />
@@ -221,10 +220,9 @@
     <ClInclude Include="ObstructStatic.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Result.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Result_aaa.h" />
     <ClInclude Include="SceneBase.h" />
     <ClInclude Include="SceneMgr.h" />
     <ClInclude Include="Target.h" />

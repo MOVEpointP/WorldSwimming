@@ -7,7 +7,7 @@
 #include "Hitchecker.h"
 #include "UI.h"
 #include "Camera.h"
-#include "Result_aaa.h"
+
 
 
 #include "DxLib.h"
