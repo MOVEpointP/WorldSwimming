@@ -56,7 +56,7 @@ Player::Player()
 	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 
 	// posはVector型なので、VGetで原点にセット
-	pos = VGet(0, 10, 0);
+	pos = VGet(0, 24, 0);
 	// ３Dモデルのポジション設定
 	MV1SetPosition(modelHandle, pos);
 	// 移動する力を（すべての座標）ゼロにする
@@ -111,7 +111,7 @@ void Player::Update(float _deltaTime)
 		// キーが押されていない状態にする
 		KeyPush = false;
 		// posを原点にセット
-		pos = VGet(0, 10, -100);
+		pos = VGet(0, 24, 0);
 		// 移動する力を（すべての方向）ゼロにする
 		velocity = VGet(0, 0, 0);
 	}
@@ -188,30 +188,32 @@ void Player::Update(float _deltaTime)
 void Player::Draw()
 {
 	// 3Dモデルのスケールを拡大
-	MV1SetScale(modelHandle, VGet(10.0f, 10.0f, 10.0f));
+	MV1SetScale(modelHandle, VGet(5.0f, 5.0f, 5.0f));
+	// ３ＤモデルのX軸の回転値を９０度にセットする
+	MV1SetRotationXYZ(modelHandle, VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f));
 	// ３Ｄモデルの描画
 	MV1DrawModel(modelHandle);
 
-	if (!KeyPush)
-	{
-		m_playerOrbitEfk->StopEffect();
-	}
+	//if (!KeyPush)
+	//{
+	//	m_playerOrbitEfk->StopEffect();
+	//}
 	// プレイヤーの軌道エフェクト
-	if (KeyPush)
-	{
-		if (m_playerOrbitEfk->GetNowPlaying() != 0)
-		{
-			m_playerOrbitEfk->PlayEffekseer(pos);
-			m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
-		}
+	//if (KeyPush)
+	//{
+	//	if (m_playerOrbitEfk->GetNowPlaying() != 0)
+	//	{
+	//		m_playerOrbitEfk->PlayEffekseer(pos);
+	//		m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
+	//	}
 
-		// エフェクト再生中はプレイヤーの座標を追尾
-		m_playerOrbitEfk->SetPlayingEffectPos(pos);	
-	}
+	//	// エフェクト再生中はプレイヤーの座標を追尾
+	//	m_playerOrbitEfk->SetPlayingEffectPos(pos);	
+	//}
 
 
 	// デバッグあたり判定.
-	// DrawSphere3D(pos, hitRadius, 5, 0x00ffff, 0x00ffff, false);
+	DrawSphere3D(pos, hitRadius, 5, 0x00ffff, 0x00ffff, false);
 }
 
 //-----------------------------------------------------------------------------

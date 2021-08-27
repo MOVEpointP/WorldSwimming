@@ -1,5 +1,5 @@
 #include "TestSceneKoga.h"
-#include "Result.h"
+#include "Result_aaa.h"
 #include "Mark.h"
 #include "Target.h"
 #include "Player.h"
@@ -182,25 +182,25 @@ SceneBase* TestSceneKoga::Update(float _deltaTime)
 		m_camera->Update(*m_player);
 
 
-		// UIの中華娘を動かす
-		if (m_girlUpFlag)
-		{
-			m_girl_Y--;
-			if (m_girl_Y < GIRL_MIN_Y)
-			{
-				m_girl_Y = GIRL_MIN_Y;
-				m_girlUpFlag = false;
-			}
-		}
-		else if (!m_girlUpFlag)
-		{
-			m_girl_Y++;
-			if (m_girl_Y > 0)
-			{
-				m_girl_Y = 0;
-				m_girlUpFlag = true;
-			}
-		}
+		//// UIの中華娘を動かす
+		//if (m_girlUpFlag)
+		//{
+		//	m_girl_Y--;
+		//	if (m_girl_Y < GIRL_MIN_Y)
+		//	{
+		//		m_girl_Y = GIRL_MIN_Y;
+		//		m_girlUpFlag = false;
+		//	}
+		//}
+		//else if (!m_girlUpFlag)
+		//{
+		//	m_girl_Y++;
+		//	if (m_girl_Y > 0)
+		//	{
+		//		m_girl_Y = 0;
+		//		m_girlUpFlag = true;
+		//	}
+		//}
 
 
 
@@ -251,11 +251,11 @@ void TestSceneKoga::Draw()
 	DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 
 	//大きすぎるので描画倍率変更
-	MV1SetScale(m_poolModelHandle, VGet(0.0175f, 0.0175f, 0.0175f));
+	//MV1SetScale(m_poolModelHandle, VGet(0.0175f, 0.0175f, 0.0175f));
 	//プールの表示位置変更
-	MV1SetPosition(m_poolModelHandle, VGet(200.0f, 0.0f, 30.0f));
+	MV1SetPosition(m_poolModelHandle, VGet(0.0f, 0.0f, 180.0f));
 	// ３ＤモデルのX軸の回転値を９０度にセットする
-	MV1SetRotationXYZ(m_poolModelHandle, VGet(0.0f, -90.0f * DX_PI_F / 180.0f, 0.0f));
+	//MV1SetRotationXYZ(m_poolModelHandle, VGet(0.0f, -90.0f * DX_PI_F / 180.0f, 0.0f));
 	//プールの描画
 	MV1DrawModel(m_poolModelHandle);
 
@@ -371,8 +371,8 @@ void TestSceneKoga::Load()
 	m_manualGraphHandle = LoadGraph("data/img/manual.png");
 
 	//	モデルハンドルにセット
-	m_poolModelHandle = MV1LoadModel("data/model/stage/poolModel.mv1");
-
+	//m_poolModelHandle = MV1LoadModel("data/model/stage/poolModel.mv1");
+	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
 	//	サウンドハンドルにセット
 	m_iceSoundHandle = LoadSoundMem("data/sound/throwIce.mp3");
 	m_hitSoundHandle = LoadSoundMem("data/sound/hitIce.mp3");
