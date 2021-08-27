@@ -8,7 +8,7 @@
 #include "UI.h"
 #include "Camera.h"
 
-#include "Result_aaa.h"
+#include "Result.h"
 #include "DxLib.h"
 
 #include "Effect.h"

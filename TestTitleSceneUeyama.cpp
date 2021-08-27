@@ -1,8 +1,6 @@
 #include "TestTitleSceneUeyama.h"
 #include "DxLib.h"
 #include "GameScene_easy.h"
-#include "GameScene_normal.h"
-#include "GameScene_hard.h"
 #include "TestSceneUeyama.h"
 
 // 最大透過量
@@ -175,10 +173,10 @@ void TestTitleSceneUeyama::Sound()
 /// </summary>
 void TestTitleSceneUeyama::Load()
 {
-	m_backGraphHandle = LoadGraph("data/img/Title_Back.png");			//	グラフィックハンドルにタイトル画面のイメージをセット
-	m_logoGraphHandle = LoadGraph("data/img/Title_logo.png");			//	グラフィックハンドルにタイトル画面のイメージをセット
-	m_guidanceGraphHandle = LoadGraph("data/img/Title_guidance.png");	//	グラフィックハンドルにタイトル画面のイメージをセット
-	m_water = LoadGraph("data/img/title_Water.png");                 //グラフィックハンドルにタイトル画面のイメージをセット
+	m_backGraphHandle = LoadGraph("data/img/Title/Title_Back.png");			//	グラフィックハンドルにタイトル画面のイメージをセット
+	m_logoGraphHandle = LoadGraph("data/img/Title/Title_logo.png");			//	グラフィックハンドルにタイトル画面のイメージをセット
+	m_guidanceGraphHandle = LoadGraph("data/img/Title/Title_guidance.png");	//	グラフィックハンドルにタイトル画面のイメージをセット
+	m_water = LoadGraph("data/img/Title/title_Water.png");                 //グラフィックハンドルにタイトル画面のイメージをセット
 
 	m_soundHandle = LoadSoundMem("data/sound/SwimTitleBgm.wav");
 	m_click_sound_handle = LoadSoundMem("data/sound/SwimTitleSE.wav");	//	ENTERで進む際のサウンドをロード

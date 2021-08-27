@@ -1,5 +1,3 @@
-#pragma once
-
 #include "SceneBase.h"
 #include "DxLib.h"
 
@@ -48,6 +46,12 @@ private:
 	int m_manualGraphHandle;		//	操作説明のグラフィックハンドル
 	int m_girlGraphHandle;
 	int m_ladyGraphHandle;
+
+	int m_poolModelHandle;			//プールのモデルハンドル
+
+
+
+
 	int m_girl_missReaction_GraphHandle;	//  ミスした時の女の子に追加する画像ハンドル
 	int m_girl_hitReaction_GraphHandle;		//  成功した時の女の子に追加する画像ハンドル
 	//float m_deltaTime;				//	デルタタイム

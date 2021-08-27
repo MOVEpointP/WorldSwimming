@@ -1,5 +1,5 @@
 #include "TestSceneKoga.h"
-#include "Result_aaa.h"
+#include "Result.h"
 #include "Mark.h"
 #include "Target.h"
 #include "Player.h"

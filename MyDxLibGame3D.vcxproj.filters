@@ -73,15 +73,6 @@
     <ClCompile Include="GameScene_easy.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameScene_hard.cpp">
-      <Filter>ソース ファイル\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="GameScene_Lunatic.cpp">
-      <Filter>ソース ファイル\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="GameScene_normal.cpp">
-      <Filter>ソース ファイル\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="SceneBase.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
@@ -157,12 +148,6 @@
     <ClInclude Include="GameScene_easy.h">
       <Filter>ソース ファイル\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="GameScene_hard.h">
-      <Filter>ソース ファイル\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="GameScene_normal.h">
-      <Filter>ソース ファイル\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="SceneBase.h">
       <Filter>ソース ファイル\Scene</Filter>
     </ClInclude>
@@ -173,9 +158,6 @@
       <Filter>ソース ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Result.h">
-      <Filter>ソース ファイル\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="GameScene_Lunatic.h">
       <Filter>ソース ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="TestSceneNakamura.h">

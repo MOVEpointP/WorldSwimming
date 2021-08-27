@@ -184,25 +184,25 @@ SceneBase* GameSceneEasy::Update(float _deltaTime)
 		m_camera->Update(*m_player);
 
 
-		// UIの中華娘を動かす
-		if (m_girlUpFlag)
-		{
-			m_girl_Y--;
-			if (m_girl_Y < GIRL_MIN_Y)
-			{
-				m_girl_Y = GIRL_MIN_Y;
-				m_girlUpFlag = false;
-			}
-		}
-		else if (!m_girlUpFlag)
-		{
-			m_girl_Y++;
-			if (m_girl_Y > 0)
-			{
-				m_girl_Y = 0;
-				m_girlUpFlag = true;
-			}
-		}
+		//// UIの中華娘を動かす
+		//if (m_girlUpFlag)
+		//{
+		//	m_girl_Y--;
+		//	if (m_girl_Y < GIRL_MIN_Y)
+		//	{
+		//		m_girl_Y = GIRL_MIN_Y;
+		//		m_girlUpFlag = false;
+		//	}
+		//}
+		//else if (!m_girlUpFlag)
+		//{
+		//	m_girl_Y++;
+		//	if (m_girl_Y > 0)
+		//	{
+		//		m_girl_Y = 0;
+		//		m_girlUpFlag = true;
+		//	}
+		//}
 
 
 
@@ -229,85 +229,95 @@ SceneBase* GameSceneEasy::Update(float _deltaTime)
 
 void GameSceneEasy::Draw()
 {
-	if (!m_fadeInFinishFlag)
-	{
-		// フェードイン処理
-		for (int i = 0; i < 255; i += FADE_IN_SPEED)
-		{
-			// 描画輝度をセット
-			SetDrawBright(i, i, i);
+	//if (!m_fadeInFinishFlag)
+//{
+//	// フェードイン処理
+//	for (int i = 0; i < 255; i += FADE_IN_SPEED)
+//	{
+//		// 描画輝度をセット
+//		SetDrawBright(i, i, i);
 
-			PlaySoundMem(m_doorSoundHandle, DX_PLAYTYPE_BACK, FALSE);
-			ChangeVolumeSoundMem(m_volumePal + DOOR_VOLUME_PAL, m_doorSoundHandle);
+//		PlaySoundMem(m_doorSoundHandle, DX_PLAYTYPE_BACK, FALSE);
+//		ChangeVolumeSoundMem(m_volumePal + DOOR_VOLUME_PAL, m_doorSoundHandle);
 
-			// グラフィックを描画
-			DrawGraph(0, 0, m_backGraphHandle, TRUE);
-			DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
-			DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
-			ScreenFlip();
-		}
-		m_fadeInFinishFlag = true;
-	}
-	//	背景
-	DrawGraph(0, 0, m_backGraphHandle, TRUE);
-	DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
-	//女の子のリアクション描画
-	if (m_girl_hitReactionFlag == true)				// hitしたならば
-	{
-		DrawGraph(300, m_girl_Y + 450, m_girl_hitReaction_GraphHandle, TRUE);
-	}
-	else if (m_girl_missReactionFlag == true)		// missしたならば
-	{
-		DrawGraph(300, m_girl_Y + 450, m_girl_missReaction_GraphHandle, TRUE);
-	}
-	DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
-	// 目印となる机
-	m_mark->Mark_Draw();
-	// ターゲット(アイス)
-	for (int i = 0; i <= m_targetCount; i++)
-	{
-		m_target[i]->Draw();
-	}
+//		// グラフィックを描画
+//		DrawGraph(0, 0, m_backGraphHandle, TRUE);
+//		DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
+//		DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
+//		ScreenFlip();
+//	}
+//	m_fadeInFinishFlag = true;
+//}
+//	背景
+/*DrawGraph(0, 0, m_backGraphHandle, TRUE);
+DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
+
+//大きすぎるので描画倍率変更
+//MV1SetScale(m_poolModelHandle, VGet(0.0175f, 0.0175f, 0.0175f));
+//プールの表示位置変更
+	MV1SetPosition(m_poolModelHandle, VGet(0.0f, 0.0f, 180.0f));
+	// ３ＤモデルのX軸の回転値を９０度にセットする
+	//MV1SetRotationXYZ(m_poolModelHandle, VGet(0.0f, -90.0f * DX_PI_F / 180.0f, 0.0f));
+	//プールの描画
+	MV1DrawModel(m_poolModelHandle);
+
+	////女の子のリアクション描画
+	//if (m_girl_hitReactionFlag == true)				// hitしたならば
+	//{
+	//	DrawGraph(300, m_girl_Y + 450, m_girl_hitReaction_GraphHandle, TRUE);
+	//}
+	//else if (m_girl_missReactionFlag == true)		// missしたならば
+	//{
+	//	DrawGraph(300, m_girl_Y + 450, m_girl_missReaction_GraphHandle, TRUE);
+	//}
+	//DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
+	//// 目印となる机
+	//m_mark->Mark_Draw();
+	//// ターゲット(アイス)
+	//for (int i = 0; i <= m_targetCount; i++)
+	//{
+	//	m_target[i]->Draw();
+	//}
 
 	// プレーヤー
 	m_player->Draw();
 
-	// 終了時
-	if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
-	{
-		DrawGraph(0, 0, m_finishGraphHandle, TRUE);							//	最後のエネミーが射出され終わったら"ゲーム終了"の表示
-	}
-	for (int i = 0; i < enemyNum; ++i)
-	{
-		m_score_ui[i]->Draw();
-	}
-	for (int i = 0; i < enemyNum; ++i)
-	{
-		m_hit_ui[i]->Draw();
-	}
+	//// 終了時
+	//if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
+	//{
+	//	DrawGraph(0, 0, m_finishGraphHandle, TRUE);							//	最後のエネミーが射出され終わったら"ゲーム終了"の表示
+	//}
+	//for (int i = 0; i < enemyNum; ++i)
+	//{
+	//	m_score_ui[i]->Draw();
+	//}
+	//for (int i = 0; i < enemyNum; ++i)
+	//{
+	//	m_hit_ui[i]->Draw();
+	//}
 
 	// エフェクトの再生
-	if (!(m_effect->GetNowPlaying() == 0) && m_target[m_targetCount]->GetHitIce())
-	{
-		m_effect->PlayEffekseer(VGet(0, 20, 0));
-		m_target[m_targetCount]->SetHitIce(false);
-	}
+	//if (!(m_effect->GetNowPlaying() == 0) && m_target[m_targetCount]->GetHitIce())
+	//{
+	//	m_effect->PlayEffekseer(VGet(0, 20, 0));
+	//	m_target[m_targetCount]->SetHitIce(false);
+	//}
 
-	if (m_state == GAME_SCENE_STATE::COUNTDOWN)
-	{
-		// 透過して描画
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
-		DrawBox(0, 0, SCREEN_SIZE_W, SCREEN_SIZE_H, GetColor(0, 0, 0), TRUE);
-		// 透過を元に戻す
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
-	DrawGraph(0, 0, m_manualGraphHandle, TRUE);							//	操作説明を表示
+	//if (m_state == GAME_SCENE_STATE::COUNTDOWN)
+	//{
+	//	// 透過して描画
+	//	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
+	//	DrawBox(0, 0, SCREEN_SIZE_W, SCREEN_SIZE_H, GetColor(0, 0, 0), TRUE);
+	//	// 透過を元に戻す
+	//	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	//}
+	//DrawGraph(0, 0, m_manualGraphHandle, TRUE);							//	操作説明を表示
 	// カウントダウンの描画
-	if (m_state == GAME_SCENE_STATE::COUNTDOWN)
+	/*if (m_state == GAME_SCENE_STATE::COUNTDOWN)
 	{
 		int Count = (COUNTDOWN)-(GetNowCount() / 1000 - m_startTime);
 		DrawExtendFormatString(960, 540, 10.0, 10.0, GetColor(255, 0, 0), "%d", Count);
-	}
+	}*/
 
 	/*m_obstructManager->Draw();*/
 	/*DrawString(0, 0, "ゲーム画面です", GetColor(255, 255, 255));*/
@@ -362,6 +372,9 @@ void GameSceneEasy::Load()
 	m_ladyGraphHandle = LoadGraph("data/img/chinaLady.png");
 	m_manualGraphHandle = LoadGraph("data/img/manual.png");
 
+	//	モデルハンドルにセット
+	//m_poolModelHandle = MV1LoadModel("data/model/stage/poolModel.mv1");
+	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
 	//	サウンドハンドルにセット
 	m_iceSoundHandle = LoadSoundMem("data/sound/throwIce.mp3");
 	m_hitSoundHandle = LoadSoundMem("data/sound/hitIce.mp3");
