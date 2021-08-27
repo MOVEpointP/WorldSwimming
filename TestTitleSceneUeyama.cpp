@@ -42,6 +42,9 @@ TestTitleSceneUeyama::TestTitleSceneUeyama()
 	m_fadeTransVal = FIRST_TRANS_VAL;
 	// 毎透過量変数を１に設定
 	m_permeationAmount = 1;
+
+	m_soundHandle = LoadSoundMem("data/sound/SwimTitleBgm.wav");
+
 }
 
 TestTitleSceneUeyama::~TestTitleSceneUeyama()
@@ -60,107 +63,14 @@ TestTitleSceneUeyama::~TestTitleSceneUeyama()
 /// <returns> シーンのポインタ </returns>
 SceneBase* TestTitleSceneUeyama::Update(float _deltaTime)
 {
-	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_BACK);
 
 	// ステートメントごとに処理を変更
-	switch (m_state)
-	{
-	case TITLE_TRANS_STATE::FIRST_ENTER:
-
-
-
-		// ※キー入力重複対策のフラグ
-		// ENTERキーから指を離したら、次のENTERの入力を有効に
-		if (!CheckHitKey(KEY_INPUT_RETURN))
-		{
-			m_checkKeyFlag = false;
-		}
-
 		// ENTERで次のステートへ
-		if (CheckHitKey(KEY_INPUT_RETURN) && m_checkKeyFlag == false)
-		{
-			// ※キー入力重複対策のフラグ
-			m_checkKeyFlag = true;
-			ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_click_sound_handle);
-			PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL);
+	if (CheckHitKey(KEY_INPUT_RETURN))
+	{
 
-			m_state = TITLE_TRANS_STATE::SECOND_CHOICE;
-		}
+		return new GameSceneEasy();
 
-		break;
-
-	case TITLE_TRANS_STATE::SECOND_CHOICE:
-
-		// ※キー入力重複対策のフラグ
-		// ENTERキーから指を離したら、次のENTERの入力を有効に
-		if (!CheckHitKey(KEY_INPUT_RETURN) && !CheckHitKey(KEY_INPUT_UP) && !CheckHitKey(KEY_INPUT_DOWN))
-		{
-			m_checkKeyFlag = false;
-		}
-
-		// 難易度選択
-		if (CheckHitKey(KEY_INPUT_UP) && !m_checkKeyFlag)
-		{
-			// ※キー入力重複対策のフラグ
-			m_checkKeyFlag = true;
-
-			// カーソル制御 (0:イージー、1:ノーマル、2:ハード)
-			if (m_cursolNum == 1 || m_cursolNum == 2)
-			{
-				m_cursolNum--;
-			}
-			else if (m_cursolNum == 0)
-			{
-				m_cursolNum = 2;
-			}
-		}
-		else if (CheckHitKey(KEY_INPUT_DOWN) && !m_checkKeyFlag)
-		{
-			// ※キー入力重複対策のフラグ
-			m_checkKeyFlag = true;
-
-			// カーソル制御 (0:イージー、1:ノーマル、2:ハード)
-			if (m_cursolNum == 1 || m_cursolNum == 0)
-			{
-				m_cursolNum++;
-			}
-			else if (m_cursolNum == 2)
-			{
-				m_cursolNum = 0;
-			}
-		}
-
-		// ENTERで選択した難易度のシーンへ
-		if (CheckHitKey(KEY_INPUT_RETURN) && !m_checkKeyFlag)
-		{
-			ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_click_sound_handle);
-			PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL);
-			m_fadeOutFlag = true;
-		}
-
-		if (m_cursolNum == 0 && m_fadeOutFinishFlag)
-		{
-			// イージーモードシーンのインスタンスを返す
-			return new GameSceneEasy();
-		}
-
-		if (m_cursolNum == 1 && m_fadeOutFinishFlag)
-		{
-			// ノーマルモードのインスタンスを返す
-			return new GameSceneNormal();
-		}
-
-		if (m_cursolNum == 2 && m_fadeOutFinishFlag)
-		{
-			// ハードモードのインスタンスを返す
-			return new GameSceneHard();
-		}
-
-		break;
-
-	default:
-
-		break;
 	}
 
 
@@ -170,6 +80,8 @@ SceneBase* TestTitleSceneUeyama::Update(float _deltaTime)
 
 void TestTitleSceneUeyama::Draw()
 {
+
+
 	if (!m_fadeInFinishFlag)
 	{
 		// フェードイン処理
@@ -193,26 +105,26 @@ void TestTitleSceneUeyama::Draw()
 	// バックグラウンド
 	DrawGraph(0, 0, m_backGraphHandle, TRUE);
 	DrawGraph(0, 0, m_water, TRUE);
+	// タイトルロゴ
+	DrawGraph(0, 0, m_logoGraphHandle, TRUE);
 
 
 
 	// 選択時にカーソルが見やすいように背景を暗くする
-	if (m_state == TITLE_TRANS_STATE::SECOND_CHOICE)
-	{
-		// 透過して描画
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
-		DrawBox(0, 0, SCREEN_SIZE_W, SCREEN_SIZE_H, GetColor(0, 0, 0), TRUE);
-		// 透過を元に戻す
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
+	//if (m_state == TITLE_TRANS_STATE::SECOND_CHOICE)
+	//{
+	//	// 透過して描画
+	//	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
+	//	DrawBox(0, 0, SCREEN_SIZE_W, SCREEN_SIZE_H, GetColor(0, 0, 0), TRUE);
+	//	// 透過を元に戻す
+	//	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	//}
 
-	// タイトルロゴ
-	DrawGraph(0, 0, m_logoGraphHandle, TRUE);
 
 	// ステートメントごとに処理を変更
-	switch (m_state)
-	{
-	case TITLE_TRANS_STATE::FIRST_ENTER:
+	//switch (m_state)
+	//{
+	//case TITLE_TRANS_STATE::FIRST_ENTER:
 
 		// 透過して描画
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_transpVal);
@@ -220,64 +132,32 @@ void TestTitleSceneUeyama::Draw()
 		// 透過を元に戻す
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-		break;
+	//	break;
 
-	case TITLE_TRANS_STATE::SECOND_CHOICE:
+	//case TITLE_TRANS_STATE::SECOND_CHOICE:
 
-		//--------------------------------------------------//
-		// 難易度選択カーソル
-		//-------------------------------------------------//
-		// 透過して描画
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_transpVal);
-		// カーソルはDrawBoxで描画
-		DrawBox(SCREEN_SIZE_W / 2 - GetFontSize() * 4 * 3,
-			SCREEN_SIZE_H / 2 + m_cursolNum * 80 - 8,
-			SCREEN_SIZE_W / 2 + GetFontSize() * 4 * 3,
-			SCREEN_SIZE_H / 2 + m_cursolNum * 80 + 72,
-			GetColor(255, 155, 50), TRUE);
-		// 透過を元に戻す
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-		// 難易度表示
-		for (int i = 0; i < ALL_DIFFICULT; i++)
-		{
-			if (i == 0)
-			{
-				DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize() * 4 * 2, SCREEN_SIZE_H / 2 + (i * 80), 4.0, 4.0, GetColor(255, 255, 255), "イージー");
-			}
-
-			if (i == 1)
-			{
-				DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize() * 4 * 2, SCREEN_SIZE_H / 2 + (i * 80), 4.0, 4.0, GetColor(255, 255, 255), "ノーマル");
-			}
-
-			if (i == 2)
-			{
-				DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize() * 4 * 1.5, SCREEN_SIZE_H / 2 + (i * 80), 4.0, 4.0, GetColor(255, 255, 255), "ハード");
-			}
-		}
 
 		// フェードアウト処理
-		if (m_fadeOutFlag)
-		{
-			for (int i = 0; i < 255; i += FADE_OUT_SPEED)
-			{
-				// 描画輝度をセット
-				SetDrawBright(255 - i, 255 - i, 255 - i);
+		//if (m_fadeOutFlag)
+		//{
+		//	for (int i = 0; i < 255; i += FADE_OUT_SPEED)
+		//	{
+		//		// 描画輝度をセット
+		//		SetDrawBright(255 - i, 255 - i, 255 - i);
 
-				// グラフィックを描画
-				DrawGraph(0, 0, m_backGraphHandle, FALSE);
-				ScreenFlip();
-			}
-			m_fadeOutFinishFlag = true;
-			
-		}
-		break;
+		//		// グラフィックを描画
+		//		DrawGraph(0, 0, m_backGraphHandle, FALSE);
+		//		ScreenFlip();
+		//	}
+		//	m_fadeOutFinishFlag = true;
+		//	
+		//}
+	//	break;
 
-	default:
+	//default:
 
-		break;
-	}
+	//	break;
+
 
 }
 
@@ -286,9 +166,8 @@ void TestTitleSceneUeyama::Draw()
 /// </summary>
 void TestTitleSceneUeyama::Sound()
 {
-
-	//PlaySoundFile("data/sound/SwimTitleBgm.mp3", DX_PLAYTYPE_BACK);
-	ChangeVolumeSoundMem(m_volumePal, m_soundHandle);
+	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_BACK, FALSE);
+	ChangeVolumeSoundMem(m_volumePal+150, m_soundHandle);
 }
 
 /// <summary>
