@@ -7,11 +7,17 @@
 
 #include "DxLib.h"
 
+#define DIVE	0
+#define SWIM	1
+#define RESULT	2
+
+
 class ObstructBase;
 
 class Player final
 {
 public:
+
 	Player();				// コンストラクタ.
 	~Player();				// デストラクタ.
 
@@ -24,7 +30,10 @@ public:
 	void OnHitObstruct(ObstructBase& obstruct);
 
 	// モデルハンドルの取得.
-	int GetModelHandle(){ return modelHandle; }
+	int GetModelHandle(){ return m_modelHandle[m_playerState]; }
+
+	// モーション状態の取得
+	int GetPlayerState() { return m_playerState; }
 
 	// ポジションのgetter/setter.
 	const VECTOR& GetPos() const { return pos; }
@@ -38,12 +47,16 @@ public:
 	float GetHitRadius() { return hitRadius; }
 
 private:
-	int		modelHandle;	// モデルハンドル.
+	int		m_modelHandle[3];			//	モデルハンドル
+	int		m_diveModelHandle;		//	ダイブモデルハンドル.
+	int		m_swimModelHandle;		//　泳ぎモデルハンドル.
+	int		m_resultModelHandle;	//	ガイナ立ちモデルハンドル.
+	int		m_playerState;
 	VECTOR	pos;			// ポジション.
 	VECTOR	velocity;		// 移動力.
 	VECTOR	dir;			// 回転方向.
 	float	hitRadius;		// あたり判定の半径.
-	float TotalTime, PlayTime;//モーションの再生時間
+	float TotalTime[3], PlayTime;//モーションの再生時間
 	int AttachIndex;//モーションの
 
 	// 発射エフェクト

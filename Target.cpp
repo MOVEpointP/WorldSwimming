@@ -32,15 +32,21 @@ Target::Target()
 	, m_targetCount(0)
 	, m_plusX(0)
 	, m_setTime(0) 
-	,m_shotInterval(5)
+	, m_shotInterval(5)
 	, m_iceState(NO_SHOT)
 	, m_hitFlag(false)
 	, m_throwIceSoundHandle(-1)
 	, m_hitIceSoundHandle(-1)
 	, m_iceType(0)
+	, m_handImgHandle(-1)
+	, m_legImgHandle(-1)
+	, m_o2ImgHandle(-1)
 {
-	// ３Ｄモデルの読み込み
-	modelHandle = MV1LoadModel("data/model/target/icecream/SVH-icecream/icecream.pmx");
+	// 画像の読み込み
+	m_handImgHandle= LoadGraph("data/img/target/hand.png");
+	m_legImgHandle=LoadGraph("data/img/target/legs.png");
+	m_o2ImgHandle=LoadGraph("data/img/target/O2.png");
+	//modelHandle = MV1LoadModel("data/model/target/icecream/SVH-icecream/icecream.pmx");
 	m_FontHandle = CreateFontToHandle(NULL, m_font_size, m_font_thick, DX_FONTTYPE_NORMAL);
 
 	m_target_accel = 0.1f;
@@ -58,8 +64,11 @@ Target::Target()
 //-----------------------------------------------------------------------------
 Target::~Target()
 {
-	// モデルのアンロード.
-	MV1DeleteModel(modelHandle);
+	// 各種ハンドルのアンロード.
+	//MV1DeleteModel(modelHandle);
+	DeleteGraph(m_handImgHandle);
+	DeleteGraph(m_legImgHandle);
+	DeleteGraph(m_o2ImgHandle);
 }
 
 //-----------------------------------------------------------------------------
