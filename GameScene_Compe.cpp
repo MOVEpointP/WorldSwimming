@@ -1,4 +1,4 @@
-#include "TestSceneKoga.h"
+#include "GameScene_Compe.h"
 #include "Result.h"
 #include "Mark.h"
 #include "Target.h"
@@ -7,6 +7,8 @@
 #include "Hitchecker.h"
 #include "UI.h"
 #include "Camera.h"
+
+
 
 #include "DxLib.h"
 #include "Effect.h"
@@ -38,7 +40,7 @@ const int FADE_OUT_SPEED = 3;
 const int GONG_VOLUME_PAL = 30;
 const int DOOR_VOLUME_PAL = 40;
 
-TestSceneKoga::TestSceneKoga()
+GameSceneCompe::GameSceneCompe()
 	:m_player(nullptr)
 	, m_camera(nullptr)
 	, m_mark(nullptr)
@@ -77,7 +79,7 @@ TestSceneKoga::TestSceneKoga()
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
 }
 
-TestSceneKoga::~TestSceneKoga()
+GameSceneCompe::~GameSceneCompe()
 {
 	delete m_player;	//	プレイヤーのポインタメンバ変数を消去
 	delete m_camera;	//	カメラのポインタメンバ変数を消去
@@ -109,14 +111,14 @@ TestSceneKoga::~TestSceneKoga()
 	delete m_effect;
 }
 
-SceneBase* TestSceneKoga::Update(float _deltaTime)
+SceneBase* GameSceneCompe::Update(float _deltaTime)
 {
 	// デバッグビルドのみデバッグ関数を呼び出す
 #ifdef _DEBUG
 	DebugKey();
 #endif
 
-	switch (m_state = GAME_SCENE_STATE::GAME)
+	switch (m_state)
 	{
 	case GAME_SCENE_STATE::COUNTDOWN:
 		if ((COUNTDOWN + 1) - (GetNowCount() / 1000 - m_startTime) <= 1)
@@ -225,34 +227,34 @@ SceneBase* TestSceneKoga::Update(float _deltaTime)
 }
 
 
-void TestSceneKoga::Draw()
+void GameSceneCompe::Draw()
 {
 	//if (!m_fadeInFinishFlag)
-	//{
-	//	// フェードイン処理
-	//	for (int i = 0; i < 255; i += FADE_IN_SPEED)
-	//	{
-	//		// 描画輝度をセット
-	//		SetDrawBright(i, i, i);
+//{
+//	// フェードイン処理
+//	for (int i = 0; i < 255; i += FADE_IN_SPEED)
+//	{
+//		// 描画輝度をセット
+//		SetDrawBright(i, i, i);
 
-	//		PlaySoundMem(m_doorSoundHandle, DX_PLAYTYPE_BACK, FALSE);
-	//		ChangeVolumeSoundMem(m_volumePal + DOOR_VOLUME_PAL, m_doorSoundHandle);
+//		PlaySoundMem(m_doorSoundHandle, DX_PLAYTYPE_BACK, FALSE);
+//		ChangeVolumeSoundMem(m_volumePal + DOOR_VOLUME_PAL, m_doorSoundHandle);
 
-	//		// グラフィックを描画
-	//		DrawGraph(0, 0, m_backGraphHandle, TRUE);
-	//		DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
-	//		DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
-	//		ScreenFlip();
-	//	}
-	//	m_fadeInFinishFlag = true;
-	//}
-	//	背景
-	/*DrawGraph(0, 0, m_backGraphHandle, TRUE);
-	DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
+//		// グラフィックを描画
+//		DrawGraph(0, 0, m_backGraphHandle, TRUE);
+//		DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
+//		DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
+//		ScreenFlip();
+//	}
+//	m_fadeInFinishFlag = true;
+//}
+//	背景
+/*DrawGraph(0, 0, m_backGraphHandle, TRUE);
+DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 
-	//大きすぎるので描画倍率変更
-	//MV1SetScale(m_poolModelHandle, VGet(0.0175f, 0.0175f, 0.0175f));
-	//プールの表示位置変更
+//大きすぎるので描画倍率変更
+//MV1SetScale(m_poolModelHandle, VGet(0.0175f, 0.0175f, 0.0175f));
+//プールの表示位置変更
 	MV1SetPosition(m_poolModelHandle, VGet(0.0f, 0.0f, 180.0f));
 	// ３ＤモデルのX軸の回転値を９０度にセットする
 	//MV1SetRotationXYZ(m_poolModelHandle, VGet(0.0f, -90.0f * DX_PI_F / 180.0f, 0.0f));
@@ -295,20 +297,20 @@ void TestSceneKoga::Draw()
 	//}
 
 	// エフェクトの再生
-	if (!(m_effect->GetNowPlaying() == 0) && m_target[m_targetCount]->GetHitIce())
-	{
-		//m_effect->PlayEffekseer(VGet(0, 20, 0));
-		m_target[m_targetCount]->SetHitIce(false);
-	}
+	//if (!(m_effect->GetNowPlaying() == 0) && m_target[m_targetCount]->GetHitIce())
+	//{
+	//	m_effect->PlayEffekseer(VGet(0, 20, 0));
+	//	m_target[m_targetCount]->SetHitIce(false);
+	//}
 
-	if (m_state == GAME_SCENE_STATE::COUNTDOWN)
-	{
-		// 透過して描画
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
-		DrawBox(0, 0, SCREEN_SIZE_W, SCREEN_SIZE_H, GetColor(0, 0, 0), TRUE);
-		// 透過を元に戻す
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
+	//if (m_state == GAME_SCENE_STATE::COUNTDOWN)
+	//{
+	//	// 透過して描画
+	//	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
+	//	DrawBox(0, 0, SCREEN_SIZE_W, SCREEN_SIZE_H, GetColor(0, 0, 0), TRUE);
+	//	// 透過を元に戻す
+	//	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	//}
 	//DrawGraph(0, 0, m_manualGraphHandle, TRUE);							//	操作説明を表示
 	// カウントダウンの描画
 	/*if (m_state == GAME_SCENE_STATE::COUNTDOWN)
@@ -340,7 +342,7 @@ void TestSceneKoga::Draw()
 	}
 }
 
-void TestSceneKoga::Sound()
+void GameSceneCompe::Sound()
 {
 	//	ゲーム終了時に効果音を流す
 	if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
@@ -357,7 +359,7 @@ void TestSceneKoga::Sound()
 	}
 }
 
-void TestSceneKoga::Load()
+void GameSceneCompe::Load()
 {
 	//	グラフィックハンドルにセット
 	m_finishGraphHandle = LoadGraph("data/img/gameEnd.png");
@@ -408,7 +410,7 @@ void TestSceneKoga::Load()
 	m_effect = new PlayEffect("data/effects/FeatherBomb.efk", 5.0f);
 }
 
-void TestSceneKoga::DebugKey()
+void GameSceneCompe::DebugKey()
 {
 	// 確認用
 	if (CheckHitKey(KEY_INPUT_A))

@@ -52,7 +52,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//TestSceneUeyama* TestScene = new TestSceneUeyama;
 
 	//	タイトルシーンをセット
-	Scene->SetScene(new TestSceneNakamura);
+	Scene->SetScene(new TestSceneKoga);
 
 	// エスケープキーが押されるかウインドウが閉じられるまでループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)

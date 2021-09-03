@@ -6,6 +6,7 @@
 class ObstructBase;
 class TestSceneKoga;
 class PlayEffect;
+class Player;
 class UI;
 
 enum Target_State
@@ -65,9 +66,12 @@ public:
 	void SetIceState(Target_State _iceState) { m_iceState = _iceState; }
 
 private:
-	int		modelHandle;	// モデルハンドル.
-	int		m_FontHandle;	// フォントハンドル
-	VECTOR	pos;			// ポジション.
+	int		modelHandle;		// モデルハンドル.
+	int		m_handImgHandle;	// 手の画像ハンドル
+	int		m_legImgHandle;		// 足の画像ハンドル
+	int		m_o2ImgHandle;		// 酸素画像ハンドル
+	int		m_FontHandle;		// フォントハンドル
+	VECTOR	pos;				// ポジション.
 	int m_posX;
 
 	VECTOR	velocity;		// 移動力.

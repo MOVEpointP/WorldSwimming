@@ -7,7 +7,7 @@
 #include "Effect.h"
 
 // 静的定数.
-const float Player::ACCEL				= 500.0f;		// 通常の加速.
+const float Player::ACCEL				= 25.0f;		// 通常の加速.
 
 //
 int Player::m_sHandle;
@@ -27,23 +27,37 @@ const int VOLUME_PAL = 100;
 // @brief  コンストラクタ.
 //-----------------------------------------------------------------------------
 Player::Player()
-	: modelHandle(-1)
-	 , hitRadius(7.5f)
+	:hitRadius(7.5f)
 	,m_playerOrbitEfk(nullptr)
+	,m_diveModelHandle(-1)
+	,m_swimModelHandle(-1)
+	,m_resultModelHandle(-1)
+	,m_playerState(0)
 {
+	
+
 	// サウンドの読み込み
 	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
 
-	// ３Ｄモデルの読み込み(飛び込みモーション）テスト
-	modelHandle = MV1LoadModel("data/model/player/result.mv1");
-	// ３Ｄモデルの読み込み(泳ぐモーション）テスト
-	//modelHandle = MV1LoadModel("data/model/player/Swimming01.mv1");
 
-	//３Ｄモデルの０番目のアニメーションをアタッチする
-	AttachIndex = MV1AttachAnim(modelHandle, 0, -1, FALSE);
+	// ３Ｄモデルの読み込み
+	//m_diveModelHandle = MV1LoadModel("data/model/player/dive.mv1");			//ダイブモーション付きモデル
+	//m_swimModelHandle = MV1LoadModel("data/model/player/Swimming01.mv1");	//泳ぎモーション付きモデル
+	//m_resultModelHandle = MV1LoadModel("data/model/player/result.mv1");		//リザルトポーズモーション付きモデル
 
+	m_modelHandle[0] = MV1LoadModel("data/model/player/dive.mv1");
+	m_modelHandle[1] = MV1LoadModel("data/model/player/Swimming01.mv1");
+	m_modelHandle[2] = MV1LoadModel("data/model/player/result.mv1");
+
+
+	//３Ｄモデルの０番目のアニメーションをアタッチし、
 	//アタッチしたアニメーションの総再生時間を取得する
-	TotalTime = MV1GetAttachAnimTotalTime(modelHandle, AttachIndex);
+	AttachIndex = MV1AttachAnim(m_modelHandle[0], 0, -1, FALSE);
+	TotalTime[DIVE] = MV1GetAttachAnimTotalTime(m_modelHandle[0], AttachIndex);
+	AttachIndex = MV1AttachAnim(m_modelHandle[1], 0, -1, FALSE);
+	TotalTime[SWIM] = MV1GetAttachAnimTotalTime(m_modelHandle[1], AttachIndex);
+	AttachIndex = MV1AttachAnim(m_modelHandle[2], 0, -1, FALSE);
+	TotalTime[RESULT] = MV1GetAttachAnimTotalTime(m_modelHandle[2], AttachIndex);
 
 	//再生時間の初期化
 	PlayTime = 0.0f;
@@ -58,7 +72,7 @@ Player::Player()
 	// posはVector型なので、VGetで原点にセット
 	pos = VGet(0, 24, 0);
 	// ３Dモデルのポジション設定
-	MV1SetPosition(modelHandle, pos);
+	MV1SetPosition(m_modelHandle[m_playerState], pos);
 	// 移動する力を（すべての座標）ゼロにする
 	velocity = VGet(0, 0, 0);
 	// 
@@ -73,7 +87,9 @@ Player::Player()
 Player::~Player()
 {
 	// モデルのアンロード.
-	MV1DeleteModel(modelHandle);
+	MV1DeleteModel(m_modelHandle[0]);
+	MV1DeleteModel(m_modelHandle[1]);
+	MV1DeleteModel(m_modelHandle[2]);
 	// サウンドのアンロード
 	DeleteSoundMem(m_sHandle);
 	// エフェクトのアンロード
@@ -102,15 +118,22 @@ void Player::Update(float _deltaTime)
 
 	if (KeyPush)
 	{
-		accelVec = VScale(dir, ACCEL);
+		if (m_playerState == SWIM)
+		{
+			accelVec = VScale(dir, ACCEL);
+		}
+		// 再生時間を進める
+		PlayTime += 0.25f;
 	}
 
 	// z座標が415を超えたら所定の位置に戻る
-	if (VSize(pos) > VSize(VGet(0, 0, 415)))
+	if (VSize(pos) > VSize(VGet(0, 0, 350)))
 	{
 		// キーが押されていない状態にする
 		KeyPush = false;
-		// posを原点にセット
+		m_playerState = SWIM;
+		PlayTime = 0.0f;
+		// posを初期地点にセット
 		pos = VGet(0, 24, 0);
 		// 移動する力を（すべての方向）ゼロにする
 		velocity = VGet(0, 0, 0);
@@ -154,31 +177,33 @@ void Player::Update(float _deltaTime)
 	//printfDx("%f %f %f\n", dir.x, dir.y, dir.z);
 
 	// ３Dモデルのポジション設定
-	MV1SetPosition(modelHandle, pos);
+	MV1SetPosition(m_modelHandle[m_playerState], pos);
 
 	// 向きに合わせて回転.
-	//MV1SetRotationZYAxis(modelHandle, dir, VGet(0.0f, 1.0f, 0.0f), 0.0f);
+	//MV1SetRotationZYAxis(m_modelHandle[m_playerState], dir, VGet(0.0f, 1.0f, 0.0f), 0.0f);
 	
 	// モデルに向いてほしい方向に回転.
-	/*MATRIX tmpMat = MV1GetMatrix(modelHandle);
+	/*MATRIX tmpMat = MV1GetMatrix(m_modelHandle[m_playerState]);
 	MATRIX rotYMat = MGetRotY(180.0f * (float)(DX_PI / 180.0f));
 	tmpMat = MMult(tmpMat, rotYMat);
-	MV1SetRotationMatrix(modelHandle, tmpMat);*/
+	MV1SetRotationMatrix(m_modelHandle[m_playerState], tmpMat);*/
 
-	// 再生時間を進める
-	PlayTime += 0.1f;
+
 
 	// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
-	if (PlayTime >= TotalTime)
+
+	if (PlayTime >= TotalTime[m_playerState])
 	{
 		PlayTime = 0.0f;
+		if (m_playerState == DIVE)
+		{
+			m_playerState = SWIM;
+		}
 	}
 
+
 	// 再生時間をセットする
-	MV1SetAttachAnimTime(modelHandle, AttachIndex, PlayTime);
-
-
-
+	MV1SetAttachAnimTime(m_modelHandle[m_playerState], AttachIndex, PlayTime);
 
 }
 
@@ -188,11 +213,11 @@ void Player::Update(float _deltaTime)
 void Player::Draw()
 {
 	// 3Dモデルのスケールを拡大
-	MV1SetScale(modelHandle, VGet(5.0f, 5.0f, 5.0f));
+	MV1SetScale(m_modelHandle[m_playerState], VGet(5.0f, 5.0f, 5.0f));
 	// ３ＤモデルのX軸の回転値を９０度にセットする
-	MV1SetRotationXYZ(modelHandle, VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f));
+	MV1SetRotationXYZ(m_modelHandle[m_playerState], VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f));
 	// ３Ｄモデルの描画
-	MV1DrawModel(modelHandle);
+	MV1DrawModel(m_modelHandle[m_playerState]);
 
 	//if (!KeyPush)
 	//{
