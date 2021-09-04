@@ -43,11 +43,18 @@ private:
 	int m_permeationAmount;
 	// 透過量
 	int m_transpVal;
-	int m_fadeTransVal;				//	フェードアウト中の透過量
+	int m_transVal_Enter;				//	フェードアウト中の透過量
 	float m_deltaTime;				//	デルタタイム
 
-	bool m_checkKeyFlag;				//	キーが押されたままかを判定するフラグ
+	bool m_checkKeyFlag;			//	キーが押されたままかを判定するフラグ
 	bool m_fadeInFinishFlag;		//	フェードインの終了判定フラグ
 	bool m_fadeOutFlag;				//	フェードアウト開始用のフラグ
 	bool m_fadeOutFinishFlag;		//	フェードアウトの終了判定フラグ
+
+	float m_guidanceY;               //	タイトルロゴのy座標
+	float m_TitleLogox;               //	タイトルロゴのx座標
+	bool m_TitleLogoxFlag;
+	bool m_guidanceYFlag;
+	float m_Waterx;               //	水画像のx座標
+	bool m_WaterxFlag;
 };
