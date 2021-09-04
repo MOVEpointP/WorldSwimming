@@ -1,5 +1,6 @@
 #include "ResultHalf.h"
 #include "TestTitleSceneUeyama.h"
+#include "TestSceneUeyama.h"
 #include "Score.h"
 
 const int LOGO_X = 0;
@@ -73,10 +74,9 @@ ResultHalf::ResultHalf()
 	// 
 	dir = VGet(160, 0, 1);
 
-	m_half_score = nullptr;
 
 	m_score= Score::GetScore();//スコアの値を入れる
-	/*m_half_score->GetScore();	*///スコアの値をもらう
+	
 
 }
 
@@ -97,7 +97,7 @@ ResultHalf::~ResultHalf()
 	/*DeleteSoundMem(m_scoreSoundHandle);*/
 	DeleteSoundMem(m_evaluationSoundHandle[m_evaluation]);
 	DeleteSoundMem(m_click_sound_handle);					//	ENTERで進むときのサウンドメモリを解放
-	delete m_half_score;
+
 }
 
 SceneBase* ResultHalf::Update(float _deltaTime)
@@ -144,7 +144,13 @@ SceneBase* ResultHalf::Update(float _deltaTime)
 	{
 		ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_click_sound_handle);
 		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL);		//	音が再生し終わるまで待機
-		return new TestTitleSceneUeyama;
+		return new TestSceneUeyama;
+	}
+
+	PlayTime += 0.5f;
+	if (PlayTime >= TotalTime)
+	{
+		PlayTime = 0.0f;
 	}
 	// 再生時間をセットする
 	MV1SetAttachAnimTime(modelHandle, AttachIndex, PlayTime);
@@ -277,7 +283,7 @@ void ResultHalf::Load()
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/SwimScoreSE_S.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
 	/*m_scoreStr(std::to_string(m_score));*/
-	m_logoGraphHandle = LoadGraph("data/img/result_02_png/LastResult.png");				//	グラフィックハンドルにリザルト画面のイメージをセット
+	m_logoGraphHandle = LoadGraph("data/img/result_02_png/Result _01_backGround.png");				//	グラフィックハンドルにリザルト画面のイメージをセット
 	// m_scoreGraphHandle = LoadGraph("data/img/Result_score.png");			//	グラフィックハンドルにリザルト画面のイメージをセット
 	m_guidanceGraphHandle = LoadGraph("data/img/result_02_png/Result _Exitword.png");		//	グラフィックハンドルにリザルト画面のイメージをセット
 	m_bgmSoundHandle = LoadSoundMem("data/sound/SwimResultBGM.mp3");			//	サウンドハンドルにリザルト画面のBGMをセット
