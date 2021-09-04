@@ -27,7 +27,7 @@ private:
 	class Target* m_target[11];			//
 	class Camera* m_camera;			//	カメラクラスへのポインタメンバ変数
 	class Mark* m_mark;				//	マーククラスへのポインタメンバ変数
-	class UI* m_score_ui[10];		//  UIクラスへのポインタメンバ変数
+	class UI* m_ui;					//  UIクラスへのポインタメンバ変数
 	class UI* m_hit_ui[10];			//	ヒット判定UIクラスへのポインタメンバ変数
 	class PlayEffect* m_effect;     //  エフェクトプレーヤー
 	GAME_SCENE_STATE m_state;

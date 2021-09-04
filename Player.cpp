@@ -7,7 +7,7 @@
 #include "Effect.h"
 
 // 静的定数.
-const float Player::ACCEL				= 25.0f;		// 通常の加速.
+const float Player::ACCEL				= 15.0f;		// 通常の加速.
 
 //
 int Player::m_sHandle;
@@ -47,7 +47,8 @@ Player::Player()
 
 	m_modelHandle[0] = MV1LoadModel("data/model/player/dive.mv1");
 	m_modelHandle[1] = MV1LoadModel("data/model/player/Swimming01.mv1");
-	m_modelHandle[2] = MV1LoadModel("data/model/player/result.mv1");
+	m_modelHandle[2] = MV1LoadModel("data/model/player/taisou.mv1");
+	m_modelHandle[3] = MV1LoadModel("data/model/player/result.mv1");
 
 
 	//３Ｄモデルの０番目のアニメーションをアタッチし、
@@ -57,7 +58,9 @@ Player::Player()
 	AttachIndex = MV1AttachAnim(m_modelHandle[1], 0, -1, FALSE);
 	TotalTime[SWIM] = MV1GetAttachAnimTotalTime(m_modelHandle[1], AttachIndex);
 	AttachIndex = MV1AttachAnim(m_modelHandle[2], 0, -1, FALSE);
-	TotalTime[RESULT] = MV1GetAttachAnimTotalTime(m_modelHandle[2], AttachIndex);
+	TotalTime[TURN] = MV1GetAttachAnimTotalTime(m_modelHandle[2], AttachIndex);
+	AttachIndex = MV1AttachAnim(m_modelHandle[3], 0, -1, FALSE);
+	TotalTime[RESULT] = MV1GetAttachAnimTotalTime(m_modelHandle[3], AttachIndex);
 
 	//再生時間の初期化
 	PlayTime = 0.0f;
@@ -70,7 +73,8 @@ Player::Player()
 	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 
 	// posはVector型なので、VGetで原点にセット
-	pos = VGet(0, 24, 0);
+	pos = VGet(0, 30, 20);
+	//pos = VGet(0, 13, 50);
 	// ３Dモデルのポジション設定
 	MV1SetPosition(m_modelHandle[m_playerState], pos);
 	// 移動する力を（すべての座標）ゼロにする
@@ -90,6 +94,7 @@ Player::~Player()
 	MV1DeleteModel(m_modelHandle[0]);
 	MV1DeleteModel(m_modelHandle[1]);
 	MV1DeleteModel(m_modelHandle[2]);
+	MV1DeleteModel(m_modelHandle[3]);
 	// サウンドのアンロード
 	DeleteSoundMem(m_sHandle);
 	// エフェクトのアンロード
@@ -120,54 +125,58 @@ void Player::Update(float _deltaTime)
 	{
 		if (m_playerState == SWIM)
 		{
+			// z座標が320を超えたら所定の位置に戻る
+			if (VSize(pos) > VSize(VGet(0, 0, 320)))
+			{
+				dir = VGet(0, 0, -1);
+			}
+			else if (VSize(pos) < VSize(VGet(0, 0, 35)))
+			{
+				pos = VGet(0, 13, 30);
+				velocity = VGet(0, 0, 0);
+			}
 			accelVec = VScale(dir, ACCEL);
 		}
 		// 再生時間を進める
-		PlayTime += 0.25f;
+		PlayTime += 0.4f;
 	}
 
-	// z座標が415を超えたら所定の位置に戻る
-	if (VSize(pos) > VSize(VGet(0, 0, 350)))
-	{
-		// キーが押されていない状態にする
-		KeyPush = false;
-		m_playerState = SWIM;
-		PlayTime = 0.0f;
-		// posを初期地点にセット
-		pos = VGet(0, 24, 0);
-		// 移動する力を（すべての方向）ゼロにする
-		velocity = VGet(0, 0, 0);
-	}
+
 
 	// 止まっている場合は減速しない.
-	if (VSize(velocity) > 0)
-	{
-		// 右か左を押していたらグリップによる減速.
-		if (Key & PAD_INPUT_RIGHT || Key & PAD_INPUT_LEFT)
-		{
-			accelVec = VAdd(accelVec, VScale(dir, GRIP_DECEL));
-		}
-		// 何も押さなければ減速.
-		if (Key == 0&&KeyPush==false)
-		{
-			accelVec = VScale(dir, DEFAULT_DECEL);
-		}
-	}
+	//if (VSize(velocity) > 0)
+	//{
+	//	// 右か左を押していたらグリップによる減速.
+	//	if (Key & PAD_INPUT_RIGHT || Key & PAD_INPUT_LEFT)
+	//	{
+	//		accelVec = VAdd(accelVec, VScale(dir, GRIP_DECEL));
+	//	}
+	//	// 何も押さなければ減速.
+	//	if (Key == 0&&KeyPush==false)
+	//	{
+	//		accelVec = VScale(dir, DEFAULT_DECEL);
+	//	}
+	//}
 
 	// ベロシティ加速計算.
 	velocity = VAdd(velocity, accelVec);
 
 	// 反対方向に進む状態になっていたら止める.
-	if (VDot(velocity, dir) < 0)
-	{
-		velocity = VGet(0, 0, 0);
-	}
+	//if (VDot(velocity, dir) < 0)
+	//{
+	//	velocity = VGet(0, 0, 0);
+	//}
 
 	// 上下方向にいかないようにベロシティを整える.
 	velocity = VGet(velocity.x * _deltaTime, 0, velocity.z * _deltaTime);
 
 	// ポジションを更新.
 	pos = VAdd(pos, velocity);
+
+	if (KeyPush && m_playerState == DIVE)
+	{
+		pos.y -= 0.1;
+	}
 
 	// 力をかけ終わったベロシティの方向にディレクションを調整.
 	/*if (VSize(velocity) != 0)
@@ -198,6 +207,7 @@ void Player::Update(float _deltaTime)
 		if (m_playerState == DIVE)
 		{
 			m_playerState = SWIM;
+			pos.z = 50;
 		}
 	}
 
@@ -214,7 +224,7 @@ void Player::Draw()
 {
 	// 3Dモデルのスケールを拡大
 	MV1SetScale(m_modelHandle[m_playerState], VGet(5.0f, 5.0f, 5.0f));
-	// ３ＤモデルのX軸の回転値を９０度にセットする
+	// ３ＤモデルのX軸の回転値を180度にセットする
 	MV1SetRotationXYZ(m_modelHandle[m_playerState], VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f));
 	// ３Ｄモデルの描画
 	MV1DrawModel(m_modelHandle[m_playerState]);
@@ -238,7 +248,7 @@ void Player::Draw()
 
 
 	// デバッグあたり判定.
-	DrawSphere3D(pos, hitRadius, 5, 0x00ffff, 0x00ffff, false);
+	//DrawSphere3D(pos, hitRadius, 5, 0x00ffff, 0x00ffff, false);
 }
 
 //-----------------------------------------------------------------------------

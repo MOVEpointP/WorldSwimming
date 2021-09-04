@@ -15,15 +15,10 @@ int UI::m_miss_graphHandle;
 int UI::m_score;
 
 // ScoreUIコンストラクタ
-UI::UI(const int& _x, const int& _y, const int& _graph_handle)
+UI::UI()
 {
-	// x,y座標に画像の位置座標を格納する
-	m_posX = (_x * score_graph_size) + 100;
-	m_posY = (_y * score_graph_size) + 100;
-	// 使う画像を格納する
-	m_handle = _graph_handle;
-	// scoreを０にする
-	m_score = 0;
+	m_posX = 0;
+	m_posY = 0;
 }
 
 // ScoreUIデストラクタ
@@ -42,36 +37,27 @@ void UI::Load()
 	m_hit_graphHandle = LoadGraph("data/model/score_ui/hit.png");
 	// MISS画像の読み込み
 	m_miss_graphHandle = LoadGraph("data/model/score_ui/miss.png");
+
+	m_gaugeImgHandle = LoadGraph("data/img/UI/nami.png");
+	m_boyImgHandle = LoadGraph("data/img/UI/boy.png");
 }
 
 // 更新
-// 引数にエネミーからscoreとtargetCountを持ってくる
-void UI::ScoreUpdate(bool _hitOrMiss)
+// 引数にプレイヤーから座標を持ってくる
+void UI::ScoreUpdate(int _playerPos)
 {
-	m_handle = -1;
-	if (m_handle == -1)
-	{
-		// 当たり判定を読んで×か〇かの判定？
-			// 当たっていれば
-		if (_hitOrMiss)
-		{
-			// 描画用ハンドルにhitのハンドルを格納
-			m_handle = m_hit_graphHandle;
-			// スコアを一つ加算する
-			m_score++;
-		}
-		// 当たっていなければ
-		else
-		{
-			// 描画用ハンドルにmissのハンドルを格納
-			m_handle = m_miss_graphHandle;
-		}
-	}
+	// x座標に画像の位置座標を格納する
+	//m_posX = (_playerPos * score_graph_size) + 100;
+
 }
 
 // 描画(仮引数の値で呼び出す画像を変える)
 void UI::Draw()
 {
+	//DrawGraph(1300, -100, m_boyImgHandle, TRUE);
+	DrawExtendGraph(1300, 30, 1300+200, 30+110, m_boyImgHandle, TRUE);
+	DrawGraph(1300, -150, m_gaugeImgHandle, TRUE);
+	
 	//DrawGraph(m_posX, m_posY, m_handle, TRUE);
  	DrawRotaGraph(m_posX, m_posY, score_shrink, 0, m_handle, TRUE, FALSE);
 }

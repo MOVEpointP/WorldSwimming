@@ -6,14 +6,14 @@ class UI final
 {
 public:
 	// コンストラクタ
-	UI(const int& _x, const int& _y, const int& _graph_handle);
+	UI();
 	// デストラクタ
 	~UI();
 	// ロード
 	void UI::Load();
 	// 更新
 	// 引数にエネミーからscoreとターゲットカウントを持ってくる
-	void UI::ScoreUpdate(bool _hitOrMiss);
+	void UI::ScoreUpdate(int _playerPos);
 	// 描画
 	void UI::Draw();
 	// getter
@@ -29,12 +29,16 @@ private:
 	// 外れた時の画像ハンドル
 	static int m_miss_graphHandle;
 
+	int m_gaugeImgHandle;
+	int m_boyImgHandle;
+
 	// スコア保存用変数
 	static int m_score;
 
-	// スコアの座標
+	// ポインターの座標
 	int m_posX;
 	int m_posY;
+
 	// ハンドル格納変数
 	int m_handle;
 };

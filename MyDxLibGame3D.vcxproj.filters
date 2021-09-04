@@ -91,6 +91,12 @@
     <ClCompile Include="TestSceneSudo.cpp">
       <Filter>ソース ファイル\work</Filter>
     </ClCompile>
+    <ClCompile Include="SceneChange.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene_Compe.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -165,6 +171,12 @@
     </ClInclude>
     <ClInclude Include="TestSceneSudo.h">
       <Filter>ソース ファイル\work</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneChange.h">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene_Compe.h">
+      <Filter>ソース ファイル\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -353,8 +353,8 @@ void TestSceneUeyama::Load()
 	{
 		for (int j = 0; j < 5; ++j)
 		{
-			m_score_ui[j + (i * 5)] = new UI(j, i, scoreHandle);
-			m_hit_ui[j + (i * 5)] = new UI(j, i, -1);
+			m_score_ui[j + (i * 5)] = new UI();
+			m_hit_ui[j + (i * 5)] = new UI();
 		}
 	}
 	// UIクラスのprivateメンバ変数に画像ハンドルをロード

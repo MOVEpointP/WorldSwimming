@@ -52,7 +52,23 @@ void Camera::Update(const Player& player)
 	pos = VAdd(pos, scaledPosToAim);
 #endif
 	// カメラに位置を反映.
-	SetCameraPositionAndTarget_UpVecY(VGet(0,50, player.GetPos() .z-25), /*player.GetPos()*/VGet(0,-10, player.GetPos().z+50));
+	switch (player.GetPlayerState())
+	{
+	case DIVE:
+		SetCameraPositionAndTarget_UpVecY(VGet(0, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+		break;
+	case SWIM:
+		if (player.GetPos().z >= 225)
+		{
+			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, 275), /*player.GetPos()*/VGet(0, -10, 275));
+		}
+		else
+		{
+			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, player.GetPos().z + 50), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+		}
+		
+		break;
+	}
 }
 
 //

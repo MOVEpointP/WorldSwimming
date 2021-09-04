@@ -162,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="GameScene_Compe.cpp" />
     <ClCompile Include="GameScene_easy.cpp" />
     <ClCompile Include="HitChecker.cpp" />
     <ClCompile Include="main.cpp" />
@@ -176,6 +177,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="SceneBase.cpp" />
+    <ClCompile Include="SceneChange.cpp" />
     <ClCompile Include="SceneMgr.cpp" />
     <ClCompile Include="Target.cpp" />
     <ClCompile Include="TestResultSceneUeyama.cpp" />
@@ -199,6 +201,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="GameScene_Compe.h" />
     <ClInclude Include="GameScene_easy.h" />
     <ClInclude Include="Hitchecker.h" />
     <ClInclude Include="Mark.h" />
@@ -212,6 +215,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="SceneBase.h" />
+    <ClInclude Include="SceneChange.h" />
     <ClInclude Include="SceneMgr.h" />
     <ClInclude Include="Target.h" />
     <ClInclude Include="TestResultSceneUeyama.h" />

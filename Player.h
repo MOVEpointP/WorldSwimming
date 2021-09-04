@@ -9,7 +9,8 @@
 
 #define DIVE	0
 #define SWIM	1
-#define RESULT	2
+#define TURN	2
+#define RESULT	3
 
 
 class ObstructBase;
@@ -33,7 +34,7 @@ public:
 	int GetModelHandle(){ return m_modelHandle[m_playerState]; }
 
 	// モーション状態の取得
-	int GetPlayerState() { return m_playerState; }
+	const int GetPlayerState() const { return m_playerState; }
 
 	// ポジションのgetter/setter.
 	const VECTOR& GetPos() const { return pos; }
@@ -47,7 +48,7 @@ public:
 	float GetHitRadius() { return hitRadius; }
 
 private:
-	int		m_modelHandle[3];			//	モデルハンドル
+	int		m_modelHandle[4];			//	モデルハンドル
 	int		m_diveModelHandle;		//	ダイブモデルハンドル.
 	int		m_swimModelHandle;		//　泳ぎモデルハンドル.
 	int		m_resultModelHandle;	//	ガイナ立ちモデルハンドル.

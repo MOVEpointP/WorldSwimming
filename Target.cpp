@@ -41,6 +41,7 @@ Target::Target()
 	, m_handImgHandle(-1)
 	, m_legImgHandle(-1)
 	, m_o2ImgHandle(-1)
+	, m_posX(0)
 {
 	// ‰æ‘œ‚Ì“Ç‚İ‚İ
 	m_handImgHandle= LoadGraph("data/img/target/hand.png");
@@ -136,20 +137,24 @@ void Target::Update(float _deltaTime)
 //-----------------------------------------------------------------------------
 void Target::Draw()
 {
+	DrawGraph(m_posX, 320, m_handImgHandle, TRUE);
+	
+	
+	
 	// Œ³ƒ‚ƒfƒ‹‚Å‚Í¬‚³‚·‚¬‚é‚Ì‚Å•`‰æ”{—¦‚ğİ’è
 	MV1SetScale(modelHandle, VGet(3.0f, 3.0f, 3.0f));
 	if (m_iceState != NO_SHOT)
 	{
 		// ‚R‚cƒ‚ƒfƒ‹‚Ì•`‰æ
-		MV1DrawModel(modelHandle);
+		//MV1DrawModel(modelHandle);
 	}
 	
 	if (m_iceState == NO_SHOT)
 	{
 		int timebuffer = GetNowCount() / 1000;
 		
-		DrawCircleAA(m_font_X, m_font_Y,((m_shotInterval + 1) - (timebuffer - m_setTime))*30
-			,32, GetColor(255, 255, 255),FALSE);
+		//DrawCircleAA(m_font_X, m_font_Y,((m_shotInterval + 1) - (timebuffer - m_setTime))*30
+		//	,32, GetColor(255, 255, 255),FALSE);
 	}
 
 	// ƒfƒoƒbƒO‚ ‚½‚è”»’è.

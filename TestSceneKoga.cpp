@@ -66,10 +66,11 @@ TestSceneKoga::TestSceneKoga()
 	for (int i = 0; i < enemyNum; i++)
 	{
 		m_target[i] = nullptr;
-		m_score_ui[i] = nullptr;
 		m_hit_ui[i] = nullptr;
 	}
 	m_target[enemyNum] = nullptr;
+
+	m_ui = nullptr;
 
 	// 開始時のタイムを取得
 	m_startTime = GetNowCount() / 1000;
@@ -100,10 +101,11 @@ TestSceneKoga::~TestSceneKoga()
 	for (int i = 0; i < enemyNum; i++)
 	{
 		delete m_target[i];
-		delete m_score_ui[i];
 		delete m_hit_ui[i];
 	}
 	delete m_target[enemyNum];
+
+	delete m_ui;
 
 	m_effect->Delete();
 	delete m_effect;
@@ -175,7 +177,7 @@ SceneBase* TestSceneKoga::Update(float _deltaTime)
 				m_girl_missReactionFlag = true;		// 女の子がmissした時のリアクションをする
 			}
 		}
-		m_target[m_targetCount]->Reaction(m_hit_ui[m_targetCount], m_iceHitFlagBuffer);
+		//m_target[m_targetCount]->Reaction(m_hit_ui[m_targetCount], m_iceHitFlagBuffer);
 
 		m_player->Update(_deltaTime);
 
@@ -215,7 +217,7 @@ SceneBase* TestSceneKoga::Update(float _deltaTime)
 		if (m_fadeOutFinishFlag)
 		{
 			// scoreUIのスコアをResultのscore変数にセット
-			return new Result(m_score_ui[m_targetCount]->GetScore());				//	リザルトシーンに切り替える
+			return new Result(m_ui->GetScore());				//	リザルトシーンに切り替える
 		}
 		break;
 	default:
@@ -271,11 +273,11 @@ void TestSceneKoga::Draw()
 	//DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
 	//// 目印となる机
 	//m_mark->Mark_Draw();
-	//// ターゲット(アイス)
-	//for (int i = 0; i <= m_targetCount; i++)
-	//{
-	//	m_target[i]->Draw();
-	//}
+	// ターゲット(アイス)
+	for (int i = 0; i <= m_targetCount; i++)
+	{
+		m_target[i]->Draw();
+	}
 
 	// プレーヤー
 	m_player->Draw();
@@ -285,10 +287,9 @@ void TestSceneKoga::Draw()
 	//{
 	//	DrawGraph(0, 0, m_finishGraphHandle, TRUE);							//	最後のエネミーが射出され終わったら"ゲーム終了"の表示
 	//}
-	//for (int i = 0; i < enemyNum; ++i)
-	//{
-	//	m_score_ui[i]->Draw();
-	//}
+
+	m_ui->Draw();
+
 	//for (int i = 0; i < enemyNum; ++i)
 	//{
 	//	m_hit_ui[i]->Draw();
@@ -382,6 +383,9 @@ void TestSceneKoga::Load()
 	int scoreHandle = LoadGraph("data/model/score_ui/score(1).png");
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成
+
+	m_camera->SetPlayerState(m_player->GetPlayerState());
+
 	m_mark = new Mark;				//	マーククラスのインスタンスを生成
 	for (int i = 0; i < (enemyNum + 1); i++)
 	{
@@ -398,12 +402,12 @@ void TestSceneKoga::Load()
 	{
 		for (int j = 0; j < 5; ++j)
 		{
-			m_score_ui[j + (i * 5)] = new UI(j, i, scoreHandle);
-			m_hit_ui[j + (i * 5)] = new UI(j, i, -1);
+			m_ui= new UI();
+			m_hit_ui[j + (i * 5)] = new UI();
 		}
 	}
 	// UIクラスのprivateメンバ変数に画像ハンドルをロード
-	m_score_ui[0]->Load();
+	m_ui->Load();
 
 	m_effect = new PlayEffect("data/effects/FeatherBomb.efk", 5.0f);
 }
