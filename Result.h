@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _RESULT_H_
 #define _RESULT_H_
 
@@ -10,7 +9,7 @@
 class Result : public SceneBase
 {
 public:
-	Result(const int& _score);			//	コンストラクタ
+	Result();			//	コンストラクタ
 	~Result();			//　デストラクタ
 
 	SceneBase* Update(float _deltaTime)override;	//	更新

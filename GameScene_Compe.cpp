@@ -77,6 +77,8 @@ GameSceneCompe::GameSceneCompe()
 	m_startTime = GetNowCount() / 1000;
 	// ステートセット(カウントダウンから)
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
+
+	KeyPush = false;
 }
 
 GameSceneCompe::~GameSceneCompe()
@@ -204,9 +206,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		//	}
 		//}
 
-
-
-		if (m_targetCount == enemyNum)
+		if (CheckHitKey(KEY_INPUT_LSHIFT) && !KeyPush)
 		{
 			m_finishFlag = TRUE;
 		}
@@ -217,7 +217,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		if (m_fadeOutFinishFlag)
 		{
 			// scoreUIのスコアをResultのscore変数にセット
-			return new Result(m_score_ui[m_targetCount]->GetScore());				//	リザルトシーンに切り替える
+			return new Result();				//	リザルトシーンに切り替える
 		}
 		break;
 	default:
@@ -260,6 +260,8 @@ DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 	//MV1SetRotationXYZ(m_poolModelHandle, VGet(0.0f, -90.0f * DX_PI_F / 180.0f, 0.0f));
 	//プールの描画
 	MV1DrawModel(m_poolModelHandle);
+
+	//DrawGraph(0, 0, m_timingImgHandle, TRUE);
 
 	////女の子のリアクション描画
 	//if (m_girl_hitReactionFlag == true)				// hitしたならば
@@ -371,6 +373,7 @@ void GameSceneCompe::Load()
 	m_girl_hitReaction_GraphHandle = LoadGraph("data/img/chinaGirl_iine.png");			//  女の子の反応の画像ハンドルをロード
 	m_ladyGraphHandle = LoadGraph("data/img/chinaLady.png");
 	m_manualGraphHandle = LoadGraph("data/img/manual.png");
+	m_timingImgHandle = LoadGraph("data/img/gameScene/timing.png");
 
 	//	モデルハンドルにセット
 	//m_poolModelHandle = MV1LoadModel("data/model/stage/poolModel.mv1");

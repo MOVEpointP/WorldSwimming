@@ -14,6 +14,8 @@ public:
 	GameSceneCompe();				//	コンストラクタ
 	~GameSceneCompe();			//	デストラクタ
 
+	bool KeyPush;			//キーを押したかどうか
+
 	SceneBase* Update(float _deltaTime)override;	//	更新
 	void Draw()override;			//	描画
 	void Sound()override;			//	音楽
@@ -49,7 +51,7 @@ private:
 
 	int m_poolModelHandle;			//プールのモデルハンドル
 
-
+	int m_timingImgHandle;
 
 
 	int m_girl_missReaction_GraphHandle;	//  ミスした時の女の子に追加する画像ハンドル

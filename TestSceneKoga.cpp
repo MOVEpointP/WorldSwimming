@@ -1,5 +1,6 @@
 #include "TestSceneKoga.h"
 #include "Result.h"
+#include "ResultHalf.h"
 #include "Mark.h"
 #include "Target.h"
 #include "Player.h"
@@ -217,7 +218,7 @@ SceneBase* TestSceneKoga::Update(float _deltaTime)
 		if (m_fadeOutFinishFlag)
 		{
 			// scoreUIのスコアをResultのscore変数にセット
-			return new Result(m_ui->GetScore());				//	リザルトシーンに切り替える
+			return new Result();				//	リザルトシーンに切り替える
 		}
 		break;
 	default:

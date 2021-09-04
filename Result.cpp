@@ -23,8 +23,8 @@ const int FADE_IN_SPEED = 3;
 //	フェードアウトの速度
 const int FADE_OUT_SPEED = 3;
 
-Result::Result(const int& _score)
-	:m_score(_score)
+Result::Result()
+	:m_score(0)
 	, m_fadeInFinishFlag(false)
 	, m_fadeOutFlag(false)
 	, m_fadeOutFinishFlag(false)

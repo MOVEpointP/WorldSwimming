@@ -222,7 +222,7 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 		if (m_fadeOutFinishFlag)
 		{
 			// scoreUIのスコアをResultのscore変数にセット
-			return new Result(m_score_ui[m_targetCount]->GetScore());				//	リザルトシーンに切り替える
+			return new Result();				//	リザルトシーンに切り替える
 		}
 		break;
 	default:

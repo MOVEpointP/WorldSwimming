@@ -1,5 +1,6 @@
 #include "GameScene_easy.h"
 #include "Result.h"
+#include "ResultHalf.h"
 #include "Mark.h"
 #include "Target.h"
 #include "Player.h"
@@ -7,8 +8,6 @@
 #include "Hitchecker.h"
 #include "UI.h"
 #include "Camera.h"
-
-
 
 #include "DxLib.h"
 #include "Effect.h"
@@ -68,10 +67,11 @@ GameSceneEasy::GameSceneEasy()
 	for (int i = 0; i < enemyNum; i++)
 	{
 		m_target[i] = nullptr;
-		m_score_ui[i] = nullptr;
 		m_hit_ui[i] = nullptr;
 	}
 	m_target[enemyNum] = nullptr;
+
+	m_ui = nullptr;
 
 	// 開始時のタイムを取得
 	m_startTime = GetNowCount() / 1000;
@@ -102,9 +102,11 @@ GameSceneEasy::~GameSceneEasy()
 	for (int i = 0; i < enemyNum; i++)
 	{
 		delete m_target[i];
-		delete m_score_ui[i];
 		delete m_hit_ui[i];
 	}
+
+	delete m_ui;
+
 	delete m_target[enemyNum];
 
 	m_effect->Delete();
@@ -205,8 +207,7 @@ SceneBase* GameSceneEasy::Update(float _deltaTime)
 		//}
 
 
-
-		if (m_targetCount == enemyNum)
+		if (CheckHitKey(KEY_INPUT_LSHIFT) && !KeyPush)
 		{
 			m_finishFlag = TRUE;
 		}
@@ -217,7 +218,7 @@ SceneBase* GameSceneEasy::Update(float _deltaTime)
 		if (m_fadeOutFinishFlag)
 		{
 			// scoreUIのスコアをResultのscore変数にセット
-			return new Result(m_score_ui[m_targetCount]->GetScore());				//	リザルトシーンに切り替える
+			return new ResultHalf();				//	リザルトシーンに切り替える
 		}
 		break;
 	default:
@@ -261,6 +262,8 @@ DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 	//プールの描画
 	MV1DrawModel(m_poolModelHandle);
 
+	DrawGraph(0, 0, m_timingImgHandle, TRUE);
+
 	////女の子のリアクション描画
 	//if (m_girl_hitReactionFlag == true)				// hitしたならば
 	//{
@@ -273,11 +276,11 @@ DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 	//DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
 	//// 目印となる机
 	//m_mark->Mark_Draw();
-	//// ターゲット(アイス)
-	//for (int i = 0; i <= m_targetCount; i++)
-	//{
-	//	m_target[i]->Draw();
-	//}
+	// ターゲット(アイス)
+	for (int i = 0; i <= m_targetCount; i++)
+	{
+		m_target[i]->Draw();
+	}
 
 	// プレーヤー
 	m_player->Draw();
@@ -287,10 +290,9 @@ DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 	//{
 	//	DrawGraph(0, 0, m_finishGraphHandle, TRUE);							//	最後のエネミーが射出され終わったら"ゲーム終了"の表示
 	//}
-	//for (int i = 0; i < enemyNum; ++i)
-	//{
-	//	m_score_ui[i]->Draw();
-	//}
+
+	m_ui->Draw();
+
 	//for (int i = 0; i < enemyNum; ++i)
 	//{
 	//	m_hit_ui[i]->Draw();
@@ -371,6 +373,7 @@ void GameSceneEasy::Load()
 	m_girl_hitReaction_GraphHandle = LoadGraph("data/img/chinaGirl_iine.png");			//  女の子の反応の画像ハンドルをロード
 	m_ladyGraphHandle = LoadGraph("data/img/chinaLady.png");
 	m_manualGraphHandle = LoadGraph("data/img/manual.png");
+	m_timingImgHandle = LoadGraph("data/img/gameScene/timing.png");
 
 	//	モデルハンドルにセット
 	//m_poolModelHandle = MV1LoadModel("data/model/stage/poolModel.mv1");
@@ -400,12 +403,12 @@ void GameSceneEasy::Load()
 	{
 		for (int j = 0; j < 5; ++j)
 		{
-			m_score_ui[j + (i * 5)] = new UI();
+			m_ui = new UI();
 			m_hit_ui[j + (i * 5)] = new UI();
 		}
 	}
 	// UIクラスのprivateメンバ変数に画像ハンドルをロード
-	m_score_ui[0]->Load();
+	m_ui->Load();
 
 	m_effect = new PlayEffect("data/effects/FeatherBomb.efk", 5.0f);
 }

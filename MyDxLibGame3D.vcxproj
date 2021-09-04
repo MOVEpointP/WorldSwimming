@@ -176,9 +176,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="ResultHalf.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneChange.cpp" />
     <ClCompile Include="SceneMgr.cpp" />
+    <ClCompile Include="Score.cpp" />
     <ClCompile Include="Target.cpp" />
     <ClCompile Include="TestResultSceneUeyama.cpp" />
     <ClCompile Include="TestSceneKoga.cpp" />
@@ -214,9 +216,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="ResultHalf.h" />
     <ClInclude Include="SceneBase.h" />
     <ClInclude Include="SceneChange.h" />
     <ClInclude Include="SceneMgr.h" />
+    <ClInclude Include="Score.h" />
     <ClInclude Include="Target.h" />
     <ClInclude Include="TestResultSceneUeyama.h" />
     <ClInclude Include="TestSceneKoga.h" />

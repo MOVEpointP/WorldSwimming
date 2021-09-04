@@ -46,7 +46,7 @@ TestTitleSceneUeyama::TestTitleSceneUeyama()
 	// 毎透過量変数を１に設定
 	m_permeationAmount = 1;
 
-	m_soundHandle = LoadSoundMem("data/sound/SwimTitleBgm.wav");
+	m_soundHandle = LoadSoundMem("data/sound/Title/SwimTitleBgm.wav");
 
 }
 
@@ -185,8 +185,8 @@ void TestTitleSceneUeyama::Load()
 	m_guidanceGraphHandle = LoadGraph("data/img/Title/Title_guidance.png");	//	グラフィックハンドルにタイトル画面のイメージをセット
 	m_water = LoadGraph("data/img/Title/title_Water.png");                 //	グラフィックハンドルにタイトル画面のイメージをセット
 
-	m_soundHandle = LoadSoundMem("data/sound/SwimTitleBgm.wav");
-	m_click_sound_handle = LoadSoundMem("data/sound/SwimTitleSE.wav");	//	ENTERで進む際のサウンドをロード
+	m_soundHandle = LoadSoundMem("data/sound/Title/SwimTitleBgm.wav");
+	m_click_sound_handle = LoadSoundMem("data/sound/Title/SwimTitleSE.wav");	//	ENTERで進む際のサウンドをロード
 }
 
 /// <summary>

@@ -57,7 +57,7 @@ Target::Target()
 	// ˆÚ“®‚·‚é—Í‚ği‚·‚×‚Ä‚ÌÀ•Wjƒ[ƒ‚É‚·‚é
 	velocity = VGet(0, 0, 0);
 	// 
-	dir = VGet(-1, 0, 0);
+	dir = VGet(1, 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -183,9 +183,9 @@ void Target::Reaction(UI* _ui, bool _hitFlag)
 		m_iceState = END_SHOT;
 		break;
 	case false:
-		if (pos.x < -500 || pos.x > 500 && m_iceState == NOW_SHOT)
+		if (pos.x < -500 || pos.x > 1300 && m_iceState == NOW_SHOT)
 		{
-			pos = VGet(200, 100, 200);
+			pos = VGet(-2000, -1000, 200);
 
 			ScoreUpdateUI(*_ui, _hitFlag);
 
