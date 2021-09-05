@@ -167,7 +167,7 @@ void Player::Update(float _deltaTime)
 		}
 		else if (m_moveFlag == false)
 		{
-			m_motionSpeed = 2.0f;
+			m_motionSpeed = 1.0f;
 		}
 		// 再生時間を進める
 		PlayTime += m_motionSpeed;
@@ -253,7 +253,7 @@ void Player::Update(float _deltaTime)
 //-----------------------------------------------------------------------------
 void Player::Draw()
 {
-	DrawFormatString(0, 0, 255, "%f", pos.z);
+
 	// 3Dモデルのスケールを拡大
 	MV1SetScale(m_modelHandle[m_playerState], VGet(5.0f, 5.0f, 5.0f));
 	// ３ＤモデルのX軸の回転値を180度にセットする
