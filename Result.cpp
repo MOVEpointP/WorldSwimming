@@ -202,7 +202,7 @@ void Result::Sound()
 		break;
 	}
 	PlaySoundMem(m_bgmSoundHandle, DX_PLAYTYPE_BACK, FALSE);
-	ChangeVolumeSoundMem(50, m_bgmSoundHandle);//マジックナンバーにしたので後で直す
+	ChangeVolumeSoundMem(m_volumePal, m_bgmSoundHandle);
 
 }
 

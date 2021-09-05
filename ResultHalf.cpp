@@ -1,6 +1,6 @@
 #include "ResultHalf.h"
 #include "TestTitleSceneUeyama.h"
-#include "TestSceneUeyama.h"
+//#include "TestSceneUeyama.h"
 #include "GameScene_Compe.h"
 #include "Score.h"
 

@@ -47,12 +47,21 @@ public:
 	// あたり判定半径の取得.
 	float GetHitRadius() { return hitRadius; }
 
+	//セッター
+	void SetScene(bool _sceneFlag) { m_moveFlag = _sceneFlag; }//ゲームシーンからシーンフラグをもらう
+
+	bool ResultSceneFlag;         //　往復数によるゲーム終了判定フラグ
+
 private:
 	int		m_modelHandle[4];			//	モデルハンドル
 	int		m_diveModelHandle;		//	ダイブモデルハンドル.
 	int		m_swimModelHandle;		//　泳ぎモデルハンドル.
 	int		m_resultModelHandle;	//	ガイナ立ちモデルハンドル.
 	int		m_playerState;
+	int     m_modeCount;			// 往復した回数
+	bool    m_moveFlag;
+	int		m_trainingMaxCount;			//　練習での往復最大数
+	float   m_motionSpeed;				//　モデルのモーションスピード
 	VECTOR	pos;			// ポジション.
 	VECTOR	velocity;		// 移動力.
 	VECTOR	dir;			// 回転方向.
@@ -70,11 +79,14 @@ private:
 	// 静的定数.
 	static const float ACCEL;
 	static const float MAX_SPEED;
+	static const float TRANING_SPEED;
 	static const float DEFAULT_DECEL;
 	static const float BREAK_DECEL;
 	static const float GRIP_DECEL;
 	static const float GRIP_POWER;
 	static const float COLIDE_DECEL_FAC;
+	
+
 };
 
 #endif // _PLAYER_H_

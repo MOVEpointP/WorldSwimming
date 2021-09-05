@@ -1,5 +1,6 @@
 #include "TestSceneSudo.h"
 #include "Result.h"
+#include "ResultHalf.h"
 #include "Mark.h"
 #include "Target.h"
 #include "Player.h"
@@ -50,16 +51,18 @@ TestSceneSudo::TestSceneSudo()
 	, m_girl_Y(GIRL_Y)
 	, m_lady_Y(LADY_Y)
 	, m_girlUpFlag(false)
-	, m_fadeInFinishFlag(false)//@@@@@@
+	, m_fadeInFinishFlag(false)
 	, m_fadeOutFlag(false)
-	, m_fadeOutFinishFlag(true)
+	, m_fadeOutFinishFlag(false)
 	, m_girl_hitReactionFlag(false)
 	, m_girl_missReactionFlag(false)
 	, m_girl_ReactionFlag(false)
 	//　確認用
 	, m_hitCount(0)
 	, m_hitFlag(false)
-	
+	, m_endSoundHandle(0)
+	, m_finishSoundFlag(false)
+	, m_soundCount(0)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -67,19 +70,17 @@ TestSceneSudo::TestSceneSudo()
 	for (int i = 0; i < enemyNum; i++)
 	{
 		m_target[i] = nullptr;
-		m_score_ui[i] = nullptr;
 		m_hit_ui[i] = nullptr;
 	}
 	m_target[enemyNum] = nullptr;
+
+	m_ui = nullptr;
 
 	// 開始時のタイムを取得
 	m_startTime = GetNowCount() / 1000;
 	// ステートセット(カウントダウンから)
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
 
-	//背景＠＠＠
-	 m_pos = VGet(0, 0, 0);
-	 MV1SetScale(m_backGraphHandle, VGet(-5.0f, -5.0f, -5.0f));//ステージ小さくしてるよ
 }
 
 TestSceneSudo::~TestSceneSudo()
@@ -89,9 +90,7 @@ TestSceneSudo::~TestSceneSudo()
 	delete m_mark;		//	マークのポインタメンバ変数を消去
 	//	メモリの解放処理
 	StopSoundMem(m_finishSoundHandle);
-	//＠＠＠
-	MV1DeleteModel(m_backGraphHandle);
-	/*DeleteGraph(m_backGraphHandle);*/
+	DeleteGraph(m_backGraphHandle);
 	DeleteGraph(m_finishGraphHandle);
 	DeleteGraph(m_manualGraphHandle);
 	DeleteGraph(m_girlGraphHandle);
@@ -107,9 +106,11 @@ TestSceneSudo::~TestSceneSudo()
 	for (int i = 0; i < enemyNum; i++)
 	{
 		delete m_target[i];
-		delete m_score_ui[i];
 		delete m_hit_ui[i];
 	}
+
+	delete m_ui;
+
 	delete m_target[enemyNum];
 
 	m_effect->Delete();
@@ -122,6 +123,7 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 #ifdef _DEBUG
 	DebugKey();
 #endif
+
 
 	switch (m_state)
 	{
@@ -167,7 +169,7 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 		m_target[m_targetCount]->SetTargetCount(m_targetCount);
 		m_iceHitFlagBuffer = HitChecker::Check(*m_player, *m_target[m_targetCount]);
 		// x,y,z軸のそれぞれのポジションを取得
-		m_target[m_targetCount]->SetSinglePosX();
+                                      		m_target[m_targetCount]->SetSinglePosX();
 		// m_iceHitFlagBufferがtrueになったら
 		if (!m_girl_ReactionFlag && m_target[m_targetCount]->GetIceState() == NOW_SHOT)
 		{
@@ -189,92 +191,56 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 		m_camera->Update(*m_player);
 
 
-		// UIの中華娘を動かす
-		if (m_girlUpFlag)
-		{
-			m_girl_Y--;
-			if (m_girl_Y < GIRL_MIN_Y)
-			{
-				m_girl_Y = GIRL_MIN_Y;
-				m_girlUpFlag = false;
-			}
-		}
-		else if (!m_girlUpFlag)
-		{
-			m_girl_Y++;
-			if (m_girl_Y > 0)
-			{
-				m_girl_Y = 0;
-				m_girlUpFlag = true;
-			}
-		}
 
+		//if (CheckHitKey(KEY_INPUT_LSHIFT) && !KeyPush)
+		//{
+		//	m_finishFlag = TRUE;
+		//}
+		//if (m_finishFlag == TRUE)
+		//{
+		//	m_fadeOutFlag = true;
+		//}
+		//if (m_fadeOutFinishFlag)
+		//{
+		//	// scoreUIのスコアをResultのscore変数にセット
+		//	return new ResultHalf();				//	リザルトシーンに切り替える
+		//}
 
-
-		if (m_targetCount == enemyNum)
+		//　練習量分往復が完了したら
+		if (m_player->ResultSceneFlag)
 		{
 			m_finishFlag = TRUE;
 		}
 		if (m_finishFlag == TRUE)
 		{
-			m_fadeOutFlag = true;
+			m_fadeOutFlag = true; 
+			m_finishSoundFlag = true;
 		}
 		if (m_fadeOutFinishFlag)
 		{
 			// scoreUIのスコアをResultのscore変数にセット
-			return new Result();				//	リザルトシーンに切り替える
+			return new ResultHalf();                //    リザルトシーンに切り替える
 		}
 		break;
 	default:
 		break;
 	}
-
-	//背景座標アップデート＠＠＠
-	MV1SetPosition(m_backGraphHandle, m_pos);
 	return this;						//	ゲームシーンを表示し続ける
 }
 
 
 void TestSceneSudo::Draw()
 {
-	if (!m_fadeInFinishFlag)
-	{
-		// フェードイン処理
-		for (int i = 0; i < 255; i += FADE_IN_SPEED)
-		{
-			// 描画輝度をセット
-			SetDrawBright(i, i, i);
 
-			PlaySoundMem(m_doorSoundHandle, DX_PLAYTYPE_BACK, FALSE);
-			ChangeVolumeSoundMem(m_volumePal + DOOR_VOLUME_PAL, m_doorSoundHandle);
 
-			// グラフィックを描画
-			// ＠＠＠
-			MV1DrawModel(m_backGraphHandle);
-			/*DrawGraph(0, 0, m_backGraphHandle, TRUE);*/
-			DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
-			DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
-			ScreenFlip();
-		}
-		m_fadeInFinishFlag = true;
-	}
-	//	背景
-	// ＠＠＠
-	MV1DrawModel(m_backGraphHandle);
-	//DrawGraph(0, 0, m_backGraphHandle, TRUE);
-	DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
-	//女の子のリアクション描画
-	if (m_girl_hitReactionFlag == true)				// hitしたならば
-	{
-		DrawGraph(300, m_girl_Y + 450, m_girl_hitReaction_GraphHandle, TRUE);
-	}
-	else if (m_girl_missReactionFlag == true)		// missしたならば
-	{
-		DrawGraph(300, m_girl_Y + 450, m_girl_missReaction_GraphHandle, TRUE);
-	}
-	DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
-	// 目印となる机
-	m_mark->Mark_Draw();
+//プールの表示位置変更
+	MV1SetPosition(m_poolModelHandle, VGet(0.0f, 0.0f, 180.0f));
+
+	//プールの描画
+	MV1DrawModel(m_poolModelHandle);
+
+	DrawGraph(0, 0, m_timingImgHandle, TRUE);
+
 	// ターゲット(アイス)
 	for (int i = 0; i <= m_targetCount; i++)
 	{
@@ -284,45 +250,8 @@ void TestSceneSudo::Draw()
 	// プレーヤー
 	m_player->Draw();
 
-	// 終了時
-	if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
-	{
-		DrawGraph(0, 0, m_finishGraphHandle, TRUE);							//	最後のエネミーが射出され終わったら"ゲーム終了"の表示
-	}
-	for (int i = 0; i < enemyNum; ++i)
-	{
-		m_score_ui[i]->Draw();
-	}
-	for (int i = 0; i < enemyNum; ++i)
-	{
-		m_hit_ui[i]->Draw();
-	}
+	m_ui->Draw();
 
-	// エフェクトの再生
-	if (!(m_effect->GetNowPlaying() == 0) && m_target[m_targetCount]->GetHitIce())
-	{
-		m_effect->PlayEffekseer(VGet(0, 20, 0));
-		m_target[m_targetCount]->SetHitIce(false);
-	}
-
-	if (m_state == GAME_SCENE_STATE::COUNTDOWN)
-	{
-		// 透過して描画
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
-		DrawBox(0, 0, SCREEN_SIZE_W, SCREEN_SIZE_H, GetColor(0, 0, 0), TRUE);
-		// 透過を元に戻す
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
-	DrawGraph(0, 0, m_manualGraphHandle, TRUE);							//	操作説明を表示
-	// カウントダウンの描画
-	if (m_state == GAME_SCENE_STATE::COUNTDOWN)
-	{
-		int Count = (COUNTDOWN)-(GetNowCount() / 1000 - m_startTime);
-		DrawExtendFormatString(960, 540, 10.0, 10.0, GetColor(255, 0, 0), "%d", Count);
-	}
-
-	/*m_obstructManager->Draw();*/
-	/*DrawString(0, 0, "ゲーム画面です", GetColor(255, 255, 255));*/
 
 	// フェードアウト処理
 	if (m_fadeOutFlag)
@@ -333,9 +262,7 @@ void TestSceneSudo::Draw()
 			SetDrawBright(255 - i, 255 - i, 255 - i);
 
 			// グラフィックを描画
-			// ＠＠＠
-			MV1DrawModel(m_backGraphHandle);
-			/*DrawGraph(0, 0, m_backGraphHandle, FALSE);*/
+			DrawGraph(0, 0, m_backGraphHandle, FALSE);
 			DrawGraph(0, 0, m_finishGraphHandle, TRUE);
 			DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
 			DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
@@ -343,6 +270,22 @@ void TestSceneSudo::Draw()
 		}
 		m_fadeOutFinishFlag = true;
 
+	}
+
+
+	if (m_finishSoundFlag)
+	{
+		PlaySoundMem(m_endSoundHandle, DX_PLAYTYPE_BACK);
+		ChangeVolumeSoundMem(m_volumePal + 20, m_iceSoundHandle);
+
+		DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 2, 4.0, 4.0, GetColor(0, 0, 0), "終了！");
+
+		m_soundCount = GetNowCount() / 1000;
+
+		if (m_soundCount > 1000)
+		{
+			m_fadeOutFlag = true;
+		}
 	}
 }
 
@@ -367,9 +310,7 @@ void TestSceneSudo::Load()
 {
 	//	グラフィックハンドルにセット
 	m_finishGraphHandle = LoadGraph("data/img/gameEnd.png");
-	// 形状情報のみのモデルファイルを読みこみ＠＠＠
-	m_backGraphHandle = MV1LoadModel("data/model/stage/poolModel.mv1");
-	//m_backGraphHandle = LoadGraph("data/img/gameBack.png");
+	m_backGraphHandle = LoadGraph("data/img/gameBack.png");
 	m_soundHandle = LoadSoundMem("data/sound/gameBgm.ogg");
 	m_finishSoundHandle = LoadSoundMem("data/sound/gameEnd.wav");
 	m_girlGraphHandle = LoadGraph("data/img/chinaGirl.png");
@@ -377,12 +318,16 @@ void TestSceneSudo::Load()
 	m_girl_hitReaction_GraphHandle = LoadGraph("data/img/chinaGirl_iine.png");			//  女の子の反応の画像ハンドルをロード
 	m_ladyGraphHandle = LoadGraph("data/img/chinaLady.png");
 	m_manualGraphHandle = LoadGraph("data/img/manual.png");
+	m_timingImgHandle = LoadGraph("data/img/gameScene/timing.png");
 
+	//	モデルハンドルにセット
+	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
 	//	サウンドハンドルにセット
 	m_iceSoundHandle = LoadSoundMem("data/sound/throwIce.mp3");
 	m_hitSoundHandle = LoadSoundMem("data/sound/hitIce.mp3");
 	m_missSoundHandle = LoadSoundMem("data/sound/missIce.mp3");
 	m_doorSoundHandle = LoadSoundMem("data/sound/door.ogg");
+	m_endSoundHandle = LoadSoundMem("data/sound/Game/finish.mp3");//練習のメニュー分の距離を達成した時に流れる効果音
 
 	int scoreHandle = LoadGraph("data/model/score_ui/score(1).png");
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
@@ -396,19 +341,19 @@ void TestSceneSudo::Load()
 		m_target[i]->SetThrowSound(m_iceSoundHandle);
 		m_target[i]->SetHitSound(m_hitSoundHandle);
 		m_target[i]->SetMissSound(m_missSoundHandle);
-		// m_target[i]->SetAccelVec()
+		
 	}
 
 	for (int i = 0; i < 2; ++i)
 	{
 		for (int j = 0; j < 5; ++j)
 		{
-			m_score_ui[j + (i * 5)] = new UI();
+			m_ui = new UI();
 			m_hit_ui[j + (i * 5)] = new UI();
 		}
 	}
 	// UIクラスのprivateメンバ変数に画像ハンドルをロード
-	m_score_ui[0]->Load();
+	m_ui->Load();
 
 	m_effect = new PlayEffect("data/effects/FeatherBomb.efk", 5.0f);
 }
@@ -421,7 +366,6 @@ void TestSceneSudo::DebugKey()
 		if (m_hitCount < enemyNum)
 		{
 			m_hitFlag = true;
-			//m_hit_ui[m_hitCount]->ScoreUpdate(m_hit_ui[m_hitCount], m_hitFlag);
 			m_hitCount++;
 		}
 	}
@@ -430,7 +374,6 @@ void TestSceneSudo::DebugKey()
 		if (m_hitCount < enemyNum)
 		{
 			m_hitFlag = false;
-			//m_hit_ui[m_hitCount]->ScoreUpdate(m_hit_ui[m_hitCount], m_hitFlag);
 			m_hitCount++;
 		}
 	}

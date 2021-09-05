@@ -14,6 +14,7 @@ int Player::m_sHandle;
 
 //const float Player::ACCEL = 0.03f;		// 通常の加速.
 const float Player::MAX_SPEED			= 0.8f;			// 最高速度.
+const float Player::TRANING_SPEED       = 80.0f;		// 練習時の倍速スピード.
 const float Player::DEFAULT_DECEL		= -0.01f;		// なにもしない時の減速.
 const float Player::BREAK_DECEL			= -0.05f;		// ブレーキ時の減速.
 const float Player::GRIP_DECEL			= -0.025f;		// グリップの減速.
@@ -33,9 +34,11 @@ Player::Player()
 	,m_swimModelHandle(-1)
 	,m_resultModelHandle(-1)
 	,m_playerState(0)
+	,m_modeCount(0)
+	, m_moveFlag(false)
+	, m_trainingMaxCount(4)
 {
 	
-
 	// サウンドの読み込み
 	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
 
@@ -64,8 +67,6 @@ Player::Player()
 
 	//再生時間の初期化
 	PlayTime = 0.0f;
-
-
 
 	// エフェクト読み込み
 	m_playerOrbitEfk = new PlayEffect("data/effects/PlayerLine.efk");
@@ -125,23 +126,53 @@ void Player::Update(float _deltaTime)
 	{
 		if (m_playerState == SWIM)
 		{
+		
 			// z座標が320を超えたら所定の位置に戻る
-			if (VSize(pos) > VSize(VGet(0, 0, 320)))
+			if (VSize(pos) > VSize(VGet(0, 0, 320.0f)))
 			{
 				dir = VGet(0, 0, -1);
 			}
-			else if (VSize(pos) < VSize(VGet(0, 0, 35)))
+			else if (VSize(pos) < VSize(VGet(0, 0, 50.0f)))
 			{
-				pos = VGet(0, 13, 30);
-				velocity = VGet(0, 0, 0);
+			/*	pos = VGet(0, 13, 30);*/
+				//velocity = VGet(0, 0, 0);
+				m_modeCount++;//往復分カウントする
+				dir.z = 1;
 			}
-			accelVec = VScale(dir, ACCEL);
+
+			//本番か練習か
+			if (m_moveFlag == true)//本番だったら
+			{
+				if (m_modeCount == 1)
+				{
+					ResultSceneFlag = true;
+				}
+				accelVec = VScale(dir, ACCEL);
+			}
+			else if (m_moveFlag == false)//練習だったら
+			{
+				if (m_modeCount == 4)
+				{
+					ResultSceneFlag = true;
+				}
+				accelVec = VScale(dir, TRANING_SPEED);
+			}
+		}
+
+		//練習と本番でモーションのスピードを調整する
+		if (m_moveFlag == true)
+		{
+			m_motionSpeed = 0.4f;
+
+		}
+		else if (m_moveFlag == false)
+		{
+			m_motionSpeed = 2.0f;
 		}
 		// 再生時間を進める
-		PlayTime += 0.4f;
+		PlayTime += m_motionSpeed;
+
 	}
-
-
 
 	// 止まっている場合は減速しない.
 	//if (VSize(velocity) > 0)
@@ -222,12 +253,21 @@ void Player::Update(float _deltaTime)
 //-----------------------------------------------------------------------------
 void Player::Draw()
 {
+	DrawFormatString(0, 0, 255, "%f", pos.z);
 	// 3Dモデルのスケールを拡大
 	MV1SetScale(m_modelHandle[m_playerState], VGet(5.0f, 5.0f, 5.0f));
 	// ３ＤモデルのX軸の回転値を180度にセットする
 	MV1SetRotationXYZ(m_modelHandle[m_playerState], VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f));
 	// ３Ｄモデルの描画
 	MV1DrawModel(m_modelHandle[m_playerState]);
+	
+	if (!m_moveFlag)
+	{
+		//残り往復数の表記
+		DrawExtendFormatString(20 - GetFontSize(), 10, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);
+		// 倍速表示
+		DrawExtendFormatString(20 - GetFontSize(), 80, 4.0, 4.0, GetColor(0, 0, 0), "＞＞倍速表示中");
+	}
 
 	//if (!KeyPush)
 	//{

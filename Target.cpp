@@ -42,6 +42,8 @@ Target::Target()
 	, m_legImgHandle(-1)
 	, m_o2ImgHandle(-1)
 	, m_posX(0)
+	, m_targetGoodFlag(false)
+	, TimeCount(0)
 {
 	// 画像の読み込み
 	m_handImgHandle= LoadGraph("data/img/target/hand.png");
@@ -159,6 +161,21 @@ void Target::Draw()
 
 	// デバッグあたり判定.
 	//DrawSphere3D(pos, hitRadius, 5, 0x00ffff, 0x00ffff, false);
+
+	//プリプロ版でのgood表示
+	if (m_targetGoodFlag == true)
+	{
+
+		DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 320, 4.0, 10.0, GetColor(0, 0, 0), "good!");
+		TimeCount = GetNowCount() / 1000;
+
+		if (TimeCount > 1000)
+		{
+			m_targetGoodFlag = false;
+			TimeCount = 0;
+		}
+
+	}
 }
 
 //-----------------------------------------------------------------------------

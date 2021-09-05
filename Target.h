@@ -111,6 +111,9 @@ private:
 	static const int m_font_thick;
 	
 	Target_State m_iceState;
+
+	bool m_targetGoodFlag;		//プリプロ版でのグッド判定フラグ
+	int  TimeCount;				//経過時間をカウントする
 };
 
 #endif // _TARGET_H_

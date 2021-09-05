@@ -8,8 +8,6 @@
 #include "UI.h"
 #include "Camera.h"
 
-
-
 #include "DxLib.h"
 #include "Effect.h"
 
@@ -61,6 +59,7 @@ GameSceneCompe::GameSceneCompe()
 	//　確認用
 	, m_hitCount(0)
 	, m_hitFlag(false)
+	, m_player_mode(true)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -79,6 +78,7 @@ GameSceneCompe::GameSceneCompe()
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
 
 	KeyPush = false;
+
 }
 
 GameSceneCompe::~GameSceneCompe()
@@ -119,6 +119,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 #ifdef _DEBUG
 	DebugKey();
 #endif
+	m_player->SetScene(true);
 
 	switch (m_state)
 	{
@@ -206,7 +207,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		//	}
 		//}
 
-		if (CheckHitKey(KEY_INPUT_LSHIFT) && !KeyPush)
+		if (m_player->ResultSceneFlag)
 		{
 			m_finishFlag = TRUE;
 		}

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "SceneBase.h"
 #include "DxLib.h"
 
@@ -16,6 +14,8 @@ public:
 	TestSceneSudo();				//	コンストラクタ
 	~TestSceneSudo();			//	デストラクタ
 
+	bool KeyPush;			//キーを押したかどうか
+
 	SceneBase* Update(float _deltaTime)override;	//	更新
 	void Draw()override;			//	描画
 	void Sound()override;			//	音楽
@@ -29,7 +29,7 @@ private:
 	class Target* m_target[11];			//
 	class Camera* m_camera;			//	カメラクラスへのポインタメンバ変数
 	class Mark* m_mark;				//	マーククラスへのポインタメンバ変数
-	class UI* m_score_ui[10];		//  UIクラスへのポインタメンバ変数
+	class UI* m_ui;		//  UIクラスへのポインタメンバ変数
 	class UI* m_hit_ui[10];			//	ヒット判定UIクラスへのポインタメンバ変数
 	class PlayEffect* m_effect;     //  エフェクトプレーヤー
 	GAME_SCENE_STATE m_state;
@@ -48,11 +48,20 @@ private:
 	int m_manualGraphHandle;		//	操作説明のグラフィックハンドル
 	int m_girlGraphHandle;
 	int m_ladyGraphHandle;
+	int m_endSoundHandle;		//　ゴール時のサウンドハンドル
+
+	int m_poolModelHandle;			//プールのモデルハンドル
+	int m_timingImgHandle;
+
+
+
 	int m_girl_missReaction_GraphHandle;	//  ミスした時の女の子に追加する画像ハンドル
 	int m_girl_hitReaction_GraphHandle;		//  成功した時の女の子に追加する画像ハンドル
 	//float m_deltaTime;				//	デルタタイム
 	bool m_checkKeyFlag;			//	キーが押されたままかを判定するフラグ
-	bool m_finishFlag;				//	ゲーム終了判定フラグ
+	bool m_finishFlag;				//	ゲーム終了判定フラグ#include "SceneBase.h"
+
+
 	bool m_iceThrowFlag;			//	アイス射出フラグ
 	bool m_iceHitFlagBuffer;
 	bool m_girlUpFlag;
@@ -68,10 +77,7 @@ private:
 	int m_hitCount;
 	bool m_hitFlag;
 
-
-	//　モデル確認
-	int AnimHandle[3];
-	int AttachIndex;
-	VECTOR m_pos;
-
+	bool m_playerMode;				//練習or本番の判定
+	bool m_finishSoundFlag;			//ゴール時のサウンド判定フラグ
+	int  m_soundCount;				//ゴール時のサウンド用フレームカウント
 };
