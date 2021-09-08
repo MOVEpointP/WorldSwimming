@@ -20,8 +20,6 @@ Mark::~Mark()
 void Mark::Mark_Update()
 {
 
-
-
 	MV1SetPosition(m_modelHandle, m_pos);
 }
 

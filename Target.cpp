@@ -38,7 +38,7 @@ Target::Target()
 	, m_throwIceSoundHandle(-1)
 	, m_hitIceSoundHandle(-1)
 	, m_iceType(0)
-	, m_handImgHandle(-1)
+	//, m_handImgHandle(-1)
 	, m_legImgHandle(-1)
 	, m_o2ImgHandle(-1)
 	, m_posX(0)
@@ -46,7 +46,7 @@ Target::Target()
 	, TimeCount(0)
 {
 	// 画像の読み込み
-	m_handImgHandle= LoadGraph("data/img/target/hand.png");
+	//m_handImgHandle= LoadGraph("data/img/target/hand.png");
 	m_legImgHandle=LoadGraph("data/img/target/legs.png");
 	m_o2ImgHandle=LoadGraph("data/img/target/O2.png");
 	//modelHandle = MV1LoadModel("data/model/target/icecream/SVH-icecream/icecream.pmx");
@@ -69,7 +69,7 @@ Target::~Target()
 {
 	// 各種ハンドルのアンロード.
 	//MV1DeleteModel(modelHandle);
-	DeleteGraph(m_handImgHandle);
+	//DeleteGraph(m_handImgHandle);
 	DeleteGraph(m_legImgHandle);
 	DeleteGraph(m_o2ImgHandle);
 }
@@ -81,6 +81,7 @@ void Target::Update(float _deltaTime)
 {
 	if (m_iceState==END_SHOT)
 	{
+		m_targetGoodFlag = true;
 		return;
 	}
 	 accelVec = VGet(0, 0, 0);
@@ -139,9 +140,7 @@ void Target::Update(float _deltaTime)
 //-----------------------------------------------------------------------------
 void Target::Draw()
 {
-	DrawGraph(m_posX, 320, m_handImgHandle, TRUE);
-	
-	
+	DrawGraph(m_posX, 320, m_legImgHandle, TRUE);
 	
 	// 元モデルでは小さすぎるので描画倍率を設定
 	MV1SetScale(modelHandle, VGet(3.0f, 3.0f, 3.0f));

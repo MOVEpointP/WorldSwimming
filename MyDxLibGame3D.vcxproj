@@ -172,7 +172,10 @@
     </ClCompile>
     <ClCompile Include="HitChecker.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mark.cpp" />
+    <ClCompile Include="Mark.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="ObstructBase.cpp" />
     <ClCompile Include="ObstructFloat.cpp" />
     <ClCompile Include="ObstructManager.cpp" />

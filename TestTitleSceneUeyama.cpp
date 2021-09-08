@@ -2,6 +2,7 @@
 #include "DxLib.h"
 #include "GameScene_easy.h"
 #include "TestSceneUeyama.h"
+#include "TestSceneSudo.h"
 
 // ç≈ëÂìßâﬂó 
 const int MAX_TRANSP_VAL = 255;
@@ -72,7 +73,7 @@ SceneBase* TestTitleSceneUeyama::Update(float _deltaTime)
 	if (CheckHitKey(KEY_INPUT_RETURN))
 	{
 		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL, FALSE);//ÅHÉtÉâÉOçÏÇÈÇ©Ç«Ç§Ç©
-		return new GameSceneEasy();
+		return new TestSceneSudo();
 	
 	}
 

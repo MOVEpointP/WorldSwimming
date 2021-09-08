@@ -1,6 +1,6 @@
 #include "GameScene_Compe.h"
 #include "Result.h"
-#include "Mark.h"
+//#include "Mark.h"
 #include "Target.h"
 #include "Player.h"
 #include "ObstructManager.h"
@@ -41,7 +41,7 @@ const int DOOR_VOLUME_PAL = 40;
 GameSceneCompe::GameSceneCompe()
 	:m_player(nullptr)
 	, m_camera(nullptr)
-	, m_mark(nullptr)
+	/*, m_mark(nullptr)*/
 	, m_effect(nullptr)
 	, m_targetCount(0)
 	, m_startTime(0)
@@ -79,13 +79,14 @@ GameSceneCompe::GameSceneCompe()
 
 	KeyPush = false;
 
+
 }
 
 GameSceneCompe::~GameSceneCompe()
 {
 	delete m_player;	//	プレイヤーのポインタメンバ変数を消去
 	delete m_camera;	//	カメラのポインタメンバ変数を消去
-	delete m_mark;		//	マークのポインタメンバ変数を消去
+	//delete m_mark;		//	マークのポインタメンバ変数を消去
 	//	メモリの解放処理
 	StopSoundMem(m_finishSoundHandle);
 	DeleteGraph(m_backGraphHandle);
@@ -132,7 +133,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		break;
 	case GAME_SCENE_STATE::GAME:
 		// 机の更新
-		m_mark->Mark_Update();
+	/*	m_mark->Mark_Update();*/
 
 		if (m_targetCount == 0)
 		{
@@ -217,7 +218,6 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		}
 		if (m_fadeOutFinishFlag)
 		{
-			// scoreUIのスコアをResultのscore変数にセット
 			return new Result();				//	リザルトシーンに切り替える
 		}
 		break;
@@ -347,6 +347,10 @@ DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 
 void GameSceneCompe::Sound()
 {
+	//	本番BGM
+	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_BACK, FALSE);
+	ChangeVolumeSoundMem(m_volumePal + 150, m_soundHandle);
+
 	//	ゲーム終了時に効果音を流す
 	if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
 	{
@@ -354,12 +358,7 @@ void GameSceneCompe::Sound()
 		PlaySoundMem(m_finishSoundHandle, DX_PLAYTYPE_BACK, FALSE);
 		ChangeVolumeSoundMem(m_volumePal + GONG_VOLUME_PAL, m_finishSoundHandle);
 	}
-	//	ゲーム中にBGMを流す
-	if (m_finishFlag == FALSE)
-	{
-		PlaySoundMem(m_soundHandle, DX_PLAYTYPE_BACK, FALSE);
-		ChangeVolumeSoundMem(m_volumePal, m_soundHandle);
-	}
+	
 }
 
 void GameSceneCompe::Load()
@@ -367,7 +366,7 @@ void GameSceneCompe::Load()
 	//	グラフィックハンドルにセット
 	m_finishGraphHandle = LoadGraph("data/img/gameEnd.png");
 	m_backGraphHandle = LoadGraph("data/img/gameBack.png");
-	m_soundHandle = LoadSoundMem("data/sound/gameBgm.ogg");
+	m_soundHandle = LoadSoundMem("data/sound/Game/honban.mp3");
 	m_finishSoundHandle = LoadSoundMem("data/sound/gameEnd.wav");
 	m_girlGraphHandle = LoadGraph("data/img/chinaGirl.png");
 	m_girl_missReaction_GraphHandle = LoadGraph("data/img/chinaGirl_aseri(01).png");	//  女の子の反応の画像ハンドルをロード
@@ -388,7 +387,7 @@ void GameSceneCompe::Load()
 	int scoreHandle = LoadGraph("data/model/score_ui/score(1).png");
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成
-	m_mark = new Mark;				//	マーククラスのインスタンスを生成
+	//m_mark = new Mark;			//	マーククラスのインスタンスを生成
 	for (int i = 0; i < (enemyNum + 1); i++)
 	{
 		m_target[i] = new Target;

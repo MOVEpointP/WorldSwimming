@@ -31,7 +31,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	InitializeEffekseer();
 	// 画面モードのセット
 	SetGraphMode(1920, 1080, 16);
-	ChangeWindowMode(FALSE);
+	ChangeWindowMode(TRUE);
 	SetDrawScreen(DX_SCREEN_BACK);		//	裏画面の設定
 
 	//	デルタタイム管理用の変数をセット

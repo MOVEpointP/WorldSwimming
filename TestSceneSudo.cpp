@@ -1,7 +1,7 @@
 #include "TestSceneSudo.h"
 #include "Result.h"
 #include "ResultHalf.h"
-#include "Mark.h"
+//#include "Mark.h"
 #include "Target.h"
 #include "Player.h"
 #include "ObstructManager.h"
@@ -12,7 +12,7 @@
 #include "DxLib.h"
 #include "Effect.h"
 
-static int enemyNum = 10;					//	エネミーの数
+static int enemyNum = 19;					//	エネミーの数
 static int GIRL_Y = 0;						//	中華女子の初期Y座標
 static int LADY_Y = 0;						//	中華女性のY座標
 static int GIRL_MIN_Y = -80;				//	中華女子の最小Y座標
@@ -42,7 +42,7 @@ const int DOOR_VOLUME_PAL = 40;
 TestSceneSudo::TestSceneSudo()
 	:m_player(nullptr)
 	, m_camera(nullptr)
-	, m_mark(nullptr)
+	/*, m_mark(nullptr)*/
 	, m_effect(nullptr)
 	, m_targetCount(0)
 	, m_startTime(0)
@@ -81,13 +81,16 @@ TestSceneSudo::TestSceneSudo()
 	// ステートセット(カウントダウンから)
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
 
+	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");
+
+
 }
 
 TestSceneSudo::~TestSceneSudo()
 {
 	delete m_player;	//	プレイヤーのポインタメンバ変数を消去
 	delete m_camera;	//	カメラのポインタメンバ変数を消去
-	delete m_mark;		//	マークのポインタメンバ変数を消去
+	//delete m_mark;		//	マークのポインタメンバ変数を消去
 	//	メモリの解放処理
 	StopSoundMem(m_finishSoundHandle);
 	DeleteGraph(m_backGraphHandle);
@@ -103,6 +106,7 @@ TestSceneSudo::~TestSceneSudo()
 	DeleteSoundMem(m_missSoundHandle);
 	DeleteSoundMem(m_hitSoundHandle);
 	DeleteSoundMem(m_doorSoundHandle);
+
 	for (int i = 0; i < enemyNum; i++)
 	{
 		delete m_target[i];
@@ -124,6 +128,7 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 	DebugKey();
 #endif
 
+	m_player->SetScene(false);
 
 	switch (m_state)
 	{
@@ -135,8 +140,8 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 		}
 		break;
 	case GAME_SCENE_STATE::GAME:
-		// 机の更新
-		m_mark->Mark_Update();
+		//// 机の更新
+		//m_mark->Mark_Update();
 
 		if (m_targetCount == 0)
 		{
@@ -213,7 +218,6 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 		}
 		if (m_finishFlag == TRUE)
 		{
-			m_fadeOutFlag = true; 
 			m_finishSoundFlag = true;
 		}
 		if (m_fadeOutFinishFlag)
@@ -253,6 +257,23 @@ void TestSceneSudo::Draw()
 	m_ui->Draw();
 
 
+	if (m_finishSoundFlag)
+{
+		PlaySoundMem(m_endSoundHandle, DX_PLAYTYPE_BACK);
+		ChangeVolumeSoundMem(m_volumePal + 20, m_iceSoundHandle);
+
+		DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 2, 4.0, 4.0, GetColor(0, 0, 0), "終了！");
+
+		m_soundCount = GetNowCount() / 1000;
+
+		if (m_soundCount > 1000)
+		{
+			m_fadeOutFlag = true;
+			//m_finishSoundFlag = false;
+		}
+}
+
+
 	// フェードアウト処理
 	if (m_fadeOutFlag)
 	{
@@ -273,37 +294,22 @@ void TestSceneSudo::Draw()
 	}
 
 
-	if (m_finishSoundFlag)
-	{
-		PlaySoundMem(m_endSoundHandle, DX_PLAYTYPE_BACK);
-		ChangeVolumeSoundMem(m_volumePal + 20, m_iceSoundHandle);
-
-		DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 2, 4.0, 4.0, GetColor(0, 0, 0), "終了！");
-
-		m_soundCount = GetNowCount() / 1000;
-
-		if (m_soundCount > 1000)
-		{
-			m_fadeOutFlag = true;
-		}
-	}
 }
 
 void TestSceneSudo::Sound()
 {
 	//	ゲーム終了時に効果音を流す
-	if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
-	{
-		StopSoundMem(m_soundHandle);
-		PlaySoundMem(m_finishSoundHandle, DX_PLAYTYPE_BACK, FALSE);
-		ChangeVolumeSoundMem(m_volumePal + GONG_VOLUME_PAL, m_finishSoundHandle);
-	}
-	//	ゲーム中にBGMを流す
-	if (m_finishFlag == FALSE)
-	{
-		PlaySoundMem(m_soundHandle, DX_PLAYTYPE_BACK, FALSE);
-		ChangeVolumeSoundMem(m_volumePal, m_soundHandle);
-	}
+	//if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
+	//{
+	//	StopSoundMem(m_soundHandle);
+	//	PlaySoundMem(m_finishSoundHandle, DX_PLAYTYPE_BACK, FALSE);
+	//	ChangeVolumeSoundMem(m_volumePal + GONG_VOLUME_PAL, m_finishSoundHandle);
+	//}
+
+	//練習BGMの再生
+		PlaySoundMem(m_soundHandle, DX_PLAYTYPE_LOOP, FALSE);
+		ChangeVolumeSoundMem(m_volumePal+50, m_soundHandle);
+	
 }
 
 void TestSceneSudo::Load()
@@ -311,7 +317,7 @@ void TestSceneSudo::Load()
 	//	グラフィックハンドルにセット
 	m_finishGraphHandle = LoadGraph("data/img/gameEnd.png");
 	m_backGraphHandle = LoadGraph("data/img/gameBack.png");
-	m_soundHandle = LoadSoundMem("data/sound/gameBgm.ogg");
+	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");
 	m_finishSoundHandle = LoadSoundMem("data/sound/gameEnd.wav");
 	m_girlGraphHandle = LoadGraph("data/img/chinaGirl.png");
 	m_girl_missReaction_GraphHandle = LoadGraph("data/img/chinaGirl_aseri(01).png");	//  女の子の反応の画像ハンドルをロード
@@ -332,7 +338,7 @@ void TestSceneSudo::Load()
 	int scoreHandle = LoadGraph("data/model/score_ui/score(1).png");
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成
-	m_mark = new Mark;				//	マーククラスのインスタンスを生成
+	//m_mark = new Mark;				//	マーククラスのインスタンスを生成
 	for (int i = 0; i < (enemyNum + 1); i++)
 	{
 		m_target[i] = new Target;

@@ -226,7 +226,7 @@ void ResultHalf::Draw()
 	// ‚R‚cƒ‚ƒfƒ‹‚ÌXŽ²‚Ì‰ñ“]’l‚ð‚X‚O“x‚ÉƒZƒbƒg‚·‚é
 	MV1SetRotationXYZ(modelHandle, VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f));
 	// ‚R‚cƒ‚ƒfƒ‹‚Ì•`‰æ
-	MV1DrawModel(modelHandle);
+	//MV1DrawModel(modelHandle);
 
 }
 

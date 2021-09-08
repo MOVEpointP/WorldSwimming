@@ -7,14 +7,14 @@
 #include "Effect.h"
 
 // 静的定数.
-const float Player::ACCEL				= 15.0f;		// 通常の加速.
+const float Player::ACCEL				=11.0f;		// 通常の加速.
 
 //
 int Player::m_sHandle;
 
 //const float Player::ACCEL = 0.03f;		// 通常の加速.
 const float Player::MAX_SPEED			= 0.8f;			// 最高速度.
-const float Player::TRANING_SPEED       = 80.0f;		// 練習時の倍速スピード.
+const float Player::TRANING_SPEED       = 9.0f;	        // 練習時の倍速スピード.
 const float Player::DEFAULT_DECEL		= -0.01f;		// なにもしない時の減速.
 const float Player::BREAK_DECEL			= -0.05f;		// ブレーキ時の減速.
 const float Player::GRIP_DECEL			= -0.025f;		// グリップの減速.
@@ -36,8 +36,12 @@ Player::Player()
 	,m_playerState(0)
 	,m_modeCount(0)
 	, m_moveFlag(false)
-	, m_trainingMaxCount(4)
-{
+	, m_trainingMaxCount(2)
+	, m_speedDisplay(0)
+	, m_moveAnimFlag(false)
+	, m_moveCount(0)
+
+{	
 	
 	// サウンドの読み込み
 	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
@@ -126,7 +130,6 @@ void Player::Update(float _deltaTime)
 	{
 		if (m_playerState == SWIM)
 		{
-		
 			// z座標が320を超えたら所定の位置に戻る
 			if (VSize(pos) > VSize(VGet(0, 0, 320.0f)))
 			{
@@ -151,7 +154,7 @@ void Player::Update(float _deltaTime)
 			}
 			else if (m_moveFlag == false)//練習だったら
 			{
-				if (m_modeCount == 4)
+				if (m_modeCount == 2)
 				{
 					ResultSceneFlag = true;
 				}
@@ -167,7 +170,7 @@ void Player::Update(float _deltaTime)
 		}
 		else if (m_moveFlag == false)
 		{
-			m_motionSpeed = 1.0f;
+			m_motionSpeed = 0.3f;
 		}
 		// 再生時間を進める
 		PlayTime += m_motionSpeed;
@@ -230,18 +233,44 @@ void Player::Update(float _deltaTime)
 
 
 
-	// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
+	//// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
 
 	if (PlayTime >= TotalTime[m_playerState])
 	{
-		PlayTime = 0.0f;
 		if (m_playerState == DIVE)
 		{
 			m_playerState = SWIM;
 			pos.z = 50;
+
+			PlayTime = 0.0f;
+
 		}
+		if (m_playerState == SWIM)
+		{
+			PlayTime = 0.0f;
+
+		}
+
+
 	}
 
+
+
+	/*if (m_moveAnimFlag)
+	{
+		m_moveCount += GetNowCount() / 12000;
+
+
+		if (m_moveCount >= 100000)
+		{
+			m_moveCount = 0;
+
+			PlayTime = 0.0f;
+
+			m_moveAnimFlag = false;
+		}
+
+	}*/
 
 	// 再生時間をセットする
 	MV1SetAttachAnimTime(m_modelHandle[m_playerState], AttachIndex, PlayTime);
@@ -264,9 +293,7 @@ void Player::Draw()
 	if (!m_moveFlag)
 	{
 		//残り往復数の表記
-		DrawExtendFormatString(20 - GetFontSize(), 10, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);
-		// 倍速表示
-		DrawExtendFormatString(20 - GetFontSize(), 80, 4.0, 4.0, GetColor(0, 0, 0), "＞＞倍速表示中");
+		DrawExtendFormatString(20 - GetFontSize(), 10, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);		
 	}
 
 	//if (!KeyPush)

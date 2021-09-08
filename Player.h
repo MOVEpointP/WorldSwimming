@@ -68,6 +68,9 @@ private:
 	float	hitRadius;		// あたり判定の半径.
 	float TotalTime[3], PlayTime;//モーションの再生時間
 	int AttachIndex;//モーションの
+	int m_speedDisplay;		//倍速表示の矢印を動かす
+	bool m_moveAnimFlag;//モーションを一時停止するフラグ
+	int m_moveCount;
 
 	// 発射エフェクト
 	class PlayEffect* m_playerOrbitEfk;
