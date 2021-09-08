@@ -7,7 +7,7 @@
 #include "Effect.h"
 
 // 静的定数.
-const float Player::ACCEL				=11.0f;		// 通常の加速.
+const float Player::ACCEL				=15.0f;		// 通常の加速.
 
 //
 int Player::m_sHandle;
@@ -163,12 +163,12 @@ void Player::Update(float _deltaTime)
 		}
 
 		//練習と本番でモーションのスピードを調整する
-		if (m_moveFlag == true)
+		if (m_moveFlag == true)//本番
 		{
-			m_motionSpeed = 0.4f;
+			m_motionSpeed = 0.5f;
 
 		}
-		else if (m_moveFlag == false)
+		else if (m_moveFlag == false)//練習
 		{
 			m_motionSpeed = 0.3f;
 		}
