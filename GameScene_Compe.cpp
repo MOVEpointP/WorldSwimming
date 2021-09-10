@@ -60,6 +60,8 @@ GameSceneCompe::GameSceneCompe()
 	, m_hitCount(0)
 	, m_hitFlag(false)
 	, m_player_mode(true)
+	, m_liveYFlag(false)
+	, m_liveY(0)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -208,6 +210,25 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		//	}
 		//}
 
+			//タイトルロゴを上下に動かす
+		if (m_liveYFlag == false)
+		{
+			m_liveY += 0.1f;
+			if (m_liveY >= 0)
+			{
+				m_liveYFlag = true;
+			}
+		}
+		else if (m_liveYFlag == true)
+		{
+			m_liveY -= 0.1f;
+			if (m_liveY <= -10)
+			{
+				m_liveYFlag = false;
+			}
+		}
+
+
 		if (m_player->ResultSceneFlag)
 		{
 			m_finishFlag = TRUE;
@@ -284,6 +305,13 @@ DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 
 	// プレーヤー
 	m_player->Draw();
+
+	DrawGraph(0, m_liveY, m_countryGraphHandle, TRUE);
+
+	//LIVE表示
+	DrawExtendFormatString(50,0, 4.0, 10.0, GetColor(255, 0, 0), "LIVE");	//判定結果表記
+
+
 
 	//// 終了時
 	//if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
@@ -374,6 +402,7 @@ void GameSceneCompe::Load()
 	m_ladyGraphHandle = LoadGraph("data/img/chinaLady.png");
 	m_manualGraphHandle = LoadGraph("data/img/manual.png");
 	m_timingImgHandle = LoadGraph("data/img/gameScene/timing.png");
+	m_countryGraphHandle=LoadGraph("data/img/Compe/country.png");						//　国の画像
 
 	//	モデルハンドルにセット
 	//m_poolModelHandle = MV1LoadModel("data/model/stage/poolModel.mv1");

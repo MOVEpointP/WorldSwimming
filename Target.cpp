@@ -213,7 +213,7 @@ void Target::Draw()
 			DrawExtendFormatString(1920 - 700 - GetFontSize(), 300, 4.0, 10.0, GetColor(100, 0, 0), "%dコンボ！", Combo::GetCombo());	//判定結果表記
 		}
 
-		DrawFormatString(0, 100, GetColor(0, 100, 0), "すこあ：%d", Score::GetScore());//スコア表示
+		DrawExtendFormatString(0, 100, 4.0, 5.0, GetColor(0,100, 0), "スコア：%d", Score::GetScore());	//判定結果表記
 }
 
 //-----------------------------------------------------------------------------
