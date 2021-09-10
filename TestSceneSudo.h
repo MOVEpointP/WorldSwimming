@@ -81,4 +81,5 @@ private:
 	bool m_playerMode;				//練習or本番の判定
 	bool m_finishSoundFlag;			//ゴール時のサウンド判定フラグ
 	int  m_soundCount;				//ゴール時のサウンド用フレームカウント
+	int  m_targetShot;				//ターゲットの飛ぶタイミング
 };

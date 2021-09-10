@@ -2,6 +2,7 @@
 #define _TARGET_H_
 
 #include "DxLib.h"
+#include "Score.h"
 
 class ObstructBase;
 class TestSceneKoga;
@@ -32,7 +33,7 @@ public:
 	// ポジションのgetter/setter.
 	const VECTOR& GetPos() const { return pos; }
 	void SetPos(const VECTOR set) { pos = set; }
-	void SetSinglePosX() { m_posX = pos.x; }
+	void SetSinglePosX() { m_posX = pos.x; }	//ターゲットの座標をセット
 	const int GetPosX() { return m_posX; }
 
 	// ディレクションのgetter/setter.
@@ -46,7 +47,7 @@ public:
 	float GetHitRadius() { return hitRadius; }
 
 
-
+	//void SetTargetJudge(int _targetJadge) { m_targetJadge = _targetJadge; }
 	void SetTargetCount(int _targetCount) { m_targetCount = _targetCount; }
 	void SetSetTime(int _setTime) { m_setTime = _setTime; }
 	void SetInterval(int _interval) { m_shotInterval = _interval; }
@@ -109,11 +110,25 @@ private:
 	static const int m_font_Y;
 	static const int m_font_size;
 	static const int m_font_thick;
+	static const int m_score_good;		//　グッド判定の際に入るスコア
+	static const int m_score_bad;		//　バッド判定の際に入るスコア
+	static const int m_score_perfect;	//　パーフェクト判定の際に入るスコア
+	static const int m_before_good;		//	グッド判定（前）
+	static const int m_perfect;	//　パーフェクト判定
+	static const int m_after_good;		//　グッド判定（後）
+	static const int m_final_good;		//　グッド判定（最後）
+
+
+
 	
 	Target_State m_iceState;
 
-	bool m_targetGoodFlag;		//プリプロ版でのグッド判定フラグ
+	int  m_targetJadge;			//タイミングの判定結果
+	int  m_targerJadgeWord;		//タイミングの判定文字
 	int  TimeCount;				//経過時間をカウントする
+	int  m_targetScore;			//スコアを格納する変数
+	int  m_combo;				//コンボ数を格納する変数
+	class Score  m_totalScore;			//スコアのトータル変数
 };
 
 #endif // _TARGET_H_

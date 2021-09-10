@@ -9,20 +9,23 @@
 #include "UI.h"
 #include "Camera.h"
 
+
 #include "DxLib.h"
 #include "Effect.h"
 
 static int enemyNum = 19;					//	エネミーの数
-static int GIRL_Y = 0;						//	中華女子の初期Y座標
-static int LADY_Y = 0;						//	中華女性のY座標
-static int GIRL_MIN_Y = -80;				//	中華女子の最小Y座標
+//static int GIRL_Y = 0;						//	中華女子の初期Y座標
+//static int LADY_Y = 0;						//	中華女性のY座標
+//static int GIRL_MIN_Y = -80;				//	中華女子の最小Y座標
 static int COUNTDOWN = 7;					//	カウントダウンの秒数（+2）
+
 
 ////中華少女の速度
 //static float girlSpeed = 80.0f;
 
 // ターゲットが飛んでくる間隔 (秒単位)
 const int TARGET_SHOT_INTERVAL = 2;
+
 // ターゲットの速度を初期化
 static float targetSpeed = 200.0f;
 
@@ -48,8 +51,8 @@ TestSceneSudo::TestSceneSudo()
 	, m_startTime(0)
 	, m_iceThrowFlag(false)
 	, m_iceHitFlagBuffer(false)
-	, m_girl_Y(GIRL_Y)
-	, m_lady_Y(LADY_Y)
+	//, m_girl_Y(GIRL_Y)
+	//, m_lady_Y(LADY_Y)
 	, m_girlUpFlag(false)
 	, m_fadeInFinishFlag(false)
 	, m_fadeOutFlag(false)
@@ -63,6 +66,7 @@ TestSceneSudo::TestSceneSudo()
 	, m_endSoundHandle(0)
 	, m_finishSoundFlag(false)
 	, m_soundCount(0)
+	, m_targetShot(0)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -83,7 +87,7 @@ TestSceneSudo::TestSceneSudo()
 
 	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");
 
-
+	srand(time(NULL));//乱数の種を初期化
 }
 
 TestSceneSudo::~TestSceneSudo()
@@ -128,12 +132,14 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 	DebugKey();
 #endif
 
+	m_targetShot = rand() % 5 + 1;
+
 	m_player->SetScene(false);
 
 	switch (m_state)
 	{
 	case GAME_SCENE_STATE::COUNTDOWN:
-		if ((COUNTDOWN + 1) - (GetNowCount() / 1000 - m_startTime) <= 1)
+		if ((COUNTDOWN + 1) - (GetNowCount() / 1000 - m_targetShot) <= 1)
 		{
 			m_startTime = GetNowCount() / 1000;
 			m_state = GAME_SCENE_STATE::GAME;
@@ -143,52 +149,54 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 		//// 机の更新
 		//m_mark->Mark_Update();
 
-		if (m_targetCount == 0)
-		{
-			m_target[m_targetCount]->SetSetTime(m_startTime);
-		}
+		//if (m_targetCount == 0)
+		//{
+		//	//m_target[m_targetCount]->SetSetTime(m_startTime);
+		//}
 
-
+		//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@発射が１つになる理由
 		// エネミー射出管理
-		if (GetNowCount() / 1000 - m_startTime > TARGET_SHOT_INTERVAL)
+		if (GetNowCount() / 1000 - m_startTime > m_targetShot)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する（変数にしたらすごくなりそう）
 		{
 			m_startTime = GetNowCount() / 1000;
-			if (m_target[m_targetCount]->GetIceState() == NO_SHOT)
+			if (m_target[m_targetCount]->GetIceState() == NO_SHOT)//NO_SHOTの場合
 			{
-				m_target[m_targetCount]->SetIceState(NOW_SHOT);
+				m_target[m_targetCount]->SetIceState(NOW_SHOT);//ステータスにNOW_SHOTをセット 
 				PlaySoundMem(m_iceSoundHandle, DX_PLAYTYPE_BACK);
 				ChangeVolumeSoundMem(m_volumePal + 20, m_iceSoundHandle);
 			}
-			if (m_target[m_targetCount]->GetIceState() == END_SHOT)
+			if (m_target[m_targetCount]->GetIceState() == END_SHOT)//END_SHOTの場合
 			{
-				m_girl_ReactionFlag = false;						// 女の子がリアクションしないようにする
-				m_girl_hitReactionFlag = false;
-				m_girl_missReactionFlag = false;
-				m_target[m_targetCount + 1]->SetSetTime(m_startTime);
-				m_targetCount++;
+				//m_girl_ReactionFlag = false;						// 女の子がリアクションしないようにする
+				//m_girl_hitReactionFlag = false;
+				//m_girl_missReactionFlag = false;
+				//m_target[m_targetCount + 1]->SetSetTime(m_startTime);
+				m_targetCount++;			//次のエネミーにカウントを進める
 			}
 		}
 
 		// 現在の番号に応じてエネミーの更新
 		m_target[m_targetCount]->Update(_deltaTime);
 		m_target[m_targetCount]->SetTargetCount(m_targetCount);
-		m_iceHitFlagBuffer = HitChecker::Check(*m_player, *m_target[m_targetCount]);
-		// x,y,z軸のそれぞれのポジションを取得
-                                      		m_target[m_targetCount]->SetSinglePosX();
+		m_iceHitFlagBuffer = HitChecker::Check(*m_player, *m_target[m_targetCount]);//@@@@@@@@@@@@trueかfalseでReaction変わる
+
+		// アイコンのx軸のポジションを取得
+        m_target[m_targetCount]->SetSinglePosX();//@@@@@@@@@@@@ターゲットからｘ座標を取得
+
 		// m_iceHitFlagBufferがtrueになったら
-		if (!m_girl_ReactionFlag && m_target[m_targetCount]->GetIceState() == NOW_SHOT)
-		{
-			if (m_iceHitFlagBuffer)
-			{
-				m_girl_ReactionFlag = true;			// 女の子がリアクションする
-				m_girl_hitReactionFlag = true;		// 女の子がHITした時のリアクションをする
-			}
-			else if (m_target[m_targetCount]->GetPosX() <= -80)
-			{
-				m_girl_ReactionFlag = true;			// 女の子がリアクションする
-				m_girl_missReactionFlag = true;		// 女の子がmissした時のリアクションをする
-			}
-		}
+		//if (!m_girl_ReactionFlag && m_target[m_targetCount]->GetIceState() == NOW_SHOT)
+		//{
+		//	if (m_iceHitFlagBuffer)
+		//	{
+		//		//m_girl_ReactionFlag = true;			// 女の子がリアクションする
+		//		//m_girl_hitReactionFlag = true;		// 女の子がHITした時のリアクションをする
+		//	}
+		//	else if (m_target[m_targetCount]->GetPosX() <= -80)
+		//	{
+		//		//m_girl_ReactionFlag = true;			// 女の子がリアクションする
+		//		//m_girl_missReactionFlag = true;		// 女の子がmissした時のリアクションをする
+		//	}
+		//}
 		m_target[m_targetCount]->Reaction(m_hit_ui[m_targetCount], m_iceHitFlagBuffer);
 
 		m_player->Update(_deltaTime);

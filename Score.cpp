@@ -6,22 +6,3 @@ Score::Score()
 {
 	
 }
-
-
-void Score::Draw()
-{
-	
-}
-
-void Score::Sound()
-{
-}
-
-void Score::Load()
-{
-}
-
-SceneBase* Score::Update(float _deltaTime)
-{
-	return this;
-}
