@@ -38,18 +38,18 @@ void UI::Load()
 	// MISS画像の読み込み
 	m_miss_graphHandle = LoadGraph("data/model/score_ui/miss.png");
 
-	m_gaugeImgHandle = LoadGraph("data/img/UI/nami.png");
-	m_boyImgHandle = LoadGraph("data/img/UI/boy.png");
+	m_gaugeImgHandle = LoadGraph("data/img/UI/nami.png");		//現在地を表示するためのゲージ
+	m_boyImgHandle = LoadGraph("data/img/UI/boy.png");			//現在地を表す男の子
 }
 
 // 更新
 // 引数にプレイヤーから座標を持ってくる
-void UI::ScoreUpdate(int _playerPos)
-{
-	// x座標に画像の位置座標を格納する
-	//m_posX = (_playerPos * score_graph_size) + 100;
-
-}
+//void UI::ScoreUpdate(int _playerPos)
+//{
+//	// x座標に画像の位置座標を格納する
+//	//m_posX = (_playerPos * score_graph_size) + 100;
+//
+//}
 
 // 描画(仮引数の値で呼び出す画像を変える)
 void UI::Draw()
