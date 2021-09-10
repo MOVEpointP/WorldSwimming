@@ -9,7 +9,7 @@
 class Result : public SceneBase
 {
 public:
-	Result();			//	コンストラクタ
+	Result(int playerRanking);			//	コンストラクタ
 	~Result();			//　デストラクタ
 
 	SceneBase* Update(float _deltaTime)override;	//	更新
@@ -19,6 +19,7 @@ public:
 
 private:
 	int m_score;						//	スコア格納変数
+	int m_playerRanking;				//	プレイヤーのランキング格納変数
 	int m_evaluation;
 	int m_logoGraphHandle;				//	ロゴのグラフィックハンドル
 	int m_guidanceGraphHandle;			//	ガイドのグラフィックハンドル

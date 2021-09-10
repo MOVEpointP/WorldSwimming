@@ -7,6 +7,8 @@
 #include "Hitchecker.h"
 #include "UI.h"
 #include "Camera.h"
+#include "NPC.h"
+
 
 #include "DxLib.h"
 #include "Effect.h"
@@ -60,6 +62,9 @@ GameSceneCompe::GameSceneCompe()
 	, m_hitCount(0)
 	, m_hitFlag(false)
 	, m_player_mode(true)
+	, m_npc(nullptr)
+	, m_MaxGorl(false)
+	, m_playerRanking(0)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -112,6 +117,7 @@ GameSceneCompe::~GameSceneCompe()
 
 	m_effect->Delete();
 	delete m_effect;
+	delete m_npc;
 }
 
 SceneBase* GameSceneCompe::Update(float _deltaTime)
@@ -132,6 +138,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		}
 		break;
 	case GAME_SCENE_STATE::GAME:
+	{
 		// 机の更新
 	/*	m_mark->Mark_Update();*/
 
@@ -185,41 +192,44 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 
 		m_player->Update(_deltaTime);
 
+
 		m_camera->Update(*m_player);
 
+		m_npc->Update(_deltaTime);
 
-		//// UIの中華娘を動かす
-		//if (m_girlUpFlag)
-		//{
-		//	m_girl_Y--;
-		//	if (m_girl_Y < GIRL_MIN_Y)
-		//	{
-		//		m_girl_Y = GIRL_MIN_Y;
-		//		m_girlUpFlag = false;
-		//	}
-		//}
-		//else if (!m_girlUpFlag)
-		//{
-		//	m_girl_Y++;
-		//	if (m_girl_Y > 0)
-		//	{
-		//		m_girl_Y = 0;
-		//		m_girlUpFlag = true;
-		//	}
-		//}
+		// プレイヤーのランキング保存変数にNPCが何体ゴールしたかの数を入れる
+		/*
+		* NPCが何体ゴールしたかの数を入れる理由
+		* プレイヤーのランキングを決める際にNPCが何体着いたかによってランキングを決めるため
+		*/
 
-		if (m_player->ResultSceneFlag)
+		//　プレイヤーがゴールした時(フラグをgetterで取得しています)
+		static bool isProcess = false;
+		if (m_player->GetGoalFlag() && !isProcess)
 		{
-			m_finishFlag = TRUE;
+			m_npc->addRankCount();
+			// 加算したRankCountを取得してリザルトに順位として表示
+			m_playerRanking = m_npc->GetRankCount();
+			isProcess = true;
 		}
-		if (m_finishFlag == TRUE)
+
+		// シーン遷移
+		if (m_npc->GetRankCount() >= 4)
+		{
+			m_MaxGorl = true;
+		}
+		if (m_MaxGorl == true)
 		{
 			m_fadeOutFlag = true;
 		}
 		if (m_fadeOutFinishFlag)
 		{
-			return new Result();				//	リザルトシーンに切り替える
+			// 処理したかフラグを元に戻す
+			isProcess = false;
+
+			return new Result(m_playerRanking);				//	リザルトシーンに切り替える
 		}
+	}
 		break;
 	default:
 		break;
@@ -284,6 +294,9 @@ DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 
 	// プレーヤー
 	m_player->Draw();
+
+	//npc
+	m_npc->Draw();
 
 	//// 終了時
 	//if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
@@ -388,6 +401,8 @@ void GameSceneCompe::Load()
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成
 	//m_mark = new Mark;			//	マーククラスのインスタンスを生成
+	m_npc = new NPC;
+
 	for (int i = 0; i < (enemyNum + 1); i++)
 	{
 		m_target[i] = new Target;

@@ -23,8 +23,9 @@ const int FADE_IN_SPEED = 3;
 //	フェードアウトの速度
 const int FADE_OUT_SPEED = 3;
 
-Result::Result()
+Result::Result(int playerRanking)
 	:m_score(0)
+	, m_playerRanking(playerRanking)
 	, m_fadeInFinishFlag(false)
 	, m_fadeOutFlag(false)
 	, m_fadeOutFinishFlag(false)
@@ -180,7 +181,7 @@ void Result::Draw()
 
 	DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 4+90, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_score);
 	DrawExtendFormatString(SCREEN_SIZE_W / 2+300 - GetFontSize(), SCREEN_SIZE_H / 3+280, 4.0, 4.0, GetColor(0, 0, 0), "0");
-	DrawExtendFormatString(SCREEN_SIZE_W / 2+450 - GetFontSize(), SCREEN_SIZE_H / 3+430, 4.0, 4.0, GetColor(0, 0, 0), "0");
+	DrawExtendFormatString(SCREEN_SIZE_W / 2+450 - GetFontSize(), SCREEN_SIZE_H / 3+430, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_playerRanking);
 
 }
 

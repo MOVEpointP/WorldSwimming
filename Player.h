@@ -12,8 +12,8 @@
 #define TURN	2
 #define RESULT	3
 
-
 class ObstructBase;
+class NPC;
 
 class Player final
 {
@@ -26,6 +26,7 @@ public:
 
 	void Update(float _deltaTime);			// 更新.
 	void Draw();			// 描画.
+
 
 	// 衝突処理.
 	void OnHitObstruct(ObstructBase& obstruct);
@@ -50,9 +51,22 @@ public:
 	//セッター
 	void SetScene(bool _sceneFlag) { m_moveFlag = _sceneFlag; }//ゲームシーンからシーンフラグをもらう
 
+	// プレイヤーのランキングを示す変数をプレイヤーのランキング保存変数に入れる
+	void SetPlayerRankingNum(const int playerRankingCount) { PlayerRank = playerRankingCount; }
+
+	// 現在のプレイヤーのランキングを取得するgetter
+	int GetPlayerNowRankingNum() { return PlayerRank; }
+
+	// ゴールしたかどうかを返すgettr
+	bool GetGoalFlag() { return GorlFlag; }
+
 	bool ResultSceneFlag;         //　往復数によるゲーム終了判定フラグ
 
+	bool GorlFlag;	//プレイヤーがゴールしたときはtrue、ゴールしてないときはfalseになる
+
+
 private:
+
 	int		m_modelHandle[4];			//	モデルハンドル
 	int		m_diveModelHandle;		//	ダイブモデルハンドル.
 	int		m_swimModelHandle;		//　泳ぎモデルハンドル.
@@ -72,6 +86,10 @@ private:
 	bool m_moveAnimFlag;//モーションを一時停止するフラグ
 	int m_moveCount;
 
+	//　プレイヤーのランキングの順位を保存する変数
+	int PlayerRank;
+
+
 	// 発射エフェクト
 	class PlayEffect* m_playerOrbitEfk;
 	VECTOR m_efkDir;
@@ -88,8 +106,6 @@ private:
 	static const float GRIP_DECEL;
 	static const float GRIP_POWER;
 	static const float COLIDE_DECEL_FAC;
-	
-
 };
 
 #endif // _PLAYER_H_

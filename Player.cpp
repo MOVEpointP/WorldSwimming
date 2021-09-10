@@ -5,9 +5,10 @@
 #include "Player.h"
 #include "ObstructBase.h"
 #include "Effect.h"
+#include "NPC.h"
 
 // 静的定数.
-const float Player::ACCEL				=11.0f;		// 通常の加速.
+const float Player::ACCEL				=50.0f;		// 通常の加速.
 
 //
 int Player::m_sHandle;
@@ -40,6 +41,7 @@ Player::Player()
 	, m_speedDisplay(0)
 	, m_moveAnimFlag(false)
 	, m_moveCount(0)
+	, GorlFlag(false)
 
 {	
 	
@@ -105,6 +107,8 @@ Player::~Player()
 	// エフェクトのアンロード
 	m_playerOrbitEfk->Delete();
 	delete m_playerOrbitEfk;
+
+	
 }
 
 //-----------------------------------------------------------------------------
@@ -148,9 +152,17 @@ void Player::Update(float _deltaTime)
 			{
 				if (m_modeCount == 1)
 				{
+					if (GorlFlag == false)
+					{
+						GorlFlag = true;
+					}
 					ResultSceneFlag = true;
 				}
-				accelVec = VScale(dir, ACCEL);
+
+				if (ResultSceneFlag == false)
+				{
+					accelVec = VScale(dir, ACCEL);
+				}
 			}
 			else if (m_moveFlag == false)//練習だったら
 			{
@@ -296,6 +308,9 @@ void Player::Draw()
 		DrawExtendFormatString(20 - GetFontSize(), 10, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);		
 	}
 
+	DrawExtendFormatString(0 - GetFontSize(), 0, 8.0, 8.0, GetColor(0, 0, 0), "%d", PlayerRank);
+
+
 	//if (!KeyPush)
 	//{
 	//	m_playerOrbitEfk->StopEffect();
@@ -339,3 +354,4 @@ void Player::OnHitObstruct(ObstructBase& obstruct)
 	//// ぶつかったら減速する.
 	//velocity = VScale(velocity, COLIDE_DECEL_FAC);
 }
+

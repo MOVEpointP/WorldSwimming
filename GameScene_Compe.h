@@ -32,6 +32,7 @@ private:
 	class UI* m_score_ui[10];		//  UIクラスへのポインタメンバ変数
 	class UI* m_hit_ui[10];			//	ヒット判定UIクラスへのポインタメンバ変数
 	class PlayEffect* m_effect;     //  エフェクトプレーヤー
+	class NPC* m_npc;                 //  NPCのポインタメンバ変数
 
 	GAME_SCENE_STATE m_state;
 	int m_targetCount;				//	アイスの飛ばした個数
@@ -76,4 +77,9 @@ private:
 	bool m_hitFlag;
 
 	bool m_player_mode;
+
+	bool m_MaxGorl;//@@@
+
+	// プレイヤーのゴールした順位
+	int m_playerRanking;
 }; 

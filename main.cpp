@@ -15,6 +15,7 @@
 #include "EffekseerForDXLib.h"
 #include "TestSceneNakamura.h"
 #include "TestSceneSudo.h"
+#include "GameScene_Compe.h"
 
 void InitializeEffekseer();
 
@@ -52,7 +53,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//TestSceneUeyama* TestScene = new TestSceneUeyama;
 
 	//	タイトルシーンをセット
-	Scene->SetScene(new TestTitleSceneUeyama);
+	Scene->SetScene(new GameSceneCompe);
+	//Scene->SetScene(new TestTitleSceneUeyama);
 
 	// エスケープキーが押されるかウインドウが閉じられるまでループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
