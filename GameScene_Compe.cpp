@@ -65,6 +65,8 @@ GameSceneCompe::GameSceneCompe()
 	, m_npc(nullptr)
 	, m_MaxGorl(false)
 	, m_playerRanking(0)
+	, m_liveYFlag(false)
+	, m_liveY(0)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -127,6 +129,25 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 	DebugKey();
 #endif
 	m_player->SetScene(true);
+
+
+	//これはLIVEを上下に動かそうとして失敗してるやつ(別に動かさなくていいよ）
+	if (m_liveYFlag == false)
+	{
+		m_liveY += 0.1f;
+		if (m_liveY >= 0)
+		{
+			m_liveYFlag = true;
+		}
+	}
+	else if (m_liveYFlag == true)
+	{
+		m_liveY -= 0.1f;
+		if (m_liveY <= -10)
+		{
+			m_liveYFlag = false;
+		}
+	}
 
 	switch (m_state)
 	{
@@ -298,6 +319,13 @@ DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 	//npc
 	m_npc->Draw();
 
+
+	//LIVEの文字を表示
+	DrawExtendFormatString(50, m_liveY, 4.0, 4.0, GetColor(255, 0, 0), "LIVE");
+
+	//国の画像を表示
+	DrawGraph(0, 0, m_countryGraphHandle, TRUE);
+
 	//// 終了時
 	//if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
 	//{
@@ -387,6 +415,7 @@ void GameSceneCompe::Load()
 	m_ladyGraphHandle = LoadGraph("data/img/chinaLady.png");
 	m_manualGraphHandle = LoadGraph("data/img/manual.png");
 	m_timingImgHandle = LoadGraph("data/img/gameScene/timing.png");
+	m_countryGraphHandle = LoadGraph("data/img/compe/country.png");
 
 	//	モデルハンドルにセット
 	//m_poolModelHandle = MV1LoadModel("data/model/stage/poolModel.mv1");

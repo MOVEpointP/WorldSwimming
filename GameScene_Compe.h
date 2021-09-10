@@ -50,6 +50,7 @@ private:
 	int m_manualGraphHandle;		//	操作説明のグラフィックハンドル
 	int m_girlGraphHandle;
 	int m_ladyGraphHandle;
+	int m_countryGraphHandle;		//国表示画像ハンドル
 
 	int m_poolModelHandle;			//プールのモデルハンドル
 
@@ -82,4 +83,8 @@ private:
 
 	// プレイヤーのゴールした順位
 	int m_playerRanking;
+
+	// ライブの文字を動かす変数
+	bool m_liveYFlag;
+	int m_liveY;
 }; 

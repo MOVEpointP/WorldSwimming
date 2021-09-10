@@ -8,7 +8,7 @@
 #include "NPC.h"
 
 // 静的定数.
-const float Player::ACCEL				=50.0f;		// 通常の加速.
+const float Player::ACCEL				=15.0f;		// 通常の加速.
 
 //
 int Player::m_sHandle;
