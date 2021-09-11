@@ -6,6 +6,7 @@
 #include "ObstructBase.h"
 #include "Effect.h"
 #include "NPC.h"
+#include "Score.h"
 
 // 静的定数.
 const float Player::ACCEL				=15.0f;		// 通常の加速.
@@ -161,7 +162,7 @@ void Player::Update(float _deltaTime)
 
 				if (ResultSceneFlag == false)
 				{
-					accelVec = VScale(dir, ACCEL);
+					accelVec = VScale(dir, (ACCEL+ (Score::GetScore()%10)));//スコアの分だけ早くなる
 				}
 			}
 			else if (m_moveFlag == false)//練習だったら
@@ -308,6 +309,7 @@ void Player::Draw()
 		DrawExtendFormatString(20 - GetFontSize(), 10, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);		
 	}
 
+	//DrawExtendFormatString(0 - GetFontSize(), 0, 8.0, 8.0, GetColor(0, 0, 0), "%d", PlayerRank);
 
 
 	//if (!KeyPush)

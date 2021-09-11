@@ -23,10 +23,10 @@ const int Target::m_score_good = 0;			//スコアが変わらない
 const int Target::m_score_bad = -10;		//スコアが下がる
 const int Target::m_score_perfect = 10;		//スコアが上がる
 
-const int Target::m_before_good = 1300;		//	グッド判定（前）
+const int Target::m_before_good = 1200;		//	グッド判定（前）
 const int Target::m_perfect = 1325;	//　パーフェクト判定
 const int Target::m_after_good = 1375;		//　グッド判定（後）
-const int Target::m_final_good = 1400;		//　グッド判定（最後）
+const int Target::m_final_good = 1500;		//　グッド判定（最後）
 
 
 
@@ -34,6 +34,8 @@ static const double pi = 3.141592653589793;
 
 // 音量
 const int VOLUME_PAL = 100;
+
+int Target::m_targetSpeed = 0;
 
 //-----------------------------------------------------------------------------
 // @brief  コンストラクタ.
@@ -96,12 +98,12 @@ Target::~Target()
 //-----------------------------------------------------------------------------
 void Target::Update(float _deltaTime)
 {
-
 	
 	 accelVec = VGet(0, 0, 0);
 	//	アイス射出フラグがtrueになったら
 	if (m_iceState == NOW_SHOT)
 	{
+		m_target_accel += m_targetSpeed;
 		accelVec = VScale(dir, m_target_accel);
 	}
 	
@@ -147,7 +149,6 @@ void Target::Update(float _deltaTime)
 	MATRIX rotYMat = MGetRotY(180.0f * (float)(DX_PI / 180.0f));
 	//tmpMat = MMult(tmpMat, rotYMat);
 	//MV1SetRotationMatrix(modelHandle, tmpMat);
-
 }
 
 //-----------------------------------------------------------------------------
@@ -187,14 +188,15 @@ void Target::Draw()
 		else if (m_targerJadgeWord == 3)//perfectなら
 		{
 
-			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 320, 4.0, 10.0, GetColor(0, 0, 0), "perfect!!");//判定結果表記
+			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 320, 4.0, 10.0, GetColor(255, 0, 0), "perfect!!");//判定結果表記
+			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 500, 4.0, 10.0, GetColor(255, 100, 0), "+10");//判定結果表記
 
 		}
 		else if (m_targerJadgeWord == 1)//badなら
 		{
 
- 			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 320, 4.0, 10.0, GetColor(0, 0, 0), "bad");	//判定結果表記
-
+ 			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 320, 4.0, 10.0, GetColor(0, 0, 255), "bad...");	//判定結果表記
+			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 500, 4.0, 10.0, GetColor(0, 100, 255), "-10");	//判定結果表記
 		}
 
 	}
@@ -208,12 +210,16 @@ void Target::Draw()
 		}
 	
 		//１コンボ以上の時に表示する(失敗してる）
-		if (Score::GetScore())
+		if (Combo::GetCombo())
 		{
 			DrawExtendFormatString(1920 - 700 - GetFontSize(), 300, 4.0, 10.0, GetColor(100, 0, 0), "%dコンボ！", Combo::GetCombo());	//判定結果表記
 		}
 
 		DrawExtendFormatString(0, 100, 4.0, 5.0, GetColor(0,100, 0), "スコア：%d", Score::GetScore());	//判定結果表記
+
+		DrawExtendFormatString(100, 600, 4.0, 5.0, GetColor(0, 100, 0), "Shiftで発射！", Score::GetScore());	//判定結果表記
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -224,7 +230,7 @@ void Target::Reaction(UI* _ui, bool _hitFlag)
 	switch (_hitFlag)
 	{
 	case true:
-		m_plusX = 20 + m_targetCount * 10;//ｘ座標をセット
+		m_plusX = (20 + m_targetCount * 20);//ｘ座標をセット
 		pos = VGet(m_plusX, 100, -200);
 		//m_hitFlag = true;
 		

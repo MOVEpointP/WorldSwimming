@@ -38,8 +38,8 @@ void UI::Load()
 	// MISS画像の読み込み
 	m_miss_graphHandle = LoadGraph("data/model/score_ui/miss.png");
 
-	m_gaugeImgHandle = LoadGraph("data/img/UI/nami.png");		//現在地を表示するためのゲージ
-	m_boyImgHandle = LoadGraph("data/img/UI/boy.png");			//現在地を表す男の子
+	//m_gaugeImgHandle = LoadGraph("data/img/UI/nami.png");		//現在地を表示するためのゲージ
+	//m_boyImgHandle = LoadGraph("data/img/UI/boy.png");			//現在地を表す男の子
 }
 
 // 更新

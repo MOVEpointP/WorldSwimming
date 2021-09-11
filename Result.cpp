@@ -1,5 +1,6 @@
 #include "Result.h"
 #include "TestTitleSceneUeyama.h"
+#include "Score.h"
 
 const int LOGO_X = 0;
 const int LOGO_Y = 0;
@@ -29,16 +30,16 @@ Result::Result(int playerRanking)
 	, m_fadeInFinishFlag(false)
 	, m_fadeOutFlag(false)
 	, m_fadeOutFinishFlag(false)
-	, m_checkKeyFlag(false)//
-	, m_scoreSoundHandle(0)//
-	, m_scoreGraphHandle(0)//
-	, m_numSoundHandle(0)//
-	, m_logoGraphHandle(0)//
-	, m_guidanceGraphHandle(0)//
-	, m_exitdoorGraphHandle(0)//
-	, m_evaluation(0)//
-	, m_click_sound_handle(0)//
-	, m_bgmSoundHandle(0)//
+	, m_checkKeyFlag(false)
+	, m_scoreSoundHandle(0)
+	, m_scoreGraphHandle(0)
+	, m_numSoundHandle(0)
+	, m_logoGraphHandle(0)
+	, m_guidanceGraphHandle(0)
+	, m_exitdoorGraphHandle(0)
+	, m_evaluation(0)
+	, m_click_sound_handle(0)
+	, m_bgmSoundHandle(0)
 {
 	// 透過量変数を255に設定
 	transParent = defaultTrans;
@@ -179,8 +180,11 @@ void Result::Draw()
 		m_fadeOutFinishFlag = true;
 	}
 
-	DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 4+90, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_score);
+	//スコア表示
+	DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 4+90, 4.0, 4.0, GetColor(0, 0, 0), "%d", Score::GetScore());
+	
 	DrawExtendFormatString(SCREEN_SIZE_W / 2+300 - GetFontSize(), SCREEN_SIZE_H / 3+280, 4.0, 4.0, GetColor(0, 0, 0), "0");
+	//ランク表示
 	DrawExtendFormatString(SCREEN_SIZE_W / 2+450 - GetFontSize(), SCREEN_SIZE_H / 3+430, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_playerRanking);
 
 }
