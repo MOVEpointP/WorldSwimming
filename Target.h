@@ -35,6 +35,7 @@ public:
 	void SetPos(const VECTOR set) { pos = set; }
 	void SetSinglePosX() { m_posX = pos.x; }	//ターゲットの座標をセット
 	const int GetPosX() { return m_posX; }
+	static void SetTargetSpeedX(int _targetSpeed) { m_targetSpeed = _targetSpeed; }//スピードをセット
 
 	// ディレクションのgetter/setter.
 	const VECTOR& GetDir() const { return dir; }
@@ -128,7 +129,7 @@ private:
 	int  TimeCount;				//経過時間をカウントする
 	int  m_targetScore;			//スコアを格納する変数
 	int  m_combo;				//コンボ数を格納する変数
-	class Score  m_totalScore;			//スコアのトータル変数
+	static int  m_targetSpeed;			//それぞれのターゲットの流れる速度を決める変数
 };
 
 #endif // _TARGET_H_

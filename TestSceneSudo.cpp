@@ -67,6 +67,7 @@ TestSceneSudo::TestSceneSudo()
 	, m_finishSoundFlag(false)
 	, m_soundCount(0)
 	, m_targetShot(0)
+	, m_targetSpeed(0)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -132,14 +133,14 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 	DebugKey();
 #endif
 
-	m_targetShot = rand() % 5 + 1;
+	m_targetShot = rand() % 50 + 1;//ターゲットの速度を変える
 
 	m_player->SetScene(false);
 
 	switch (m_state)
 	{
 	case GAME_SCENE_STATE::COUNTDOWN:
-		if ((COUNTDOWN + 1) - (GetNowCount() / 1000 - m_targetShot) <= 1)
+		if ((COUNTDOWN + 1) - (GetNowCount() / 1000 - COUNTDOWN) <= 1)
 		{
 			m_startTime = GetNowCount() / 1000;
 			m_state = GAME_SCENE_STATE::GAME;
@@ -156,12 +157,14 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 
 		//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@発射が１つになる理由
 		// エネミー射出管理
-		if (GetNowCount() / 1000 - m_startTime > m_targetShot)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する（変数にしたらすごくなりそう）
-		{
+		//if (GetNowCount() / 1000 - m_startTime > COUNTDOWN)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する（変数にしたらすごくなりそう）
+		if(CheckHitKey(KEY_INPUT_LSHIFT))
+	{
 			m_startTime = GetNowCount() / 1000;
 			if (m_target[m_targetCount]->GetIceState() == NO_SHOT)//NO_SHOTの場合
 			{
 				m_target[m_targetCount]->SetIceState(NOW_SHOT);//ステータスにNOW_SHOTをセット 
+				Target::SetTargetSpeedX(m_targetShot);
 				PlaySoundMem(m_iceSoundHandle, DX_PLAYTYPE_BACK);
 				ChangeVolumeSoundMem(m_volumePal + 20, m_iceSoundHandle);
 			}
@@ -178,10 +181,10 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 		// 現在の番号に応じてエネミーの更新
 		m_target[m_targetCount]->Update(_deltaTime);
 		m_target[m_targetCount]->SetTargetCount(m_targetCount);
-		m_iceHitFlagBuffer = HitChecker::Check(*m_player, *m_target[m_targetCount]);//@@@@@@@@@@@@trueかfalseでReaction変わる
+		//m_iceHitFlagBuffer = HitChecker::Check(*m_player, *m_target[m_targetCount]);//@@@@@@@@@@@@trueかfalseでReaction変わる
 
 		// アイコンのx軸のポジションを取得
-        m_target[m_targetCount]->SetSinglePosX();//@@@@@@@@@@@@ターゲットからｘ座標を取得
+        m_target[m_targetCount]->SetSinglePosX();//@@@@@@@@@@@@ターゲットにｘ座標をセット
 
 		// m_iceHitFlagBufferがtrueになったら
 		//if (!m_girl_ReactionFlag && m_target[m_targetCount]->GetIceState() == NOW_SHOT)
