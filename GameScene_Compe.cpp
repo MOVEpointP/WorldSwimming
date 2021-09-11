@@ -67,6 +67,7 @@ GameSceneCompe::GameSceneCompe()
 	, m_playerRanking(0)
 	, m_liveYFlag(false)
 	, m_liveY(0)
+	, m_countryDraw(false)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -154,7 +155,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 	case GAME_SCENE_STATE::COUNTDOWN:
 		if ((COUNTDOWN + 1) - (GetNowCount() / 1000 - m_startTime) <= 1)
 		{
-			m_startTime = GetNowCount() / 1000;
+			m_startTime = GetNowCount() / 5000;
 			m_state = GAME_SCENE_STATE::GAME;
 		}
 		break;
@@ -163,6 +164,12 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		// 机の更新
 	/*	m_mark->Mark_Update();*/
 
+		//プレイヤーが泳ぎ始めたら国家の表示
+		if (m_player->GetPlayerState() == SWIM)
+		{
+			m_countryDraw = true;
+
+		}
 		if (m_targetCount == 0)
 		{
 			m_target[m_targetCount]->SetSetTime(m_startTime);
@@ -323,8 +330,12 @@ DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);*/
 	//LIVEの文字を表示
 	DrawExtendFormatString(50, m_liveY, 4.0, 4.0, GetColor(255, 0, 0), "LIVE");
 
-	//国の画像を表示
-	DrawGraph(0, 0, m_countryGraphHandle, TRUE);
+	if (m_countryDraw == true)
+	{
+		//国の画像を表示
+		DrawGraph(0, 0, m_countryGraphHandle, TRUE);//
+
+	}
 
 	//// 終了時
 	//if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)

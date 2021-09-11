@@ -308,7 +308,6 @@ void Player::Draw()
 		DrawExtendFormatString(20 - GetFontSize(), 10, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);		
 	}
 
-	DrawExtendFormatString(0 - GetFontSize(), 0, 8.0, 8.0, GetColor(0, 0, 0), "%d", PlayerRank);
 
 
 	//if (!KeyPush)

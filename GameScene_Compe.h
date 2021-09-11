@@ -87,4 +87,6 @@ private:
 	// ƒ‰ƒCƒu‚Ì•¶š‚ğ“®‚©‚·•Ï”
 	bool m_liveYFlag;
 	int m_liveY;
+
+	bool m_countryDraw;
 }; 

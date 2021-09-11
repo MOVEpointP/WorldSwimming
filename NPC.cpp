@@ -11,7 +11,7 @@
 //描画、アップデートは今までで一人分しかされていないため
 
 // 静的定数.
-const float NPC::ACCEL = 50.0f;		// 通常の加速.
+const float NPC::ACCEL = 15.0f;		// 通常の加速.
 
 //
 int NPC::m_sHandle;
