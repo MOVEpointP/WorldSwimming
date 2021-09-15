@@ -19,12 +19,14 @@ public:
 
 	// ポジションのgetter/setter.
 	const VECTOR& GetPos() const { return pos; }
+
 	// プレイヤーの泳ぎ状態のgetter/setter.
 	void SetPlayerState(int _playerState) { m_playerState = _playerState; }
 
 private:
-	VECTOR	pos;			// ポジション.
-	int m_playerState;		// プレイヤーの泳ぎ状態
+
+	VECTOR	pos;						// ポジション.
+	int m_playerState;					// プレイヤーの泳ぎ状態
 	int m_playerPosZ;
 };
 

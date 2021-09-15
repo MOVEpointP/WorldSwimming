@@ -11,6 +11,8 @@ class TestSceneKoga;
 
 class HitChecker
 {
+
 public:
 	static bool Check(Player& player, Target& Target);
+
 };

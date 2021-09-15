@@ -31,7 +31,8 @@ public:
 
 	void StopEffect();
 
-	const int GetNowPlaying();    // エフェクトが再生中かどうか(0:再生中  1:再生されていない)
+	// エフェクトが再生中かどうか(0:再生中  1:再生されていない)
+	const int GetNowPlaying();   
 
 	// 再生中のエフェクトの座標セッター
 	void SetPlayingEffectPos(const VECTOR& _playPos);
@@ -44,8 +45,10 @@ public:
 
 private:
 
-	VECTOR m_playPos;          // エフェクトの座標
+	// エフェクトの座標
+	VECTOR m_playPos;          
 
-	int m_effectHandle;        // 被ダメージエフェクトのハンドル
+	// 被ダメージエフェクトのハンドル
+	int m_effectHandle;        
 	int m_playingEffect;
 };

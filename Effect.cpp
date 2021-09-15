@@ -1,3 +1,5 @@
+//wakannnai
+
 //-----------------------------------------------------------------------+
 // エフェクトクラス                         
 //                                                      2019 Yutaro Ono.
@@ -23,7 +25,7 @@ PlayEffect::PlayEffect(const char* sourceEffectHandle)
 
 // コンストラクタ2 (スケール指定)
 PlayEffect::PlayEffect(const char* sourceEffectHandle, float _scale)
-	:m_effectHandle(-1)
+	: m_effectHandle(-1)
 	, m_playPos(VGet(0, 0, 0))
 	, m_playingEffect(-1)
 {

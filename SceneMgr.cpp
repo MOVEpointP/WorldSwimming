@@ -1,7 +1,6 @@
-#include "SceneMgr.h"
+#include "SceneMgr.h"	
 #include "Title.h"
 #include "Result.h"
-#include "TestSceneUeyama.h"
 
 #include "DxLib.h"
 
@@ -18,11 +17,11 @@ SceneMgr::~SceneMgr()
 void SceneMgr::Update(float _deltaTime)
 {
 	SceneBase* tmpScene = m_scene->Update(_deltaTime);		//	現在のシーンを保存(publicの関数・変数を呼び出すときはアロー演算子(->)　要調査)
-	if (tmpScene != m_scene)						//	シーンが切り替わった時
+	if (tmpScene != m_scene)								//	シーンが切り替わった時
 	{
-		delete m_scene;								//	直前のシーンを消す
-		m_scene = tmpScene;							//	シーンを更新する
-		m_scene->Load();							//	シーンの初期化
+		delete m_scene;										//	直前のシーンを消す
+		m_scene = tmpScene;									//	シーンを更新する
+		m_scene->Load();									//	シーンの初期化
 	}
 }
 
