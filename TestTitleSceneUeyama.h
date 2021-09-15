@@ -5,15 +5,8 @@
 class TestTitleSceneUeyama : public SceneBase
 {
 public:
-
-	enum class TITLE_TRANS_STATE
-	{
-		FIRST_ENTER = 0,
-		SECOND_CHOICE
-	};
-
-	TestTitleSceneUeyama();					//	コンストラクタ
-	~TestTitleSceneUeyama();					//	デストラクタ
+	TestTitleSceneUeyama();				//	コンストラクタ
+	~TestTitleSceneUeyama();			//	デストラクタ
 
 	SceneBase* Update(float _deltaTime) override;
 	void Draw() override;
@@ -21,18 +14,7 @@ public:
 	void Load() override;
 
 	void UpdateTransparent();
-
-	//	デルタタイムのセッター
-	void SetDeltaTime(float _deltaTime) { m_deltaTime = _deltaTime; }
-
-	//	デルタタイムのゲッター
-	float GetDeltaTime() { return m_deltaTime; }
-
 private:
-	TITLE_TRANS_STATE m_state;
-
-	unsigned int m_cursolNum;    // 難易度選択時のカーソル番号
-
 	int m_backGraphHandle;				//	タイトル画面・背景のグラフィックハンドル
 	int m_logoGraphHandle;				//	タイトル画面・ロゴのグラフィックハンドル
 	int m_guidanceGraphHandle;			//	タイトル画面・ガイドのグラフィックハンドル
@@ -44,17 +26,14 @@ private:
 	// 透過量
 	int m_transpVal;
 	int m_transVal_Enter;				//	フェードアウト中の透過量
-	float m_deltaTime;				//	デルタタイム
 
-	bool m_checkKeyFlag;			//	キーが押されたままかを判定するフラグ
-	bool m_fadeInFinishFlag;		//	フェードインの終了判定フラグ
-	bool m_fadeOutFlag;				//	フェードアウト開始用のフラグ
-	bool m_fadeOutFinishFlag;		//	フェードアウトの終了判定フラグ
+	bool m_fadeInFinishFlag;			//	フェードインの終了判定フラグ
+	bool m_fadeOutFlag;					//	フェードアウト開始用のフラグ
+	bool m_fadeOutFinishFlag;			//	フェードアウトの終了判定フラグ
 
-	float m_guidanceY;               //	タイトルロゴのy座標
-	float m_TitleLogox;               //	タイトルロゴのx座標
-	bool m_TitleLogoxFlag;
+	float m_guidanceY;				    //	タイトルロゴのy座標
+	float m_TitleLogox;                 //	タイトルロゴのx座標
 	bool m_guidanceYFlag;
-	float m_Waterx;               //	水画像のx座標
+	float m_Waterx;                     //	水画像のx座標
 	bool m_WaterxFlag;
 };

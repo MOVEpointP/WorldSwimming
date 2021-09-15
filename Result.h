@@ -1,11 +1,8 @@
 #ifndef _RESULT_H_
 #define _RESULT_H_
-
 #include "SceneBase.h"
 #include "UI.h"
-
 #include "DxLib.h"
-
 class Result : public SceneBase
 {
 public:
@@ -21,20 +18,14 @@ private:
 	int m_score;						//	スコア格納変数
 	int m_playerRanking;				//	プレイヤーのランキング格納変数
 	int m_evaluation;
-	int m_logoGraphHandle;				//	ロゴのグラフィックハンドル
-	int m_guidanceGraphHandle;			//	ガイドのグラフィックハンドル
-	int m_scoreGraphHandle;				//	スコアのグラフィックハンドル
-	int m_numGraphHandle[11];			//
+	int m_backGraphHandle;				//	ロゴのグラフィックハンドル
 	int m_evaluationGraphHandle[3];		//	評価のグラフィックハンドル
-	int m_exitdoorGraphHandle;			//　enter to start のドアのハンドル
 	// 毎透過量
 	int permeationAmount;
 	// 透過量
 	int transParent;
 	int m_click_sound_handle;			//	ENTERで進むときのサウンドハンドル
 	int m_bgmSoundHandle;				//	BGMのサウンドハンドル
-	int m_scoreSoundHandle;				//	スコアのサウンドハンドル
-	int m_numSoundHandle;				//	数表示のサウンドハンドル
 	int m_evaluationSoundHandle[3];		//	評価のサウンドハンドル
 	int m_checkResultFlag = 0;				//	場面管理用フラグ
 	bool m_checkKeyFlag;				//	キーが押されたままかを判定するフラグ

@@ -49,12 +49,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//	シーンマネージャークラスのインスタンスを生成
 	SceneMgr* Scene = new SceneMgr;
 
-	////	ゲームシーンのインスタンスを生成
-	//TestSceneUeyama* TestScene = new TestSceneUeyama;
-
 	//	タイトルシーンをセット
-	Scene->SetScene(new GameSceneCompe);
-	//Scene->SetScene(new TestTitleSceneUeyama);
+	Scene->SetScene(new Title);
 
 	// エスケープキーが押されるかウインドウが閉じられるまでループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
