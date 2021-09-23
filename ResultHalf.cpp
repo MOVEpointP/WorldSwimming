@@ -3,15 +3,13 @@
 //#include "TestSceneUeyama.h"
 #include "GameScene_Compe.h"
 #include "Score.h"
+#include "Fade.h"
 
 const int LOGO_X = 0;
 const int LOGO_Y = 0;
 const int GUIDANCE_X = 0;
 const int GUIDANCE_Y = 0;
 const int RESULT_NUM = 3;
-const int B_P = 4;   //ランクBのスコア
-const int A_P = 7;   //ランクAのスコア
-const int S_P = 10;  //ランクSのスコア
 const int SCREEN_SIZE_W = 1920;
 const int SCREEN_SIZE_H = 1080;
 const int VOLUME_PAL_SUP = 90;
@@ -78,7 +76,6 @@ ResultHalf::ResultHalf()
 
 	m_score= Score::GetScore();//スコアの値を入れる
 	
-
 }
 
 ResultHalf::~ResultHalf()
@@ -167,23 +164,17 @@ void ResultHalf::Draw()
 	if (!m_fadeInFinishFlag)
 	{
 		// フェードイン処理
-		for (int i = 0; i < 255; i += FADE_IN_SPEED)
-		{
-			// 描画輝度をセット
-			SetDrawBright(i, i, i);
-			DrawGraph(0, 0, m_logoGraphHandle, TRUE);
-			DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//
-
-			ScreenFlip();
-		}
+		Fade::FadeIn(m_fadeInFinishFlag, m_logoGraphHandle);
 		m_fadeInFinishFlag = true;
 	}
+
 	DrawGraph(LOGO_X, LOGO_Y, m_logoGraphHandle, TRUE);					//	リザルト画面のロゴを表示
-	DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//ドア表記
+	DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);						//ドア表記
 
 	// 透過して描画
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, transParent);
 	DrawGraph(GUIDANCE_X, GUIDANCE_Y, m_guidanceGraphHandle, TRUE);		//	リザルト画面のロゴを表示
+
 	// 透過を元に戻す
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	if (m_checkResultFlag >= 1)
@@ -255,28 +246,28 @@ void ResultHalf::Sound()
 void ResultHalf::Load()
 {
 	m_click_sound_handle = LoadSoundMem("data/sound/Result/SwimEnterToSound.mp3");	//	ENTERで進む際のサウンドをロード
-	if (m_score > B_P)
+	if (Score::SetRank()==C)
 	{
 		m_evaluation = 0;
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_C.png");		//	グラフィックハンドルにリザルト画面のイメージをセット
 		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/swimResult/Result_Exitdoor.png");	//Enter to startのドア表記
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/Result/SwimScoreSE_C_A.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
-	if (m_score < B_P)
+	if (Score::SetRank() == B)
 	{
 		m_evaluation = 0;
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_B.png");		//	グラフィックハンドルにリザルト画面のイメージをセット
 		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/swimResult/Result_Exitdoor.png");	//Enter to startのドア表記
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/Result/SwimScoreSE_C_A.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
-	if (m_score >= B_P && m_score < A_P)
+	if (Score::SetRank() == A)
 	{
 		m_evaluation = 1;
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_A.png");				//	グラフィックハンドルにリザルト画面のイメージをセット
 		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/swimResult/Result_Exitdoor.png");	//Enter to startのドア表記
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/Result/SwimScoreSE_C_A.mp3");		//	サウンドハンドルにリザルト画面の効果音をセット
 	}
-	if (m_score == S_P)
+	if (Score::SetRank() == S)
 	{
 		m_evaluation = 2;
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_S.png");			//	@@@@グラフィックハンドルにリザルト画面のイメージをセット

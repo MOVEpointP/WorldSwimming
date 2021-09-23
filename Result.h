@@ -41,6 +41,15 @@ private:
 	bool m_fadeInFinishFlag;			//	フェードインの終了判定フラグ
 	bool m_fadeOutFlag;					//	フェードアウト開始用のフラグ
 	bool m_fadeOutFinishFlag;			//	フェードアウトの終了判定フラグ
+
+	enum rank
+	{
+		C,	//0
+		B,	//1
+		A,	//2
+		S 	//3
+	};
+
 };
 
 #endif // _RESULT_H_

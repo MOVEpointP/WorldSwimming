@@ -214,33 +214,33 @@ void Result::Sound()
 void Result::Load()
 {
 	m_click_sound_handle = LoadSoundMem("data/sound/swimResult/SwimEnterToSound.mp3");	//	ENTERで進む際のサウンドをロード
-	if (m_score > B_P)
+	if (Score::SetRank() == C)
 	{
 		m_evaluation = 0;
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_C.png");		//	グラフィックハンドルにリザルト画面のイメージをセット
-		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/Result_Exitdoor.png");	//Enter to startのドア表記
+		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/swimResult/Result_Exitdoor.png");	//Enter to startのドア表記
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/Result/SwimScoreSE_C_A.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
-	if (m_score < B_P)
+	if (Score::SetRank() == B)
 	{
 		m_evaluation = 0;
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_B.png");		//	グラフィックハンドルにリザルト画面のイメージをセット
-		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/Result_Exitdoor.png");	//Enter to startのドア表記
+		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/swimResult/Result_Exitdoor.png");	//Enter to startのドア表記
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/Result/SwimScoreSE_C_A.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
-	if (m_score >= B_P && m_score < A_P)
+	if (Score::SetRank() == A)
 	{
 		m_evaluation = 1;
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_A.png");				//	グラフィックハンドルにリザルト画面のイメージをセット
-		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/Result_Exitdoor.png");	//Enter to startのドア表記
+		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/swimResult/Result_Exitdoor.png");	//Enter to startのドア表記
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/Result/SwimScoreSE_C_A.mp3");		//	サウンドハンドルにリザルト画面の効果音をセット
 	}
-	if (m_score == S_P)
+	if (Score::SetRank() == S)
 	{
 		m_evaluation = 2;
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_S.png");			//	@@@@グラフィックハンドルにリザルト画面のイメージをセット
-		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/Result_Exitdoor.png");	//Enter to startのドア表記
-		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/SwimScoreSE_S.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
+		m_exitdoorGraphHandle = LoadGraph("data/img/result_02_png/swimResult/Result_Exitdoor.png");	//Enter to startのドア表記
+		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/Result/SwimScoreSE_S.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
 	/*m_scoreStr(std::to_string(m_score));*/
 	m_logoGraphHandle = LoadGraph("data/img/result_02_png/swimResult/FinalResults.png");				//	グラフィックハンドルにリザルト画面のイメージをセット

@@ -8,6 +8,7 @@
 #include "Hitchecker.h"
 #include "UI.h"
 #include "Camera.h"
+#include "Fade.h"
 
 #include "DxLib.h"
 #include "Effect.h"
@@ -45,7 +46,6 @@ TestSceneSudo::TestSceneSudo()
 	, m_finishSoundFlag(false)
 	, m_finishFadeCount(0)
 	, m_targetSpeed(0)
-	, ResultSceneFlag(false)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -201,14 +201,7 @@ void TestSceneSudo::Draw()
 	// フェードアウト処理
 	if (m_fadeOutFlag)
 	{
-		for (int i = 0; i < 255; i += FADE_OUT_SPEED)
-		{
-			// 描画輝度をセット
-			SetDrawBright(255 - i, 255 - i, 255 - i);
-
-			// グラフィックを描画
-			ScreenFlip();
-		}
+		Fade::FadeOut(m_fadeOutFlag,false);
 		m_fadeOutFinishFlag = true;
 
 	}

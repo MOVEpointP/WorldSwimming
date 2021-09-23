@@ -50,6 +50,14 @@ class ResultHalf : public SceneBase
 		float	hitRadius;		// あたり判定の半径.
 		float TotalTime, PlayTime;//モーションの再生時間
 		int AttachIndex;//モーションの
+
+		enum rank
+		{
+			C,	//0
+			B,	//1
+			A,	//2
+			S 	//3
+		};
 };
 
 #endif _RESULTHALF_H_

@@ -35,7 +35,6 @@ Target::Target()
 	, m_combo(0)
 	, m_targetScore(0)
 	, hitRadius(7.5f)
-
 {
 	// 画像の読み込み
 	m_legImgHandle=LoadGraph("data/img/target/legs.png");
@@ -57,9 +56,11 @@ Target::Target()
 //-----------------------------------------------------------------------------
 Target::~Target()
 {
+
 	// 各種ハンドルのアンロード.
 	DeleteGraph(m_legImgHandle);
 	DeleteGraph(m_o2ImgHandle);
+
 }
 
 //-----------------------------------------------------------------------------
