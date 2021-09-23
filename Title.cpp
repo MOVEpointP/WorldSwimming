@@ -1,4 +1,4 @@
-#include "Title.h"  
+#include "Title.h"
 #include "DxLib.h"
 #include "GameScene_easy.h"
 #include "TestSceneUeyama.h"
@@ -8,25 +8,25 @@
 const int MAX_TRANSP_VAL = 255;
 // 透過量変化用ベクトル
 const int TRANSP_MODERATION = -1;
-//縦横の画面サイズ
+//画面サイズ
 const int SCREEN_SIZE_W = 1920;
 const int SCREEN_SIZE_H = 1080;
-//音量調整
 const int VOLUME_PAL_SUP = 130;
 //	フェードインの速度
 const int FADE_IN_SPEED = 3;
 //	フェードアウトの速度
 const int FADE_OUT_SPEED = 3;
-
 Title::Title()
-	: m_WaterxFlag(false)
-	, m_guidanceY(0)
+	: m_guidanceY(0)
 	, m_TitleLogox(0)
 	, m_Waterx(0)
 	, m_fadeInFinishFlag(false)
 	, m_fadeOutFlag(false)
 	, m_fadeOutFinishFlag(false)
 	, m_guidanceYFlag(false)
+	, m_TitleLogoxFlag(false)
+	, m_WaterxFlag(false)
+
 {
 	// 透過量変数を122に設定
 	m_transpVal = MAX_TRANSP_VAL;
@@ -36,6 +36,7 @@ Title::Title()
 
 	m_soundHandle = LoadSoundMem("data/sound/Title/SwimTitleBgm.wav");
 }
+
 Title::~Title()
 {
 	StopSoundMem(m_soundHandle);
@@ -52,11 +53,12 @@ Title::~Title()
 /// <returns> シーンのポインタ </returns>
 SceneBase* Title::Update(float _deltaTime)
 {
+
 	// ステートメントごとに処理を変更
 		// ENTERで次のステートへ
 	if (CheckHitKey(KEY_INPUT_RETURN))
 	{
-		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL, FALSE);
+		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL, FALSE);//？フラグ作るかどうか
 		return new TestSceneSudo();
 	}
 	return this;
@@ -93,6 +95,7 @@ void Title::Draw()
 	DrawGraph(m_Waterx, 0, m_water, TRUE);
 	// 透過を元に戻す
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	// 透過して描画
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_transVal_Enter);
 	DrawGraph(0, m_guidanceY, m_guidanceGraphHandle, TRUE);		//	PUSH ENTER
@@ -149,6 +152,8 @@ void Title::UpdateTransparent()
 	}
 	// 毎透過量を透過量に加算する
 	m_transpVal += m_permeationAmount;
+
+
 	//Enter to Startのフェード処理
 	// 透過量が255より大きくなったら
 	if (m_transVal_Enter >= MAX_TRANSP_VAL)
@@ -187,6 +192,8 @@ void Title::UpdateTransparent()
 			m_guidanceYFlag = false;
 		}
 	}
+
+
 	//水の画像を左右に動かす
 	if (m_WaterxFlag == false)
 	{
@@ -195,13 +202,14 @@ void Title::UpdateTransparent()
 		{
 			m_WaterxFlag = true;
 		}
-		else if (m_WaterxFlag == true)
+	}
+	else if (m_WaterxFlag == true)
+	{
+		m_Waterx -= 0.05f;
+		if (m_Waterx <= 0)
 		{
-			m_Waterx -= 0.05f;
-			if (m_Waterx <= 0)
-			{
-				m_WaterxFlag = false;
-			}
+			m_WaterxFlag = false;
 		}
+
 	}
 }

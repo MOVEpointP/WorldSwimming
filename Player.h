@@ -12,6 +12,7 @@
 #define TURN	2
 #define RESULT	3
 
+class ObstructBase;
 class NPC;
 
 class Player final
@@ -25,6 +26,10 @@ public:
 
 	void Update(float _deltaTime);			// 更新.
 	void Draw();			// 描画.
+
+
+	// 衝突処理.
+	void OnHitObstruct(ObstructBase& obstruct);
 
 	// モデルハンドルの取得.
 	int GetModelHandle(){ return m_modelHandle[m_playerState]; }
@@ -40,6 +45,8 @@ public:
 	const VECTOR& GetDir() const { return dir; }
 	void SetDir(const VECTOR set) { dir = set; }
 
+	// あたり判定半径の取得.
+	float GetHitRadius() { return hitRadius; }
 
 	//セッター
 	void SetScene(bool _sceneFlag) { m_moveFlag = _sceneFlag; }//ゲームシーンからシーンフラグをもらう
@@ -50,12 +57,14 @@ public:
 	// 現在のプレイヤーのランキングを取得するgetter
 	int GetPlayerNowRankingNum() { return PlayerRank; }
 
-	// ゴールしたかどうかを返すgettr
-	bool GetGoalFlag() { return GorlFlag; }
+	// ゴールしたかどうかを返すgetter
+	bool GetGoalFlag() { return m_gorlFlag; }
 
-	bool ResultSceneFlag;         //　往復数によるゲーム終了判定フラグ
+	bool m_resultSceneFlag;         //　往復数によるゲーム終了判定フラグ
 
-	bool GorlFlag;	//プレイヤーがゴールしたときはtrue、ゴールしてないときはfalseになる
+	bool m_gorlFlag;	//プレイヤーがゴールしたときはtrue、ゴールしてないときはfalseになる
+
+
 private:
 
 	int		m_modelHandle[4];			//	モデルハンドル
@@ -67,16 +76,31 @@ private:
 	bool    m_moveFlag;
 	int		m_trainingMaxCount;			//　練習での往復最大数
 	float   m_motionSpeed;				//　モデルのモーションスピード
-	VECTOR	pos;					// ポジション.
-	VECTOR	velocity;				// 移動力.
-	VECTOR	dir;					// 回転方向.
-	float TotalTime[3], PlayTime;	//モーションの再生時間
-	int AttachIndex;				////アニメーションの総再生時間
+	VECTOR	pos;			// ポジション.
+	VECTOR	velocity;		// 移動力.
+	VECTOR	dir;			// 回転方向.
+	float	hitRadius;		// あたり判定の半径.
+	float TotalTime[3], PlayTime;//モーションの再生時間
+	int AttachIndex;//モーションの
+	int m_speedDisplay;		//倍速表示の矢印を動かす
+	bool m_moveAnimFlag;//モーションを一時停止するフラグ
+	int m_moveCount;
+
 	//　プレイヤーのランキングの順位を保存する変数
 	int PlayerRank;
+
+	// player用サウンド変数
+	static int m_sHandle;
+
 	// 静的定数.
 	static const float ACCEL;
+	static const float MAX_SPEED;
 	static const float TRANING_SPEED;
+	static const float DEFAULT_DECEL;
+	static const float BREAK_DECEL;
+	static const float GRIP_DECEL;
+	static const float GRIP_POWER;
+	static const float COLIDE_DECEL_FAC;
 };
 
 #endif // _PLAYER_H_
