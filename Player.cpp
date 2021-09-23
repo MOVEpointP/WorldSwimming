@@ -31,7 +31,6 @@ const int VOLUME_PAL = 100;
 //-----------------------------------------------------------------------------
 Player::Player()
 	:hitRadius(7.5f)
-	,m_playerOrbitEfk(nullptr)
 	,m_diveModelHandle(-1)
 	,m_swimModelHandle(-1)
 	,m_resultModelHandle(-1)
@@ -42,18 +41,13 @@ Player::Player()
 	, m_speedDisplay(0)
 	, m_moveAnimFlag(false)
 	, m_moveCount(0)
-	, GorlFlag(false)
+	, m_gorlFlag(false)
+	, m_resultSceneFlag(false)
 
 {	
 	
 	// サウンドの読み込み
 	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
-
-
-	// ３Ｄモデルの読み込み
-	//m_diveModelHandle = MV1LoadModel("data/model/player/dive.mv1");			//ダイブモーション付きモデル
-	//m_swimModelHandle = MV1LoadModel("data/model/player/Swimming01.mv1");	//泳ぎモーション付きモデル
-	//m_resultModelHandle = MV1LoadModel("data/model/player/result.mv1");		//リザルトポーズモーション付きモデル
 
 	m_modelHandle[0] = MV1LoadModel("data/model/player/dive.mv1");
 	m_modelHandle[1] = MV1LoadModel("data/model/player/Swimming01.mv1");
@@ -74,11 +68,6 @@ Player::Player()
 
 	//再生時間の初期化
 	PlayTime = 0.0f;
-
-	// エフェクト読み込み
-	m_playerOrbitEfk = new PlayEffect("data/effects/PlayerLine.efk");
-	m_efkDir = VGet(0.0f, DX_PI_F, 0.0f);
-	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 
 	// posはVector型なので、VGetで原点にセット
 	pos = VGet(0, 30, 20);
@@ -105,9 +94,6 @@ Player::~Player()
 	MV1DeleteModel(m_modelHandle[3]);
 	// サウンドのアンロード
 	DeleteSoundMem(m_sHandle);
-	// エフェクトのアンロード
-	m_playerOrbitEfk->Delete();
-	delete m_playerOrbitEfk;
 
 	
 }
@@ -153,14 +139,14 @@ void Player::Update(float _deltaTime)
 			{
 				if (m_modeCount == 1)
 				{
-					if (GorlFlag == false)
+					if (m_gorlFlag == false)
 					{
-						GorlFlag = true;
+						m_gorlFlag = true;
 					}
-					ResultSceneFlag = true;
+					m_resultSceneFlag = true;
 				}
 
-				if (ResultSceneFlag == false)
+				if (m_resultSceneFlag == false)
 				{
 					accelVec = VScale(dir, (ACCEL+ (Score::GetScore()%10)));//スコアの分だけ早くなる
 				}
@@ -169,7 +155,7 @@ void Player::Update(float _deltaTime)
 			{
 				if (m_modeCount == 2)
 				{
-					ResultSceneFlag = true;
+					m_resultSceneFlag = true;
 				}
 				accelVec = VScale(dir, TRANING_SPEED);
 			}
@@ -190,29 +176,8 @@ void Player::Update(float _deltaTime)
 
 	}
 
-	// 止まっている場合は減速しない.
-	//if (VSize(velocity) > 0)
-	//{
-	//	// 右か左を押していたらグリップによる減速.
-	//	if (Key & PAD_INPUT_RIGHT || Key & PAD_INPUT_LEFT)
-	//	{
-	//		accelVec = VAdd(accelVec, VScale(dir, GRIP_DECEL));
-	//	}
-	//	// 何も押さなければ減速.
-	//	if (Key == 0&&KeyPush==false)
-	//	{
-	//		accelVec = VScale(dir, DEFAULT_DECEL);
-	//	}
-	//}
-
 	// ベロシティ加速計算.
 	velocity = VAdd(velocity, accelVec);
-
-	// 反対方向に進む状態になっていたら止める.
-	//if (VDot(velocity, dir) < 0)
-	//{
-	//	velocity = VGet(0, 0, 0);
-	//}
 
 	// 上下方向にいかないようにベロシティを整える.
 	velocity = VGet(velocity.x * _deltaTime, 0, velocity.z * _deltaTime);
@@ -225,25 +190,9 @@ void Player::Update(float _deltaTime)
 		pos.y -= 0.1;
 	}
 
-	// 力をかけ終わったベロシティの方向にディレクションを調整.
-	/*if (VSize(velocity) != 0)
-	{
-		dir = VNorm(velocity);
-	}*/
-	//printfDx("%f %f %f\n", dir.x, dir.y, dir.z);
 
 	// ３Dモデルのポジション設定
 	MV1SetPosition(m_modelHandle[m_playerState], pos);
-
-	// 向きに合わせて回転.
-	//MV1SetRotationZYAxis(m_modelHandle[m_playerState], dir, VGet(0.0f, 1.0f, 0.0f), 0.0f);
-	
-	// モデルに向いてほしい方向に回転.
-	/*MATRIX tmpMat = MV1GetMatrix(m_modelHandle[m_playerState]);
-	MATRIX rotYMat = MGetRotY(180.0f * (float)(DX_PI / 180.0f));
-	tmpMat = MMult(tmpMat, rotYMat);
-	MV1SetRotationMatrix(m_modelHandle[m_playerState], tmpMat);*/
-
 
 
 	//// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
@@ -269,21 +218,6 @@ void Player::Update(float _deltaTime)
 
 
 
-	/*if (m_moveAnimFlag)
-	{
-		m_moveCount += GetNowCount() / 12000;
-
-
-		if (m_moveCount >= 100000)
-		{
-			m_moveCount = 0;
-
-			PlayTime = 0.0f;
-
-			m_moveAnimFlag = false;
-		}
-
-	}*/
 
 	// 再生時間をセットする
 	MV1SetAttachAnimTime(m_modelHandle[m_playerState], AttachIndex, PlayTime);
@@ -309,29 +243,8 @@ void Player::Draw()
 		DrawExtendFormatString(20 - GetFontSize(), 10, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);		
 	}
 
-	//DrawExtendFormatString(0 - GetFontSize(), 0, 8.0, 8.0, GetColor(0, 0, 0), "%d", PlayerRank);
 
 
-	//if (!KeyPush)
-	//{
-	//	m_playerOrbitEfk->StopEffect();
-	//}
-	// プレイヤーの軌道エフェクト
-	//if (KeyPush)
-	//{
-	//	if (m_playerOrbitEfk->GetNowPlaying() != 0)
-	//	{
-	//		m_playerOrbitEfk->PlayEffekseer(pos);
-	//		m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
-	//	}
-
-	//	// エフェクト再生中はプレイヤーの座標を追尾
-	//	m_playerOrbitEfk->SetPlayingEffectPos(pos);	
-	//}
-
-
-	// デバッグあたり判定.
-	//DrawSphere3D(pos, hitRadius, 5, 0x00ffff, 0x00ffff, false);
 }
 
 //-----------------------------------------------------------------------------
@@ -339,20 +252,5 @@ void Player::Draw()
 //-----------------------------------------------------------------------------
 void Player::OnHitObstruct(ObstructBase& obstruct)
 {
-	//// 自分自身の位置を障害物のあたり判定分ずらす.
-	//// Z軸とX軸の二次元座標として位置ずらしを行う.
-	//VECTOR yZeroPlayer = VGet(pos.x, 0, pos.z);
-	//VECTOR yZeroObstruct = VGet(obstruct.GetPos().x, 0, obstruct.GetPos().z);
-
-	//VECTOR obsToPlayer = VSub(yZeroPlayer, yZeroObstruct);
-
-	//// ぶつかったときに離す距離。ちょうどだとfloat誤差で重なり続けるので少し間をあける.
-	//float awayRange = (hitRadius + obstruct.GetHitRadius() + 0.01f);
-
-	//VECTOR awayVec = VScale(VNorm(obsToPlayer), awayRange);
-	//pos = VAdd(yZeroObstruct, awayVec);
-
-	//// ぶつかったら減速する.
-	//velocity = VScale(velocity, COLIDE_DECEL_FAC);
 }
 

@@ -57,12 +57,12 @@ public:
 	// 現在のプレイヤーのランキングを取得するgetter
 	int GetPlayerNowRankingNum() { return PlayerRank; }
 
-	// ゴールしたかどうかを返すgettr
-	bool GetGoalFlag() { return GorlFlag; }
+	// ゴールしたかどうかを返すgetter
+	bool GetGoalFlag() { return m_gorlFlag; }
 
-	bool ResultSceneFlag;         //　往復数によるゲーム終了判定フラグ
+	bool m_resultSceneFlag;         //　往復数によるゲーム終了判定フラグ
 
-	bool GorlFlag;	//プレイヤーがゴールしたときはtrue、ゴールしてないときはfalseになる
+	bool m_gorlFlag;	//プレイヤーがゴールしたときはtrue、ゴールしてないときはfalseになる
 
 
 private:
@@ -88,11 +88,6 @@ private:
 
 	//　プレイヤーのランキングの順位を保存する変数
 	int PlayerRank;
-
-
-	// 発射エフェクト
-	class PlayEffect* m_playerOrbitEfk;
-	VECTOR m_efkDir;
 
 	// player用サウンド変数
 	static int m_sHandle;
