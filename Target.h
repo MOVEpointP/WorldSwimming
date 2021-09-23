@@ -83,7 +83,7 @@ private:
 	Target_State m_targetState;
 
 	int  m_targerJadgeWord;		//タイミングの判定文字
-	int  TimeCount;				//判定表記を表示する時間をカウントする
+	int  m_timeCount;				//判定表記を表示する時間をカウントする
 	int  m_targetScore;			//スコアを格納する変数
 	int  m_combo;				//コンボ数を格納する変数
 	static int  m_targetSpeed;	//それぞれのターゲットの流れる速度を決める変数

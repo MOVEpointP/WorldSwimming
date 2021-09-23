@@ -31,7 +31,7 @@ Target::Target()
 	, m_o2ImgHandle(-1)
 	, m_posX(0)
 	, m_targerJadgeWord(0)
-	, TimeCount(0)
+	, m_m_timeCount(0)
 	, m_combo(0)
 	, m_targetScore(0)
 	, hitRadius(7.5f)
@@ -132,12 +132,12 @@ void Target::Draw()
 
 	}
 		//　判定結果を表示する間のカウント
-		TimeCount++;
+		m_timeCount++;
 
-		if (TimeCount >= 250)
+		if (m_timeCount >= 250)
 		{
 			m_targerJadgeWord = 0;
-			TimeCount = 0;
+			m_timeCount = 0;
 		}
 	
 		//　１コンボ以上の時にコンボ数を表示する
