@@ -41,8 +41,8 @@ Player::Player()
 	, m_speedDisplay(0)
 	, m_moveAnimFlag(false)
 	, m_moveCount(0)
-	, m_gorlFlag(false)
-	, m_resultSceneFlag(false)
+	, GoalFlag(false)
+	, ResultSceneFlag(false)
 
 {	
 	
@@ -139,14 +139,14 @@ void Player::Update(float _deltaTime)
 			{
 				if (m_modeCount == 1)
 				{
-					if (m_gorlFlag == false)
+					if (GoalFlag == false)
 					{
-						m_gorlFlag = true;
+						GoalFlag = true;
 					}
-					m_resultSceneFlag = true;
+					ResultSceneFlag = true;
 				}
 
-				if (m_resultSceneFlag == false)
+				if (ResultSceneFlag == false)
 				{
 					accelVec = VScale(dir, (ACCEL+ (Score::GetScore()%10)));//スコアの分だけ早くなる
 				}
@@ -155,7 +155,7 @@ void Player::Update(float _deltaTime)
 			{
 				if (m_modeCount == 2)
 				{
-					m_resultSceneFlag = true;
+					ResultSceneFlag = true;
 				}
 				accelVec = VScale(dir, TRANING_SPEED);
 			}

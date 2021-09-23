@@ -31,7 +31,6 @@ Target::Target()
 	, m_o2ImgHandle(-1)
 	, m_posX(0)
 	, m_targerJadgeWord(0)
-	, m_m_timeCount(0)
 	, m_combo(0)
 	, m_targetScore(0)
 	, hitRadius(7.5f)
@@ -56,11 +55,9 @@ Target::Target()
 //-----------------------------------------------------------------------------
 Target::~Target()
 {
-
 	// 各種ハンドルのアンロード.
 	DeleteGraph(m_legImgHandle);
 	DeleteGraph(m_o2ImgHandle);
-
 }
 
 //-----------------------------------------------------------------------------
@@ -95,7 +92,6 @@ void Target::Update(float _deltaTime)
 
 	// モデルに向いてほしい方向に回転.
 	MATRIX rotYMat = MGetRotY(180.0f * (float)(DX_PI / 180.0f));
-
 }
 
 //-----------------------------------------------------------------------------

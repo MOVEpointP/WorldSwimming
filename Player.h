@@ -58,11 +58,11 @@ public:
 	int GetPlayerNowRankingNum() { return PlayerRank; }
 
 	// ゴールしたかどうかを返すgetter
-	bool GetGoalFlag() { return m_gorlFlag; }
+	bool GetGoalFlag() { return GoalFlag; }
 
-	bool m_resultSceneFlag;         //　往復数によるゲーム終了判定フラグ
+	bool ResultSceneFlag;         //　往復数によるゲーム終了判定フラグ
 
-	bool m_gorlFlag;	//プレイヤーがゴールしたときはtrue、ゴールしてないときはfalseになる
+	bool GoalFlag;	//プレイヤーがゴールしたときはtrue、ゴールしてないときはfalseになる
 
 
 private:

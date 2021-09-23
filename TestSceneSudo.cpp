@@ -90,7 +90,7 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 {
 	// デバッグビルドのみデバッグ関数を呼び出す
 #ifdef _DEBUG
-	DebugKey();
+	//DebugKey();
 #endif
 
 	m_targetSpeed = rand() % 50 + 1;//ターゲットの速度を変える
@@ -162,8 +162,6 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 
 void TestSceneSudo::Draw()
 {
-
-
 	//プールの表示位置変更
 	MV1SetPosition(m_poolModelHandle, VGet(0.0f, 0.0f, 180.0f));
 

@@ -45,7 +45,7 @@ class ResultHalf : public SceneBase
 		VECTOR	dir;			// 回転方向.
 		float TotalTime, PlayTime;//モーションの再生時間
 		int AttachIndex;//モーションの再生時間
-
+		int m_backgroundGraphHandle;
 		enum rank
 		{
 			C,		//0
@@ -53,7 +53,6 @@ class ResultHalf : public SceneBase
 			A,		//2
 			S 		//3
 		};
-
 };
 
 #endif _RESULTHALF_H_
