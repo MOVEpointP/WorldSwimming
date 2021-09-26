@@ -8,7 +8,7 @@ private:
 
 public:
 	Score();//コンストラクタ
-	static void SetScore(int _setScore) { m_score += _setScore; }//ゲームシーンからスコアをもらう
+	static void AddScore(int _setScore) { m_score += _setScore; }//ゲームシーンからスコアをもらう
 	static int GetScore() { return m_score; }			 //スコアをリザルトに渡す
 	static int SetRank();
 	

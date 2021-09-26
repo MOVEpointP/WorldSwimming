@@ -34,11 +34,21 @@ Target::Target()
 	, m_combo(0)
 	, m_targetScore(0)
 	, hitRadius(7.5f)
+	,m_goodHandle(-1)
+	, m_badHandle(-1)
+	, m_perfectHandle(-1)
+	,m_tens_place(0)
 {
 	// 画像の読み込み
 	m_legImgHandle=LoadGraph("data/img/target/legs.png");
 	m_o2ImgHandle=LoadGraph("data/img/target/O2.png");
+	m_goodHandle = LoadGraph("data/img/gameScene/good.png");
+	m_badHandle = LoadGraph("data/img/gameScene/bad.png");
+	m_perfectHandle = LoadGraph("data/img/gameScene/perfect.png");
+	m_comboHandle = LoadGraph("data/img/gameScene/combo.png");
+	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapchipHandle);
 
+	//m_mapchipHandle[0]= LoadGraph("data/img/gameScene/suuji.png");
 	m_target_accel = 0.1f;
 
 	// posはVector型なので、VGetで原点にセット
@@ -100,7 +110,7 @@ void Target::Update(float _deltaTime)
 void Target::Draw()
 {
 	// 足のアイコンを描画
-	DrawGraph(m_posX, 320, m_legImgHandle, TRUE);
+	DrawGraph(m_posX, 400, m_legImgHandle, TRUE);
 	
 	// デバッグあたり判定.
 	if (m_targetState == END_SHOT)
@@ -108,22 +118,15 @@ void Target::Draw()
 		//判定表記
 		if (m_targerJadgeWord == 2)		//goodなら
 		{
-
-			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 320, 4.0, 10.0, GetColor(0, 0, 0), "good!");			//　判定結果表記
-			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 500, 4.0, 10.0, GetColor(0, 0, 0), "+1");			//　判定結果表記
+			DrawGraph(0, 0, m_goodHandle, TRUE);
 		}																												  
 		else if (m_targerJadgeWord == 3)//perfectなら																	
 		{																												  
-																														  
-			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 320, 4.0, 10.0, GetColor(255, 0, 0), "perfect!!");	//　判定結果表記
-			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 500, 4.0, 10.0, GetColor(255, 100, 0), "+5");		//　判定結果表記
-
+			DrawGraph(0, 0, m_perfectHandle, TRUE);
 		}
 		else if (m_targerJadgeWord == 1)//badなら
 		{
-
- 			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 320, 4.0, 10.0, GetColor(0, 0, 255), "bad...");		//　判定結果表記
-			DrawExtendFormatString(1920 / 1 - 200 - GetFontSize(), 500, 4.0, 10.0, GetColor(0, 100, 255), "-5");		//　判定結果表記
+			DrawGraph(0, 0, m_badHandle, TRUE);
 		}
 
 	}
@@ -137,15 +140,15 @@ void Target::Draw()
 		}
 	
 		//　１コンボ以上の時にコンボ数を表示する
-		if (Combo::GetCombo())
-		{
-			DrawExtendFormatString(1920 - 700 - GetFontSize(), 300, 4.0, 10.0, GetColor(100, 0, 0), "%dコンボ！", Combo::GetCombo());	//　判定結果表記
-		}																																  
-																																		  
-		DrawExtendFormatString(0, 100, 4.0, 5.0, GetColor(0,100, 0), "スコア：%d", Score::GetScore());									//　判定結果表記
-																																		  
-		DrawExtendFormatString(100, 600, 4.0, 5.0, GetColor(0, 100, 0), "Shiftで発射！", Score::GetScore());							//　判定結果表記
+		auto combo = Combo::GetCombo();
+		DrawGraph(1920 / 2 + 840, 500 + 50, m_mapchipHandle[Combo::GetCombo()], TRUE);
+		DrawGraph(1920 / 2 + 800, 500 + 50, m_mapchipHandle[Combo::GetTenCombo()], TRUE);
+		//DrawExtendFormatString(1920 / 2+840 - GetFontSize(), 500, 6.0, 10.0, GetColor(255, 255, 255), "%d", Combo::GetCombo());	//　判定結果表記
+		DrawGraph(0, -20, m_comboHandle, TRUE);
 
+		DrawExtendFormatString(1920 / 2 + 850 - GetFontSize(), 730, 2.0, 2.0, GetColor(255, 255, 255), "%d", Score::GetScore());									//　判定結果表記
+																																		  
+		//DrawExtendFormatString(100, 600, 4.0, 5.0, GetColor(0, 100, 0), "Shiftで発射！", Score::GetScore());							//　判定結果表記
 
 }
 
@@ -155,19 +158,15 @@ void Target::Draw()
 void Target::Reaction(Target* _target, bool _hitFlag)
 {
 
-	switch (_hitFlag)
+	if (_hitFlag)
 	{
-	case true:
-
 		m_plusX = (20 + m_targetCount * 20);	// ｘ座標をセット
 		pos = VGet(m_plusX, 100, -200);			// 座標をセット
 
 		m_targetState = END_SHOT;
-
-		break;
-
-	case false:
-
+	}
+	else
+	{
 		//ショットのときに
 		if (m_targetState == NOW_SHOT && pos.x >= 1100)//アイコンが近くにあるかどうか探索
 		{
@@ -180,26 +179,27 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 					m_targetScore += m_score_good;					// スコア変化なし
 					m_targerJadgeWord = 2;
 					pos = VGet(-2000, -1000, 200);					// 座標を移動して表示しなくする
-					m_combo++;										// コンボ数加算
+					m_combo = 1;									// コンボ数加算
 					m_targetState = END_SHOT;
 
 				}
 				else if (m_perfect < pos.x && pos.x < m_after_good)  // perfect
-				{													    
-																	    
+				{
+
 					m_targetScore += m_score_perfect;                // スコアup
 					m_targerJadgeWord = 3;
 					pos = VGet(-2000, -1000, 200);                   // 座標を移動して表示しなくする
-					m_combo++;                                       // コンボ数加算
+					m_combo = 1;                                     // コンボ数加算
 					m_targetState = END_SHOT;
 
 				}
 				else												 // bad（それ以外なら）
-				{													    
+				{
 					m_targetScore += m_score_bad;					 // スコアdown
 					m_targerJadgeWord = 1;
 					pos = VGet(-2000, -1000, 200);					 // 座標を移動して表示しなくする
-					m_combo = -Combo::GetCombo();					 // コンボ数リセット
+					m_combo = -Combo::GetCombo();									 // コンボ数リセット
+					m_tens_place = -Combo::GetTenCombo();
 					m_targetState = END_SHOT;
 				}
 			}
@@ -209,16 +209,24 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 				m_targetScore += m_score_bad;	// スコアdown
 				m_targerJadgeWord = 1;
 				pos = VGet(-2000, -1000, 200);	// 座標を移動して表示しなくする
-				m_combo = -Combo::GetCombo();	// コンボ数リセット
+				m_combo = -Combo::GetCombo();					// コンボ数リセット
+				m_tens_place = -Combo::GetTenCombo();
 				m_targetState = END_SHOT;
 
 			}
 
-			Score::SetScore(m_targetScore);		//スコアの値をセットする
-			Combo::SetCombo(m_combo);			//コンボの値をセットする
+			if (Combo::GetCombo() >= 9)
+			{
+ 				m_combo = -Combo::GetCombo();			 // コンボ数リセット
+				m_tens_place = 1;
+			}
 
+			Score::AddScore(m_targetScore);		//スコアの値を加算する
+			Combo::AddCombo(m_combo);			//コンボの値を加算する
+			Combo::AddTenCombo(m_tens_place);	//コンボの十の位の値を加算する
+			m_combo = 0;						//コンボの値をリセット
+			m_tens_place = 0;					//コンボの十の位リセット
 		}
-		break;
 	}
 }
 

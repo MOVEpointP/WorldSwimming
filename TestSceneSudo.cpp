@@ -13,7 +13,7 @@
 #include "DxLib.h"
 #include "Effect.h"
 
-static int enemyNum = 19;					//	エネミーの数
+static int enemyNum = 25;					//	エネミーの数
 static int COUNTDOWN = 7;					
 
 // ターゲットが飛んでくる間隔 (秒単位)
@@ -201,10 +201,7 @@ void TestSceneSudo::Draw()
 	{
 		Fade::FadeOut(m_fadeOutFlag,false);
 		m_fadeOutFinishFlag = true;
-
 	}
-
-
 }
 
 void TestSceneSudo::Sound()
@@ -220,7 +217,7 @@ void TestSceneSudo::Load()
 {
 	//	グラフィックハンドルにセット
 	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");		//練習BGMハンドル
-	m_timingImgHandle = LoadGraph("data/img/gameScene/timing.png");		//判定バーの画像ハンドル
+	m_timingImgHandle = LoadGraph("data/img/gameScene/timing2.png");		//判定バーの画像ハンドル
 
 	//	モデルハンドルにセット
 	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");

@@ -90,7 +90,12 @@ private:
 	int     m_shotInterval;     // エネミーを飛ばす間隔
 
 	float	hitRadius;		// あたり判定の半径.
-
+	int m_goodHandle;
+	int m_badHandle;
+	int m_perfectHandle;//判定の表示をする画像
+	int m_comboHandle;//コンボの表記
+	int m_mapchipHandle[10];
+	int m_tens_place;
 };
 
 #endif // _TARGET_H_

@@ -18,7 +18,8 @@ const int SCREEN_SIZE_H = 1080;
 const int FADE_IN_SPEED = 3;
 //	フェードアウトの速度
 const int FADE_OUT_SPEED = 3;
-const int m_liveY = 0;
+const int m_liveX = 45;
+const int m_liveY = 38;//ライブ表記の座標
 GameSceneCompe::GameSceneCompe()
 	: m_player(nullptr)
 	, m_camera(nullptr)
@@ -137,7 +138,7 @@ void GameSceneCompe::Draw()
 	//npc
 	m_npc->Draw();
 	//LIVEの文字を表示
-	DrawExtendFormatString(50, m_liveY, 4.0, 4.0, GetColor(255, 0, 0), "LIVE");
+	DrawExtendFormatString(m_liveX, m_liveY, 4.0, 4.0, GetColor(255, 0, 0), "LIVE");
 	DrawExtendFormatString(1920-100, 1080-100, 4.0, 4.0, GetColor(0, 0, 0), "%d秒", m_timeplayer);
 	if (m_countrydrawFlag == true)
 	{

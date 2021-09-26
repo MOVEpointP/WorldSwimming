@@ -4,10 +4,14 @@ class Combo
 {
 private:
 	static int m_combo;
+	static int m_tenCombo;
 
 public:
 	Combo();														//コンストラクタ
-	static void SetCombo(int _setCombo) { m_combo += _setCombo; }	//ゲームシーンからスコアをもらう
+	~Combo();														//デストラクタ
+	static void AddCombo(int _setCombo) { m_combo += _setCombo; }	//ゲームシーンからスコアをもらう
 	static int GetCombo() { return m_combo; }						//スコアをリザルトに渡す
 
+	static void AddTenCombo(int _setTenCombo) { m_tenCombo += _setTenCombo; }
+	static int GetTenCombo() { return m_tenCombo; }
 };

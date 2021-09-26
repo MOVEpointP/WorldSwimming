@@ -240,11 +240,8 @@ void Player::Draw()
 	if (!m_moveFlag)
 	{
 		//残り往復数の表記
-		DrawExtendFormatString(20 - GetFontSize(), 10, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);		
+		DrawExtendFormatString(1920 / 2 + 450 - GetFontSize(), 780, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);
 	}
-
-
-
 }
 
 //-----------------------------------------------------------------------------
