@@ -41,6 +41,7 @@ private:
 	bool m_fadeOutFlag;					//	フェードアウト開始用のフラグ
 	bool m_fadeOutFinishFlag;			//	フェードアウトの終了判定フラグ
 	int m_time;
+	int m_mapChip[10];
 
 	enum rank
 	{

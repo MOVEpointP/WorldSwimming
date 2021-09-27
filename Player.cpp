@@ -83,6 +83,8 @@ Player::Player()
 	dir = VGet(0, 0, 1);
 	// キーを押されていない状態にする
 	KeyPush = false;
+
+	playerDir = VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f);
 }
 
 //-----------------------------------------------------------------------------
@@ -128,6 +130,8 @@ void Player::Update(float _deltaTime)
 			if (VSize(pos) > VSize(VGet(0, 0, 320.0f)))
 			{
 				dir = VGet(0, 0, -1);
+				playerDir = VGet(0.0f, 0.0f, 0.0f);
+
 			}
 			else if (VSize(pos) < VSize(VGet(0, 0, 50.0f)))
 			{
@@ -221,6 +225,20 @@ void Player::Update(float _deltaTime)
 	// 再生時間をセットする
 	MV1SetAttachAnimTime(m_modelHandle[m_playerState], AttachIndex, PlayTime);
 
+	// 向きに合わせて回転.
+	//MV1SetRotationZYAxis(m_modelHandle[m_playerState], VGet(-0.5f, 0.5f, 0.0f), VGet(0.5f, 0.5f, 0.0f), 0.0f);
+
+	// ３ＤモデルのY軸の回転値を９０度にセットする
+	//MV1SetRotationXYZ(m_modelHandle[m_playerState], VGet(90.0f * DX_PI_F / 180.0f, 90.0f * DX_PI_F / 180.0f, 90.0f * DX_PI_F / 180.0f));
+
+
+	// モデルに向いてほしい方向に回転.
+	//MATRIX tmpMat = MV1GetMatrix(m_modelHandle[m_playerState]);
+	//MATRIX rotYMat = MGetRotY(180.0f * (float)(DX_PI / 180.0f));
+	//tmpMat = MMult(tmpMat, rotYMat);
+	//MV1SetRotationMatrix(m_modelHandle[m_playerState], tmpMat);
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -232,19 +250,12 @@ void Player::Draw()
 	// 3Dモデルのスケールを拡大
 	MV1SetScale(m_modelHandle[m_playerState], VGet(5.0f, 5.0f, 5.0f));
 	// ３ＤモデルのX軸の回転値を180度にセットする
-	MV1SetRotationXYZ(m_modelHandle[m_playerState], VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f));
+	MV1SetRotationXYZ(m_modelHandle[m_playerState], playerDir);
 	// ３Ｄモデルの描画
 	MV1DrawModel(m_modelHandle[m_playerState]);
+
+
 	
-	if (!m_moveFlag)
-	{
-		DrawGraph(0, 0, m_RoundTrip, TRUE);
-		DrawGraph(1920 / 2 + 850, 775 , m_mapchipHandle[m_trainingMaxCount - m_modeCount], TRUE);
-
-
-		//残り往復数の表記
-		//DrawExtendFormatString(1920 / 2 + 450 - GetFontSize(), 780, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);
-	}
 }
 
 //-----------------------------------------------------------------------------

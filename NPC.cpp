@@ -34,6 +34,7 @@ NPC::NPC()
 		TotalTime[SWIM] = MV1GetAttachAnimTotalTime(m_modelHandle[i][1], AttachIndex);
 		dir[i] = VGet(0, 0, 1);
 		m_gorlflag[i] = false;
+		NPCDir[i] = VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f);
 	}
 	m_rankcount = 0;
 	//再生時間の初期化
@@ -57,6 +58,8 @@ NPC::NPC()
 
 	// キーを押されていない状態にする
 	KeyPush = false;
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -105,6 +108,7 @@ void NPC::Update(float _deltaTime)
 				if (VSize(pos[i]) > VSize(VGet(0, 0, 320.0f)))
 				{
 					dir[i] = VGet(0, 0, -1);
+					NPCDir[i] = VGet(0.0f, 0.0f, 0.0f);
 				}
 			}
 			//　プール右端についたらゴールをしたフラグを返す　NPC一体目
@@ -200,7 +204,7 @@ void NPC::Draw()
 		// 3Dモデルのスケールを拡大
 		MV1SetScale(m_modelHandle[i][m_NPCState], VGet(5.0f, 5.0f, 5.0f));
 		// ３ＤモデルのX軸の回転値を180度にセットする
-		MV1SetRotationXYZ(m_modelHandle[i][m_NPCState], VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f));
+		MV1SetRotationXYZ(m_modelHandle[i][m_NPCState], NPCDir[i]);
 		// ３Ｄモデルの描画
 		MV1DrawModel(m_modelHandle[i][m_NPCState]);
 	}

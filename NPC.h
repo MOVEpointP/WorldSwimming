@@ -33,6 +33,7 @@ private:
 	VECTOR	pos[3];							// ポジション.
 	VECTOR	velocity[3];					// 移動力.
 	VECTOR	dir[3];							// 回転方向.
+	VECTOR  NPCDir[3];
 	float TotalTime[3], PlayTime;			//モーションの再生時間
 	int AttachIndex;						//モーションの
 	class Player* m_player;					//プレイヤークラスへのポインタメンバ変数

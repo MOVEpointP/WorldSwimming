@@ -79,6 +79,7 @@ private:
 	VECTOR	pos;			// ポジション.
 	VECTOR	velocity;		// 移動力.
 	VECTOR	dir;			// 回転方向.
+	VECTOR  playerDir;
 	float	hitRadius;		// あたり判定の半径.
 	float TotalTime[3], PlayTime;//モーションの再生時間
 	int AttachIndex;//モーションの

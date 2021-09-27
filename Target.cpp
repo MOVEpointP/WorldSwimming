@@ -155,7 +155,7 @@ void Target::Draw()
 		DrawGraph(1920 / 2 + 580, 400, m_mapchipHandle[Score::GetScore()], TRUE);
 		DrawGraph(1920 / 2 + 520, 400, m_mapchipHandle[Score::GetTenScore()/10], TRUE);
 
-		DrawExtendFormatString(1920 / 2 + 850 - GetFontSize(), 730, 2.0, 2.0, GetColor(255, 255, 255), "%d", Score::GetScore());									//　判定結果表記
+		//DrawExtendFormatString(1920 / 2 + 850 - GetFontSize(), 730, 2.0, 2.0, GetColor(255, 255, 255), "%d", Score::GetScore());									//　判定結果表記
 																																		  
 		//DrawExtendFormatString(100, 600, 4.0, 5.0, GetColor(0, 100, 0), "Shiftで発射！", Score::GetScore());							//　判定結果表記
 

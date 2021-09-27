@@ -44,18 +44,6 @@ ResultHalf::ResultHalf()
 	transParent = defaultTrans;
 	// 毎透過量変数を１に設定
 	permeationAmount = 1;
-	//モデル読み込み
-	modelHandle = MV1LoadModel("data/model/player/result.mv1");
-	//３Ｄモデルの０番目のアニメーションをアタッチする
-	AttachIndex = MV1AttachAnim(modelHandle, 0, -1, FALSE);
-	//アタッチしたアニメーションの総再生時間を取得する
-	TotalTime = MV1GetAttachAnimTotalTime(modelHandle, AttachIndex);
-	//再生時間の初期化
-	PlayTime = 0.0f;
-	// posはVector型なので、VGetで原点にセット
-	pos = VGet(30, 30, 0);
-	// ３Dモデルのポジション設定
-	MV1SetPosition(modelHandle, pos);
 	// 
 	dir = VGet(160, 0, 1);
 	m_score= Score::GetScore();//スコアの値を入れる
@@ -118,13 +106,6 @@ SceneBase* ResultHalf::Update(float _deltaTime)
 		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL);		//	音が再生し終わるまで待機
 		return new GameSceneCompe;
 	}
-	PlayTime += 0.5f;
-	if (PlayTime >= TotalTime)
-	{
-		PlayTime = 0.0f;
-	}
-	// 再生時間をセットする
-	MV1SetAttachAnimTime(modelHandle, AttachIndex, PlayTime);
 	return this;
 }
 
@@ -133,15 +114,15 @@ void ResultHalf::Draw()
 	if (!m_fadeInFinishFlag)
 	{
 		// フェードイン処理
-		//for (int i = 0; i < 255; i += FADE_IN_SPEED)
-		//{
-		//	// 描画輝度をセット
-		//	SetDrawBright(i, i, i);
-		//	DrawGraph(0, 0, m_logoGraphHandle, TRUE);
-		//	DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//
-		//	ScreenFlip();
-		//}
-		//m_fadeInFinishFlag = true;
+		for (int i = 0; i < 255; i += FADE_IN_SPEED)
+		{
+			// 描画輝度をセット
+			SetDrawBright(i, i, i);
+			DrawGraph(0, 0, m_logoGraphHandle, TRUE);
+			DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//
+			ScreenFlip();
+		}
+		m_fadeInFinishFlag = true;
 	}
 	DrawGraph(LOGO_X, LOGO_Y, m_logoGraphHandle, TRUE);					//	リザルト画面のロゴを表示
 	DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//ドア表記
@@ -160,7 +141,7 @@ void ResultHalf::Draw()
 		DrawGraph(0, 0, m_evaluationGraphHandle[m_evaluation], TRUE);				//	リザルト画面のロゴを表示
 	}
 	// フェードアウト処理
-	if (m_fadeOutFlag)
+	if (m_fadeInFinishFlag = true)
 	{
 		for (int i = 0; i < 255; i += FADE_OUT_SPEED)
 		{
@@ -173,12 +154,6 @@ void ResultHalf::Draw()
 		}
 		m_fadeOutFinishFlag = true;
 	}
-	// 3Dモデルのスケールを拡大
-	MV1SetScale(modelHandle, VGet(20.0f, 20.0f, 20.0f));
-	// ３ＤモデルのX軸の回転値を９０度にセットする
-	MV1SetRotationXYZ(modelHandle, VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f));
-	// ３Ｄモデルの描画
-	//MV1DrawModel(modelHandle);
 
 }
 

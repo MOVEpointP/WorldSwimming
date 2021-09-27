@@ -139,7 +139,16 @@ void GameSceneCompe::Draw()
 	m_npc->Draw();
 	//LIVE‚Ì•¶š‚ğ•\¦
 	DrawExtendFormatString(m_liveX, m_liveY, 4.0, 4.0, GetColor(255, 0, 0), "LIVE");
-	DrawExtendFormatString(1920-100, 1080-100, 4.0, 4.0, GetColor(0, 0, 0), "%d•b", m_timeplayer);
+	if (m_player->GetPlayerState() == SWIM)
+	{
+		DrawExtendFormatString(1920 - 100, 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "%d•b", m_timeplayer);
+	}
+	if (m_player->GetPlayerState() == DIVE)
+	{
+		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACE‚Å”ò‚Ñ‚±‚Ş");
+	}
+
+
 	if (m_countrydrawFlag == true)
 	{
 		//‘‚Ì‰æ‘œ‚ğ•\¦

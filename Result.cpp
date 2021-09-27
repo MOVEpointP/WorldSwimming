@@ -110,15 +110,6 @@ void Result::Draw()
 	DrawGraph(0, 0, m_guidanceGraphHandle, TRUE);		//	PUSH ENTER
 	// 透過を元に戻す
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-
-
-	if (m_checkResultFlag >= 3)
-	{
-		//ランク表示
-		DrawExtendGraph(900-300+50-20+80,400-300+50, 1300+150+50-10-100+80, 600+150-100+50, m_evaluationGraphHandle[m_evaluation], TRUE);
-		//ランク表示+画像サイズ縮小 引数の説明（x1,y1(グラフィックを描画する矩形の左上頂点の座標),x2,y2(グラフィックを描画する矩形の右下頂点＋１の座標))
-	}
 	// フェードアウト処理
 	if (m_fadeOutFlag)
 	{
@@ -134,12 +125,13 @@ void Result::Draw()
 		}
 		m_fadeOutFinishFlag = true;
 	}
-	//スコア表示
-	DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 4+90, 4.0, 4.0, GetColor(0, 0, 0), "%d", Score::GetScore());
+	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 , m_mapChip[m_time-(m_time/10)*10], TRUE);
+	DrawGraph(SCREEN_SIZE_W / 2 + 200, SCREEN_SIZE_H / 3, m_mapChip[m_time/10], TRUE);
 	//タイム表示
-	DrawExtendFormatString(SCREEN_SIZE_W / 2+300 - GetFontSize(), SCREEN_SIZE_H / 3+280, 4.0, 4.0, GetColor(0, 0, 0), "%d秒", m_time);
+	//DrawExtendFormatString(SCREEN_SIZE_W / 2+300 - GetFontSize(), SCREEN_SIZE_H / 3+280, 4.0, 4.0, GetColor(0, 0, 0), "%d秒", m_time);
+	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 + 265, m_mapChip[m_playerRanking], TRUE);
 	//プレイヤーの順位表示
-	DrawExtendFormatString(SCREEN_SIZE_W / 2+450 - GetFontSize(), SCREEN_SIZE_H / 3+430, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_playerRanking);
+	//DrawExtendFormatString(SCREEN_SIZE_W / 2+450 - GetFontSize(), SCREEN_SIZE_H / 3+430, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_playerRanking);
 }
 
 void Result::Sound()
@@ -194,6 +186,7 @@ void Result::Load()
 	m_backgroundGraphHandle = LoadGraph("data/img/result_02_png/swimResult/FinalResults.png");				//	グラフィックハンドルにリザルト画面の背景イメージをセット
 	m_bgmSoundHandle = LoadSoundMem("data/sound/Result/SwimFinalResultsBGM.mp3");			//	サウンドハンドルにリザルト画面のBGMをセット
 	m_guidanceGraphHandle = LoadGraph("data/img/result_02_png/swimResult/EnterToTitle.png");;			//	ロゴのグラフィックハンドル
+	LoadDivGraph("data/img/result_02_png/swimResult/mapchip.png", 10, 10, 1, 150, 150, m_mapChip);
 
 }
  //点滅エフェクトに用いる透過量の更新処理

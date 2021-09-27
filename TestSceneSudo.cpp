@@ -136,6 +136,11 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 
 		m_camera->Update(*m_player);
 
+		if (CheckHitKey(KEY_INPUT_RETURN))
+		{
+			return new ResultHalf();        //    リザルトシーンに切り替える
+
+		}
 
 
 		//　練習量分往復が完了したら
