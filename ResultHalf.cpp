@@ -133,15 +133,15 @@ void ResultHalf::Draw()
 	if (!m_fadeInFinishFlag)
 	{
 		// フェードイン処理
-		for (int i = 0; i < 255; i += FADE_IN_SPEED)
-		{
-			// 描画輝度をセット
-			SetDrawBright(i, i, i);
-			DrawGraph(0, 0, m_logoGraphHandle, TRUE);
-			DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//
-			ScreenFlip();
-		}
-		m_fadeInFinishFlag = true;
+		//for (int i = 0; i < 255; i += FADE_IN_SPEED)
+		//{
+		//	// 描画輝度をセット
+		//	SetDrawBright(i, i, i);
+		//	DrawGraph(0, 0, m_logoGraphHandle, TRUE);
+		//	DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//
+		//	ScreenFlip();
+		//}
+		//m_fadeInFinishFlag = true;
 	}
 	DrawGraph(LOGO_X, LOGO_Y, m_logoGraphHandle, TRUE);					//	リザルト画面のロゴを表示
 	DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//ドア表記
@@ -231,7 +231,7 @@ void ResultHalf::Load()
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_S.png");			//	@@@@グラフィックハンドルにリザルト画面のイメージをセット
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/SwimScoreSE_S.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
-	m_backgroundGraphHandle = LoadGraph("data/img/result_02_png/swimResult/FinalResults.png");				//	グラフィックハンドルにリザルト画面の背景イメージをセット
+	m_backgroundGraphHandle = LoadGraph("data/img/result_02_png/swimResult/Result _01_backGround.png");				//	グラフィックハンドルにリザルト画面の背景イメージをセット
 	m_bgmSoundHandle = LoadSoundMem("data/sound/Result/SwimFinalResultsBGM.mp3");			//	サウンドハンドルにリザルト画面のBGMをセット
 	m_guidanceGraphHandle = LoadGraph("data/img/result_02_png/swimResult/EnterToTitle.png");;			//	ロゴのグラフィックハンドル
 

@@ -43,9 +43,9 @@ Player::Player()
 	, m_moveCount(0)
 	, GoalFlag(false)
 	, ResultSceneFlag(false)
+	,m_RoundTrip(-1)
 
 {	
-	
 	// サウンドの読み込み
 	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
 
@@ -53,6 +53,9 @@ Player::Player()
 	m_modelHandle[1] = MV1LoadModel("data/model/player/Swimming01.mv1");
 	m_modelHandle[2] = MV1LoadModel("data/model/player/taisou.mv1");
 	m_modelHandle[3] = MV1LoadModel("data/model/player/result.mv1");
+
+	m_RoundTrip = LoadGraph("data/img/gameScene/oufuku.png");
+	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapchipHandle);
 
 
 	//３Ｄモデルの０番目のアニメーションをアタッチし、
@@ -153,7 +156,7 @@ void Player::Update(float _deltaTime)
 			}
 			else if (m_moveFlag == false)//練習だったら
 			{
-				if (m_modeCount == 2)
+				if (m_modeCount == 1)
 				{
 					ResultSceneFlag = true;
 				}
@@ -213,11 +216,7 @@ void Player::Update(float _deltaTime)
 
 		}
 
-
 	}
-
-
-
 
 	// 再生時間をセットする
 	MV1SetAttachAnimTime(m_modelHandle[m_playerState], AttachIndex, PlayTime);
@@ -239,8 +238,12 @@ void Player::Draw()
 	
 	if (!m_moveFlag)
 	{
+		DrawGraph(0, 0, m_RoundTrip, TRUE);
+		DrawGraph(1920 / 2 + 850, 775 , m_mapchipHandle[m_trainingMaxCount - m_modeCount], TRUE);
+
+
 		//残り往復数の表記
-		DrawExtendFormatString(1920 / 2 + 450 - GetFontSize(), 780, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);
+		//DrawExtendFormatString(1920 / 2 + 450 - GetFontSize(), 780, 4.0, 4.0, GetColor(0, 0, 0), "残りの往復数：%d", m_trainingMaxCount - m_modeCount);
 	}
 }
 

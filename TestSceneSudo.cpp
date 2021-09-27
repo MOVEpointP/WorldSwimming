@@ -13,7 +13,7 @@
 #include "DxLib.h"
 #include "Effect.h"
 
-static int enemyNum = 25;					//	エネミーの数
+static int enemyNum = 22;					//	エネミーの数
 static int COUNTDOWN = 7;					
 
 // ターゲットが飛んでくる間隔 (秒単位)
@@ -195,7 +195,6 @@ void TestSceneSudo::Draw()
 		}
 	}
 
-
 	// フェードアウト処理
 	if (m_fadeOutFlag)
 	{
@@ -206,10 +205,9 @@ void TestSceneSudo::Draw()
 
 void TestSceneSudo::Sound()
 {
-
 	//練習BGMの再生
-		PlaySoundMem(m_soundHandle, DX_PLAYTYPE_LOOP, FALSE);
-		ChangeVolumeSoundMem(m_volumePal+50, m_soundHandle);
+	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_LOOP, FALSE);
+	ChangeVolumeSoundMem(m_volumePal+50, m_soundHandle);
 	
 }
 
