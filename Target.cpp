@@ -9,7 +9,7 @@ const int Target::m_target_X      =		400;		// ターゲットの初期x座標
 const int Target::m_target_Y      =		 10;		// ターゲットの初期y座標
 const int Target::m_target_Z      =		  0;		// ターゲットの初期z座標
 								  
-const int Target::m_score_good    =	      2;		// スコアが変わらない
+const int Target::m_score_good    =	      1;		// スコアが変わらない
 const int Target::m_score_bad     =		 -5;		// スコアが下がる
 const int Target::m_score_perfect =	      5;		// スコアが上がる
 								  
@@ -38,6 +38,9 @@ Target::Target()
 	, m_badHandle(-1)
 	, m_perfectHandle(-1)
 	,m_tens_place(0)
+	, m_scoreHandle(0)
+	, m_onePlaceScore(0)
+	, m_tensPlaceScore(0)
 {
 	// 画像の読み込み
 	m_legImgHandle=LoadGraph("data/img/target/legs.png");
@@ -47,7 +50,7 @@ Target::Target()
 	m_perfectHandle = LoadGraph("data/img/gameScene/perfect.png");
 	m_comboHandle = LoadGraph("data/img/gameScene/combo.png");
 	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapchipHandle);
-
+	m_scoreHandle= LoadGraph("data/img/gameScene/score.png");
 	//m_mapchipHandle[0]= LoadGraph("data/img/gameScene/suuji.png");
 	m_target_accel = 0.1f;
 
@@ -102,6 +105,8 @@ void Target::Update(float _deltaTime)
 
 	// モデルに向いてほしい方向に回転.
 	MATRIX rotYMat = MGetRotY(180.0f * (float)(DX_PI / 180.0f));
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -146,6 +151,10 @@ void Target::Draw()
 		//DrawExtendFormatString(1920 / 2+840 - GetFontSize(), 500, 6.0, 10.0, GetColor(255, 255, 255), "%d", Combo::GetCombo());	//　判定結果表記
 		DrawGraph(0, -20, m_comboHandle, TRUE);
 
+		DrawGraph(0, 0, m_scoreHandle, TRUE);
+		DrawGraph(1920 / 2 + 580, 400, m_mapchipHandle[Score::GetScore()], TRUE);
+		DrawGraph(1920 / 2 + 520, 400, m_mapchipHandle[Score::GetTenScore()/10], TRUE);
+
 		DrawExtendFormatString(1920 / 2 + 850 - GetFontSize(), 730, 2.0, 2.0, GetColor(255, 255, 255), "%d", Score::GetScore());									//　判定結果表記
 																																		  
 		//DrawExtendFormatString(100, 600, 4.0, 5.0, GetColor(0, 100, 0), "Shiftで発射！", Score::GetScore());							//　判定結果表記
@@ -167,6 +176,7 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 	}
 	else
 	{
+
 		//ショットのときに
 		if (m_targetState == NOW_SHOT && pos.x >= 1100)//アイコンが近くにあるかどうか探索
 		{
@@ -177,6 +187,7 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 				{
 
 					m_targetScore += m_score_good;					// スコア変化なし
+					m_tensPlaceScore += m_score_good;
 					m_targerJadgeWord = 2;
 					pos = VGet(-2000, -1000, 200);					// 座標を移動して表示しなくする
 					m_combo = 1;									// コンボ数加算
@@ -187,6 +198,8 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 				{
 
 					m_targetScore += m_score_perfect;                // スコアup
+					m_tensPlaceScore += m_score_perfect;
+
 					m_targerJadgeWord = 3;
 					pos = VGet(-2000, -1000, 200);                   // 座標を移動して表示しなくする
 					m_combo = 1;                                     // コンボ数加算
@@ -196,17 +209,27 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 				else												 // bad（それ以外なら）
 				{
 					m_targetScore += m_score_bad;					 // スコアdown
+					m_tensPlaceScore += m_score_bad;
+
 					m_targerJadgeWord = 1;
 					pos = VGet(-2000, -1000, 200);					 // 座標を移動して表示しなくする
 					m_combo = -Combo::GetCombo();									 // コンボ数リセット
 					m_tens_place = -Combo::GetTenCombo();
 					m_targetState = END_SHOT;
 				}
+
+				if (Score::GetScore() >= 9)
+				{
+					m_targetScore = -Score::GetScore();			 // スコア数リセット
+				}
+
 			}
 			else if (pos.x > m_final_good)
 			{
 
 				m_targetScore += m_score_bad;	// スコアdown
+				m_tensPlaceScore += m_score_bad;
+
 				m_targerJadgeWord = 1;
 				pos = VGet(-2000, -1000, 200);	// 座標を移動して表示しなくする
 				m_combo = -Combo::GetCombo();					// コンボ数リセット
@@ -221,11 +244,22 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 				m_tens_place = 1;
 			}
 
+
 			Score::AddScore(m_targetScore);		//スコアの値を加算する
+			Score::AddTenScore(m_tensPlaceScore);
 			Combo::AddCombo(m_combo);			//コンボの値を加算する
 			Combo::AddTenCombo(m_tens_place);	//コンボの十の位の値を加算する
+			m_onePlaceScore = Score::GetScore();
 			m_combo = 0;						//コンボの値をリセット
 			m_tens_place = 0;					//コンボの十の位リセット
+			//m_tensPlaceScore = 0;
+			m_targetScore = 0;
+		}
+
+		//スコアが0より下に行かないようにする
+		if (Score::GetScore() <= 0)
+		{
+			m_targetScore = -Score::GetScore();
 		}
 	}
 }

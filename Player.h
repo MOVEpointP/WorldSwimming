@@ -85,7 +85,8 @@ private:
 	int m_speedDisplay;		//倍速表示の矢印を動かす
 	bool m_moveAnimFlag;//モーションを一時停止するフラグ
 	int m_moveCount;
-
+	int m_RoundTrip;//往復数の画像
+	int m_mapchipHandle[10];//マップチップの画像
 	//　プレイヤーのランキングの順位を保存する変数
 	int PlayerRank;
 
