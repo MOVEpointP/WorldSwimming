@@ -10,8 +10,8 @@ const int Target::m_target_Y      =		 10;		// ターゲットの初期y座標
 const int Target::m_target_Z      =		  0;		// ターゲットの初期z座標
 								  
 const int Target::m_score_good    =	      1;		// スコアが変わらない
-const int Target::m_score_bad     =		 -5;		// スコアが下がる
-const int Target::m_score_perfect =	      5;		// スコアが上がる
+const int Target::m_score_bad     =		 -3;		// スコアが下がる
+const int Target::m_score_perfect =	      3;		// スコアが上がる
 								  
 const int Target::m_before_good   =    1200;		// グッド判定（前）
 const int Target::m_perfect       =	   1325;      	// パーフェクト判定
@@ -220,7 +220,7 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 
 				if (Score::GetScore() >= 9)
 				{
-					m_targetScore = -Score::GetScore();			 // スコア数リセット
+					m_targetScore = -Score::GetScore();			 // 一の位用にスコア数リセット
 				}
 
 			}
@@ -252,7 +252,6 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 			m_onePlaceScore = Score::GetScore();
 			m_combo = 0;						//コンボの値をリセット
 			m_tens_place = 0;					//コンボの十の位リセット
-			//m_tensPlaceScore = 0;
 			m_targetScore = 0;
 		}
 

@@ -130,18 +130,20 @@ SceneBase* ResultHalf::Update(float _deltaTime)
 
 void ResultHalf::Draw()
 {
+	DrawGraph(0, 0, m_backgroundGraphHandle, FALSE);
+
 	if (!m_fadeInFinishFlag)
 	{
-		// フェードイン処理
-		//for (int i = 0; i < 255; i += FADE_IN_SPEED)
-		//{
-		//	// 描画輝度をセット
-		//	SetDrawBright(i, i, i);
-		//	DrawGraph(0, 0, m_logoGraphHandle, TRUE);
-		//	DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//
-		//	ScreenFlip();
-		//}
-		//m_fadeInFinishFlag = true;
+		 //フェードイン処理
+		for (int i = 0; i < 255; i += FADE_IN_SPEED)
+		{
+			// 描画輝度をセット
+			SetDrawBright(i, i, i);
+			DrawGraph(0, 0, m_logoGraphHandle, TRUE);
+			DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//
+			ScreenFlip();
+		}
+		m_fadeInFinishFlag = true;
 	}
 	DrawGraph(LOGO_X, LOGO_Y, m_logoGraphHandle, TRUE);					//	リザルト画面のロゴを表示
 	DrawGraph(0, 0, m_exitdoorGraphHandle, TRUE);//ドア表記
