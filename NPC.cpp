@@ -49,6 +49,12 @@ NPC::NPC()
 	velocity[0] = VGet(0, 0, 0);
 	velocity[1] = VGet(0, 0, 0);
 	velocity[2] = VGet(0, 0, 0);
+
+	// NPCの加速変化用変数初期化
+	m_npcGoalAccel[0] = 0.1f ;
+	m_npcGoalAccel[1] = 0.05f ;
+	m_npcGoalAccel[2] = 0.00f ;
+
 	// キーを押されていない状態にする
 	KeyPush = false;
 }
@@ -88,6 +94,11 @@ void NPC::Update(float _deltaTime)
 	{
 		if (m_NPCState == SWIM)
 		{
+			//NPCのスピードに変化をつける
+			m_npcGoalAccel[0] += 0.002f;
+			m_npcGoalAccel[1] += 0.006f;
+			m_npcGoalAccel[2] += 0.01f;
+
 			for (int i = 0; i <= NPC_NUMBER; i++)
 			{
 				// z座標が320を超えたら所定の位置に戻る
@@ -127,7 +138,7 @@ void NPC::Update(float _deltaTime)
 			{
 				if (m_gorlflag[i] == false)
 				{
-					accelVec[i] = VScale(dir[i], ACCEL + (i + 2));
+					accelVec[i] = VScale(dir[i], ACCEL + (i + 2)+ m_npcGoalAccel[i]);
 
 				}
 			}

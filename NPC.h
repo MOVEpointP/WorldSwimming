@@ -40,6 +40,7 @@ private:
 	static const float ACCEL;
 	bool m_gorlflag[3];
 	int m_rankcount;
+	float m_npcGoalAccel[3];					// NPCのスピード調整
 };
 
 #endif //_NPC_H_
