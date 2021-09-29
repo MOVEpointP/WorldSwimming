@@ -3,7 +3,6 @@
 #include "ResultHalf.h"
 #include "Target.h"
 #include "Player.h"
-#include "ObstructManager.h"
 #include "Hitchecker.h"
 #include "UI.h"
 #include "Camera.h"
@@ -93,7 +92,7 @@ SceneBase* GameSceneEasy::Update(float _deltaTime)
 	// デバッグビルドのみデバッグ関数を呼び出す
 #ifdef _DEBUG
 
-	DebugKey();
+	//DebugKey();
 
 #endif
 

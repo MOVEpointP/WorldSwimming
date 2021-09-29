@@ -3,7 +3,6 @@
 // 2016 Takeru Yui All Rights Reserved.
 //-----------------------------------------------------------------------------
 #include "Player.h"
-#include "ObstructBase.h"
 #include "Effect.h"
 #include "NPC.h"
 #include "Score.h"

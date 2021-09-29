@@ -10,7 +10,7 @@ Fade::Fade()
 }
 
 //フェードイン関数。フェードインしたい画像があればハンドルを入れる。なければfalseを入れる
-void Fade::FadeIn(int _fadeOutFinishFlag,int _graphHandle)
+void Fade::FadeIn(int _graphHandle)
 {
 	for (int i = 0; i < 255; i += FADE_SPEED)
 	{
@@ -18,14 +18,14 @@ void Fade::FadeIn(int _fadeOutFinishFlag,int _graphHandle)
 		SetDrawBright(i, i, i);
 
 		DrawGraph(0, 0, _graphHandle, TRUE);
-
+		
 		// グラフィックを描画
 		ScreenFlip();
 	}
 }
 
 //フェードアウト関数。フェードアウトしたい画像があればハンドルを入れる。なければfalseを入れる
-void Fade::FadeOut(int _fadeOutFinishFlag, int _graphHandle)
+void Fade::FadeOut( int _graphHandle)
 {
 	for (int i = 0; i < 255; i += FADE_SPEED)
 	{
@@ -37,5 +37,4 @@ void Fade::FadeOut(int _fadeOutFinishFlag, int _graphHandle)
 		// グラフィックを描画
 		ScreenFlip();
 	}
-
 }

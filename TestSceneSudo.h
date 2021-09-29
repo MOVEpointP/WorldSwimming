@@ -22,7 +22,8 @@ public:
 	void Load()override;			//	初期化
 
 private:
-	class Player* m_player;			//	プレイヤークラスへのポインタメンバ変数
+	class Player* m_player;		
+	//	プレイヤークラスへのポインタメンバ変数
 	class Target* m_target[25];		//  ターゲットを格納する配列
 	class Camera* m_camera;			//	カメラクラスへのポインタメンバ変数
 	GAME_SCENE_STATE m_state;		//  ゲームシーンのステータスを入れる
@@ -41,5 +42,5 @@ private:
 
 	bool m_finishSoundFlag;			//	ゴール時のサウンド判定フラグ
 	int  m_finishFadeCount;			//	ゴール時のフェードアウト用フレームカウント
-	int  m_targetSpeed;				//	ターゲットの速度
+	int m_targetSpeed;
 };

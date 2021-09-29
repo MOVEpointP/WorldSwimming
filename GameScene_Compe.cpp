@@ -2,13 +2,14 @@
 #include "Result.h"
 #include "Target.h"
 #include "Player.h"
-#include "ObstructManager.h"
 #include "Hitchecker.h"
 #include "Camera.h"
 #include "NPC.h"
 #include "DxLib.h"
 #include "Effect.h"
 #include "Time.h"
+#include "Fade.h"
+
 
 //static int COUNTDOWN = 7;					//	カウントダウンの秒数（+2）
 //	スクリーンのサイズ
@@ -20,6 +21,8 @@ const int FADE_IN_SPEED = 3;
 const int FADE_OUT_SPEED = 3;
 const int m_liveX = 45;
 const int m_liveY = 38;//ライブ表記の座標
+const int m_countryTime = 2;//国の画像を表示する時間
+
 GameSceneCompe::GameSceneCompe()
 	: m_player(nullptr)
 	, m_camera(nullptr)
@@ -29,9 +32,13 @@ GameSceneCompe::GameSceneCompe()
 	, m_npc(nullptr)
 	, m_MaxGorl(false)
 	, m_playerRanking(0)
-	, m_countrydrawFlag(false)
+	, m_countryDrawFlag(false)
 	,m_timeplayer(0)
 	,m_timeFlag(false)
+	, m_countryTime(0)
+	, m_countryFadeFlag(false)
+	, m_countryTopX(0)
+	, m_countryUnderX(SCREEN_SIZE_W)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -48,6 +55,7 @@ GameSceneCompe::~GameSceneCompe()
 	//	メモリの解放処理
 	DeleteSoundMem(m_soundHandle);
 	delete m_npc;
+	DeleteGraph(m_countryGraphHandle);
 }
 
 SceneBase* GameSceneCompe::Update(float _deltaTime)
@@ -57,22 +65,11 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 	DebugKey();
 #endif
 		m_player->SetScene(true);
-		//プレイヤーが泳ぎ始めたら国家の表示
-		if (m_player->GetPlayerState() == SWIM)
-		{
-			if (m_timeFlag == false)
-			{
-				// 開始時のタイムを取得
-				m_startTime = GetNowCount() / 1000;
-				m_timeFlag = true;
-			}
-			m_countrydrawFlag = true;
-		}
 		m_player->Update(_deltaTime);
 		m_camera->Update(*m_player);
 		m_npc->Update(_deltaTime);
-		//プレイヤーのランキング保存変数にNPCが何体ゴールしたかの数を入れる
-		//プレイヤーがゴールした時(フラグをgetterで取得しています)
+		// プレイヤーのランキング保存変数にNPCが何体ゴールしたかの数を入れる
+		// プレイヤーがゴールした時(フラグをgetterで取得しています)
 		static bool isProcess = false;
 		if (m_player->GetGoalFlag() && !isProcess)
 		{
@@ -82,11 +79,48 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 			isProcess = true;
 			m_timeFlag = false;
 		}
+
+		//プレイヤーが泳ぎ始めたら国家の表示
+		if (m_player->GetPlayerState() == SWIM)
+		{
+			if (m_timeFlag == false)
+			{
+				// 開始時のタイムを取得
+				m_startTime = GetNowCount() / 1000;
+				m_timeFlag = true;
+			}
+
+		}
+
 		if (m_timeFlag == true)
 		{
 			m_timeplayer = GetNowCount() / 1000- m_startTime;
 			Time::SetTime(m_timeplayer);			//タイムの値をセットする
 		}
+
+		// 国表示の判定
+		if (m_player->GetPlayerState() == SWIM)
+		{
+			if (m_timeplayer <= m_countryTime && m_player->GetPlayerState() == SWIM)
+			{
+				m_countryDrawFlag = true;
+				m_countryFadeFlag = true;
+			}
+			else if(m_timeplayer >= m_countryTime && m_player->GetPlayerState() == SWIM)
+			{
+				m_countryFadeFlag = false;
+
+			}
+
+			if (m_countryTopX < SCREEN_SIZE_W/2 && m_countryUnderX > SCREEN_SIZE_W / 2)
+			{
+
+			m_countryTopX += 30;
+			m_countryUnderX -= 30;
+
+			}
+		}
+
 		// シーン遷移
 		if (m_npc->GetRankCount() >= 4)
 		{
@@ -115,6 +149,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 	//}
 	return this;						//	ゲームシーンを表示し続ける
 }
+
 void GameSceneCompe::Draw()
 {
 	if (!m_fadeInFinishFlag)
@@ -148,12 +183,14 @@ void GameSceneCompe::Draw()
 		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
 	}
 
-
-	if (m_countrydrawFlag == true)
+	if (m_player->GetPlayerState() == SWIM)
 	{
-		//国の画像を表示
-		DrawGraph(0, 0, m_countryGraphHandle, TRUE);//
+			//国の画像を表示
+			DrawExtendGraph(m_countryTopX, 0, m_countryUnderX, SCREEN_SIZE_H, m_countryGraphHandle, TRUE);
+
 	}
+	
+
 	// フェードアウト処理
 	if (m_fadeOutFlag)
 	{
@@ -166,6 +203,7 @@ void GameSceneCompe::Draw()
 		}
 		m_fadeOutFinishFlag = true;
 	}
+
 }
 
 void GameSceneCompe::Sound()

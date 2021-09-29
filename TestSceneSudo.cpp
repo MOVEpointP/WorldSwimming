@@ -4,7 +4,6 @@
 #include "ResultHalf.h"
 #include "Target.h"
 #include "Player.h"
-#include "ObstructManager.h"
 #include "Hitchecker.h"
 #include "UI.h"
 #include "Camera.h"
@@ -203,7 +202,7 @@ void TestSceneSudo::Draw()
 	// フェードアウト処理
 	if (m_fadeOutFlag)
 	{
-		Fade::FadeOut(m_fadeOutFlag,false);
+		Fade::FadeOut(false);
 		m_fadeOutFinishFlag = true;
 	}
 }

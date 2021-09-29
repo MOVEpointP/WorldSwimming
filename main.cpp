@@ -6,12 +6,9 @@
 #include "Camera.h"
 #include "SceneMgr.h"
 #include "Title.h"
-#include "TestSceneUeyama.h"
-#include "TestSceneKoga.h"
 #include "TestSceneOno.h"
 #include "TestTitleSceneOno.h"
 #include "TestTitleSceneUeyama.h"
-#include "TestScene_fujihara.h"
 #include "EffekseerForDXLib.h"
 #include "TestSceneNakamura.h"
 #include "TestSceneSudo.h"
@@ -50,8 +47,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	SceneMgr* Scene = new SceneMgr;
 
 	//	タイトルシーンをセット
-	Scene->SetScene(new Title);
-	//Scene->SetScene(new GameSceneCompe);
+	//Scene->SetScene(new Title);
+	Scene->SetScene(new GameSceneCompe);
 	//Scene->SetScene(new TestSceneSudo);
 
 	// エスケープキーが押されるかウインドウが閉じられるまでループ

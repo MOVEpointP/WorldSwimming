@@ -6,9 +6,7 @@
 
 #include "HitChecker.h"
 #include "Player.h"
-#include "ObstructManager.h"
 #include "Target.h"
-#include "TestSceneKoga.h"
 
 //-----------------------------------------------------------------------------
 // @brief  ヒットチェック処理.
