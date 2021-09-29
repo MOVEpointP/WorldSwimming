@@ -42,4 +42,16 @@ private:
 	bool m_finishSoundFlag;			//	ゴール時のサウンド判定フラグ
 	int  m_finishFadeCount;			//	ゴール時のフェードアウト用フレームカウント
 	int  m_targetSpeed;				//	ターゲットの速度
+
+	int m_tensPlaceScore;
+	int m_onePlaceScore;
+	int m_scoreHandle;
+	int m_mapchipHandle[10];
+
+	int m_rankBHandle;
+	int m_rankAHandle;
+	int m_rankHandle;//スコアの効果音
+	int m_rankSoundFlag[3];
+	int m_rankSound;
+	
 };
