@@ -96,9 +96,6 @@ private:
 	int m_comboHandle;//コンボの表記
 	int m_mapchipHandle[10];
 	int m_tens_place;
-	int m_scoreHandle;
-	int m_onePlaceScore;
-	int m_tensPlaceScore;
 };
 
 #endif // _TARGET_H_

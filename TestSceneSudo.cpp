@@ -8,7 +8,7 @@
 #include "UI.h"
 #include "Camera.h"
 #include "Fade.h"
-
+#include "Score.h"
 #include "DxLib.h"
 #include "Effect.h"
 
@@ -45,6 +45,11 @@ TestSceneSudo::TestSceneSudo()
 	, m_finishSoundFlag(false)
 	, m_finishFadeCount(0)
 	, m_targetSpeed(0)
+	, m_scoreHandle(0)
+	, m_tensPlaceScore(0)
+	, m_onePlaceScore(0)
+	, m_rankBHandle(false)
+	,m_rankSound(0)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -55,13 +60,16 @@ TestSceneSudo::TestSceneSudo()
 	}
 	m_target[enemyNum] = nullptr;
 
+	for (int i = 0; i <= 2; i++)
+	{
+		m_rankSoundFlag[i] = false;
+	}
 
 	// 開始時のタイムを取得
 	m_startTime = GetNowCount() / 1000;
 	// ステートセット(カウントダウンから)
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
 
-	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");
 
 	srand(time(NULL));//乱数の種を初期化
 }
@@ -73,7 +81,9 @@ TestSceneSudo::~TestSceneSudo()
 
 	//	メモリの解放処理
 	DeleteSoundMem(m_soundHandle);
-
+	DeleteSoundMem(m_endSoundHandle);
+	
+	DeleteSoundMem(m_rankHandle);
 
 	for (int i = 0; i < enemyNum; i++)
 	{
@@ -129,6 +139,8 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 		// アイコンのx軸のポジションを取得
         m_target[m_targetCount]->SetSinglePosX();//ターゲットにｘ座標をセット
 
+		Score::calcScore(m_onePlaceScore, m_tensPlaceScore);
+
 		m_target[m_targetCount]->Reaction(m_target[m_targetCount], false);
 
 		m_player->Update(_deltaTime);
@@ -140,7 +152,6 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 			return new ResultHalf();        //    リザルトシーンに切り替える
 
 		}
-
 
 		//　練習量分往復が完了したら
 		if (m_player->ResultSceneFlag)
@@ -187,7 +198,6 @@ void TestSceneSudo::Draw()
 
 	if (m_finishSoundFlag)
 	{
-		PlaySoundMem(m_endSoundHandle, DX_PLAYTYPE_BACK);
 
 		DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 2, 4.0, 4.0, GetColor(0, 0, 0), "終了！");
 
@@ -198,6 +208,9 @@ void TestSceneSudo::Draw()
 			m_fadeOutFlag = true;
 		}
 	}
+	DrawGraph(1920 / 2 + 580, 400, m_mapchipHandle[m_onePlaceScore], TRUE);
+	DrawGraph(1920 / 2 + 500, 400, m_mapchipHandle[m_tensPlaceScore], TRUE);
+	DrawGraph(0, 0, m_scoreHandle, TRUE);
 
 	// フェードアウト処理
 	if (m_fadeOutFlag)
@@ -205,6 +218,13 @@ void TestSceneSudo::Draw()
 		Fade::FadeOut(false);
 		m_fadeOutFinishFlag = true;
 	}
+
+	if (m_player->GetPlayerState() == DIVE)
+	{
+		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
+	}
+
+
 }
 
 void TestSceneSudo::Sound()
@@ -212,7 +232,49 @@ void TestSceneSudo::Sound()
 	//練習BGMの再生
 	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_LOOP, FALSE);
 	ChangeVolumeSoundMem(m_volumePal+50, m_soundHandle);
-	
+
+	if (m_finishSoundFlag)
+	{
+		PlaySoundMem(m_endSoundHandle, DX_PLAYTYPE_NORMAL);
+	}
+
+	switch (Score::SetRank())
+	{
+	case 0:
+		break;
+	case 1:
+
+		if (CheckSoundMem(m_rankBHandle) == 0 && m_rankSoundFlag[Score::SetRank() - 1] == false)
+		{
+			PlaySoundMem(m_rankBHandle, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			m_rankSoundFlag[Score::SetRank() - 1] = true;
+		}
+		break;
+	case 2:
+		if (CheckSoundMem(m_rankAHandle) == 0 && m_rankSoundFlag[Score::SetRank() - 1] == false)
+		{
+			PlaySoundMem(m_rankAHandle, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			m_rankSoundFlag[Score::SetRank() - 1] = true;
+		}
+		break;
+	case 3:
+		if (CheckSoundMem(m_rankHandle) == 0 && m_rankSoundFlag[Score::SetRank() - 1] == false)
+		{
+			PlaySoundMem(m_rankHandle, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			m_rankSoundFlag[Score::SetRank() - 1] = true;
+		}
+		break;
+	}
+
 }
 
 void TestSceneSudo::Load()
@@ -220,6 +282,12 @@ void TestSceneSudo::Load()
 	//	グラフィックハンドルにセット
 	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");		//練習BGMハンドル
 	m_timingImgHandle = LoadGraph("data/img/gameScene/timing2.png");		//判定バーの画像ハンドル
+	m_scoreHandle = LoadGraph("data/img/gameScene/score.png");
+	m_rankBHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
+	m_rankAHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
+	m_rankHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
+
+	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapchipHandle);
 
 	//	モデルハンドルにセット
 	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
@@ -235,6 +303,8 @@ void TestSceneSudo::Load()
 		m_target[i]->SetAccel(targetSpeed);
 		
 	}
+	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");
+
 
 }
 
