@@ -42,5 +42,6 @@ private:
 	bool m_countryFadeFlag;				//国を表示する時間
 	int m_countryTopX;				//国の画像での、左上のｘ座標
 	int m_countryUnderX;				//国の画像での、右下のｘ座標
+	int m_timeFlame;				//タイム表示用のフレーム
 
 }; 

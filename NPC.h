@@ -7,10 +7,11 @@
 
 #include "DxLib.h"
 
-#define DIVE	0
+#define DIVE2	0
 #define SWIM	1
 #define TURN	2
 #define RESULT	3
+#define DIVE	4
 class NPC final
 {
 public:

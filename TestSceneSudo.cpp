@@ -1,5 +1,3 @@
-//ore
-
 #include "TestSceneSudo.h"
 #include "ResultHalf.h"
 #include "Target.h"

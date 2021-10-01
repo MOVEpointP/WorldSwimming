@@ -28,7 +28,7 @@ NPC::NPC()
 		//３Ｄモデルの０番目のアニメーションをアタッチし、
 		//アタッチしたアニメーションの総再生時間を取得する
 		AttachIndex = MV1AttachAnim(m_modelHandle[i][0], 0, -1, FALSE);
-		TotalTime[DIVE] = MV1GetAttachAnimTotalTime(m_modelHandle[i][0], AttachIndex);
+		TotalTime[DIVE2] = MV1GetAttachAnimTotalTime(m_modelHandle[i][0], AttachIndex);
 		AttachIndex = MV1AttachAnim(m_modelHandle[i][1], 0, -1, FALSE);
 		TotalTime[SWIM] = MV1GetAttachAnimTotalTime(m_modelHandle[i][1], AttachIndex);
 		dir[i] = VGet(0, 0, 1);
@@ -38,9 +38,9 @@ NPC::NPC()
 	m_rankcount = 0;
 	//再生時間の初期化
 	PlayTime = 0.0f;
-	pos[0] = VGet(23, 30, 20);
-	pos[1] = VGet(50, 30, 20);
-	pos[2] = VGet(80, 30, 20);
+	pos[0] = VGet(23/*0*/, 30, 20);
+	pos[1] = VGet(50/*23*/, 30, 20);
+	pos[2] = VGet(80/* -55*/, 30, 20);
 	// ３Dモデルのポジション設定
 	MV1SetPosition(m_modelHandle[0][m_NPCState], pos[0]);
 	MV1SetPosition(m_modelHandle[1][m_NPCState], pos[1]);
@@ -163,7 +163,7 @@ void NPC::Update(float _deltaTime)
 		// ポジションを更新.
 		pos[i] = VAdd(pos[i], velocity[i]);
 
-		if (KeyPush && m_NPCState == DIVE)
+		if (KeyPush && m_NPCState == DIVE2)
 		{
 			pos[i].y -= 0.1;
 		}
@@ -173,13 +173,19 @@ void NPC::Update(float _deltaTime)
 	//// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
 	if (PlayTime >= TotalTime[m_NPCState])
 	{
-		for (int i = 0; i < NPC_NUMBER; i++)
+		for (int i = 0; i <= NPC_NUMBER; i++)
 		{
-			if (m_NPCState == DIVE)
+			//NPCの位置がずれてる理由かもしれない
+			if (m_NPCState == DIVE2)
 			{
-				m_NPCState = SWIM;
 				pos[i].z = 50;
 				PlayTime = 0.0f;
+
+				if (i == NPC_NUMBER)
+				{
+					m_NPCState = SWIM;
+
+				}
 			}
 		}
 		if (m_NPCState == SWIM)

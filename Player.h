@@ -7,10 +7,11 @@
 
 #include "DxLib.h"
 
-#define DIVE	0
+#define DIVE2	0
 #define SWIM	1
 #define TURN	2
-#define RESULT	3
+#define RESULT 	3
+#define DIVE    4		//本番のダイブ2カメ
 
 class ObstructBase;
 class NPC;
@@ -90,6 +91,7 @@ private:
 	int m_mapchipHandle[10];//マップチップの画像
 	//　プレイヤーのランキングの順位を保存する変数
 	int PlayerRank;
+	int m_startTime;
 
 	// player用サウンド変数
 	static int m_sHandle;
