@@ -86,37 +86,26 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 			if (m_timeFlag == false)
 			{
 				// 開始時のタイムを取得
-				m_startTime = GetNowCount() / 1000;
+				m_startTime = GetNowCount() / 100;
 				m_timeFlag = true;
 			}
-
 		}
 
 		if (m_timeFlag == true)
 		{
-			m_timeplayer = GetNowCount() / 1000- m_startTime;
+			m_timeplayer = GetNowCount() / 100- m_startTime;
 			Time::SetTime(m_timeplayer);			//タイムの値をセットする
 		}
 
 		// 国表示の判定
 		if (m_player->GetPlayerState() == SWIM)
 		{
-			if (m_timeplayer <= m_countryTime && m_player->GetPlayerState() == SWIM)
-			{
-				m_countryDrawFlag = true;
-				m_countryFadeFlag = true;
-			}
-			else if(m_timeplayer >= m_countryTime && m_player->GetPlayerState() == SWIM)
-			{
-				m_countryFadeFlag = false;
-
-			}
 
 			if (m_countryTopX < SCREEN_SIZE_W/2 && m_countryUnderX > SCREEN_SIZE_W / 2)
 			{
 
-			m_countryTopX += 30;
-			m_countryUnderX -= 30;
+				m_countryTopX += 30;
+				m_countryUnderX -= 30;
 
 			}
 		}
@@ -176,16 +165,20 @@ void GameSceneCompe::Draw()
 	DrawExtendFormatString(m_liveX, m_liveY, 4.0, 4.0, GetColor(255, 0, 0), "LIVE");
 	if (m_player->GetPlayerState() == SWIM)
 	{
-		DrawExtendFormatString(1920 - 100, 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "%d秒", m_timeplayer);
+		DrawGraph(0, 0, m_timeFlame,TRUE);
+		DrawExtendFormatString(1920 -250, 1080 - 100, 4.0, 4.0, GetColor(255,255,255), "%d.%d", m_timeplayer/10, m_timeplayer%10);
 	}
-	if (m_player->GetPlayerState() == DIVE)
+	if (m_player->GetPlayerState() == DIVE2)
 	{
+		//国の画像表示
+		DrawGraph(0, 0, m_countryGraphHandle, TRUE);
+
 		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
 	}
 
 	if (m_player->GetPlayerState() == SWIM)
 	{
-			//国の画像を表示
+			//国の画像を縮小
 			DrawExtendGraph(m_countryTopX, 0, m_countryUnderX, SCREEN_SIZE_H, m_countryGraphHandle, TRUE);
 
 	}
@@ -220,6 +213,7 @@ void GameSceneCompe::Load()
 	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
 	//	サウンドハンドルにセット
 	m_soundHandle = LoadSoundMem("data/sound/Game/honban.mp3");
+	m_timeFlame= LoadGraph("data/img/compe/TimeFlame.png");
 
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成

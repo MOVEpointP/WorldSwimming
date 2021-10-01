@@ -62,9 +62,16 @@ void Camera::Update(const Player& player)
 	switch (player.GetPlayerState())
 	{
 
-	case DIVE:
+	case DIVE2:
 
-		SetCameraPositionAndTarget_UpVecY(VGet(0, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+		if (player.GetPos().z >= 225)
+		{
+			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, 275), /*player.GetPos()*/VGet(0, -10, 275));
+		}
+		else
+		{
+			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, player.GetPos().z + 50), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+		}
 
 		break;
 
@@ -80,6 +87,11 @@ void Camera::Update(const Player& player)
 		}
 		
 		break;
+
+	case DIVE:
+
+		SetCameraPositionAndTarget_UpVecY(VGet(0, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+
+		break;
 	}
 }
-

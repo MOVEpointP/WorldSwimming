@@ -29,12 +29,12 @@ const int VOLUME_PAL = 100;
 // @brief  コンストラクタ.
 //-----------------------------------------------------------------------------
 Player::Player()
-	:hitRadius(7.5f)
-	,m_diveModelHandle(-1)
-	,m_swimModelHandle(-1)
-	,m_resultModelHandle(-1)
-	,m_playerState(0)
-	,m_modeCount(0)
+	: hitRadius(7.5f)
+	, m_diveModelHandle(-1)
+	, m_swimModelHandle(-1)
+	, m_resultModelHandle(-1)
+	, m_playerState(0)
+	, m_modeCount(0)
 	, m_moveFlag(false)
 	, m_trainingMaxCount(2)
 	, m_speedDisplay(0)
@@ -42,8 +42,8 @@ Player::Player()
 	, m_moveCount(0)
 	, GoalFlag(false)
 	, ResultSceneFlag(false)
-	,m_RoundTrip(-1)
-
+	, m_RoundTrip(-1)
+	, m_startTime(0)
 {	
 	// サウンドの読み込み
 	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
@@ -60,13 +60,13 @@ Player::Player()
 	//３Ｄモデルの０番目のアニメーションをアタッチし、
 	//アタッチしたアニメーションの総再生時間を取得する
 	AttachIndex = MV1AttachAnim(m_modelHandle[0], 0, -1, FALSE);
-	TotalTime[DIVE] = MV1GetAttachAnimTotalTime(m_modelHandle[0], AttachIndex);
+	TotalTime[DIVE2] = MV1GetAttachAnimTotalTime(m_modelHandle[0], AttachIndex);
 	AttachIndex = MV1AttachAnim(m_modelHandle[1], 0, -1, FALSE);
 	TotalTime[SWIM] = MV1GetAttachAnimTotalTime(m_modelHandle[1], AttachIndex);
 	AttachIndex = MV1AttachAnim(m_modelHandle[2], 0, -1, FALSE);
 	TotalTime[TURN] = MV1GetAttachAnimTotalTime(m_modelHandle[2], AttachIndex);
 	AttachIndex = MV1AttachAnim(m_modelHandle[3], 0, -1, FALSE);
-	TotalTime[RESULT] = MV1GetAttachAnimTotalTime(m_modelHandle[3], AttachIndex);
+	//TotalTime[RESULT] = MV1GetAttachAnimTotalTime(m_modelHandle[3], AttachIndex);
 
 	//再生時間の初期化
 	PlayTime = 0.0f;
@@ -84,6 +84,12 @@ Player::Player()
 	KeyPush = false;
 
 	playerDir = VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f);
+
+	// 開始時のタイムを取得
+	m_startTime = GetNowCount() / 100;
+
+	//最初はDIVE画面にしたい
+	m_playerState = DIVE;
 }
 
 //-----------------------------------------------------------------------------
@@ -113,7 +119,13 @@ void Player::Update(float _deltaTime)
 	// 加速処理.
 	VECTOR accelVec = VGet(0, 0, 0);
 
-	// キーが押されておらず、かつキーが押されたら
+	//SWIMじゃない　且つ　○秒経ったらカメラ切り替え
+	if (GetNowCount()/100 - m_startTime > 40&& m_playerState!=SWIM)
+	{
+		m_playerState = DIVE2;
+	}
+
+	// キーが押されておらず、かつスペースキーが押されたら
 	if (CheckHitKey(KEY_INPUT_SPACE)&& !KeyPush)
 	{
 		PlaySoundMem(m_sHandle, DX_PLAYTYPE_BACK);
@@ -191,21 +203,19 @@ void Player::Update(float _deltaTime)
 	// ポジションを更新.
 	pos = VAdd(pos, velocity);
 
-	if (KeyPush && m_playerState == DIVE)
+	if (KeyPush && ( m_playerState == DIVE2))
 	{
 		pos.y -= 0.1;
 	}
-
 
 	// ３Dモデルのポジション設定
 	MV1SetPosition(m_modelHandle[m_playerState], pos);
 
 
 	//// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
-
 	if (PlayTime >= TotalTime[m_playerState])
 	{
-		if (m_playerState == DIVE)
+		if ( m_playerState == DIVE2)
 		{
 			m_playerState = SWIM;
 			pos.z = 50;
@@ -245,16 +255,27 @@ void Player::Update(float _deltaTime)
 //-----------------------------------------------------------------------------
 void Player::Draw()
 {
+	// DIVEの時はDIVE2と同じ飛び込みモデルを使う（ごり押しだからあとで訂正しようね）
+	if (m_playerState == DIVE)
+	{
+		// ３Ｄモデルのスケールを拡大
+		MV1SetScale(m_modelHandle[DIVE2], VGet(5.0f, 5.0f, 5.0f));
+		// ３ＤモデルのX軸の回転値を180度にセットする
+		MV1SetRotationXYZ(m_modelHandle[DIVE2], playerDir);
+		// ３Ｄモデルの描画
+		MV1DrawModel(m_modelHandle[DIVE2]);
 
-	// 3Dモデルのスケールを拡大
-	MV1SetScale(m_modelHandle[m_playerState], VGet(5.0f, 5.0f, 5.0f));
-	// ３ＤモデルのX軸の回転値を180度にセットする
-	MV1SetRotationXYZ(m_modelHandle[m_playerState], playerDir);
-	// ３Ｄモデルの描画
-	MV1DrawModel(m_modelHandle[m_playerState]);
+	}
+	else
+	{
+		// ３Ｄモデルのスケールを拡大
+		MV1SetScale(m_modelHandle[m_playerState], VGet(5.0f, 5.0f, 5.0f));
+		// ３ＤモデルのX軸の回転値を180度にセットする
+		MV1SetRotationXYZ(m_modelHandle[m_playerState], playerDir);
+		// ３Ｄモデルの描画
+		MV1DrawModel(m_modelHandle[m_playerState]);
+	}
 
-
-	
 }
 
 //-----------------------------------------------------------------------------
