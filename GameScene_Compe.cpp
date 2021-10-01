@@ -54,6 +54,7 @@ GameSceneCompe::~GameSceneCompe()
 	delete m_camera;	//	カメラのポインタメンバ変数を消去
 	//	メモリの解放処理
 	DeleteSoundMem(m_soundHandle);
+
 	delete m_npc;
 	DeleteGraph(m_countryGraphHandle);
 }
@@ -83,7 +84,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		//プレイヤーが泳ぎ始めたら国家の表示
 		if (m_player->GetPlayerState() == SWIM)
 		{
-			if (m_timeFlag == false)
+			if (m_timeFlag == false&& !m_player->GetGoalFlag())
 			{
 				// 開始時のタイムを取得
 				m_startTime = GetNowCount() / 1000;
@@ -91,7 +92,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 			}
 
 		}
-
+		//プレイヤーがゴールした瞬間タイムがリセットされている/////???????
 		if (m_timeFlag == true)
 		{
 			m_timeplayer = GetNowCount() / 1000- m_startTime;

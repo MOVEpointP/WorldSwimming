@@ -1,7 +1,6 @@
 #include "TestTitleSceneUeyama.h"  
 #include "DxLib.h"
 #include "GameScene_easy.h"
-#include "TestSceneUeyama.h"
 #include "TestSceneSudo.h"
 
 // ç≈ëÂìßâﬂó 

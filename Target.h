@@ -96,6 +96,9 @@ private:
 	int m_comboHandle;//コンボの表記
 	int m_mapchipHandle[10];
 	int m_tens_place;
+	int m_goodSoundHandle;
+	int m_perfectSoundHandle;
+	int m_badSoundHandle;
 };
 
 #endif // _TARGET_H_

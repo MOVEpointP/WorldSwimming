@@ -1,29 +1,21 @@
 #include "TestSceneNakamura.h"
-#include "Result.h"
-#include "Mark.h"
+#include "ResultHalf.h"
 #include "Target.h"
 #include "Player.h"
-#include "ObstructManager.h"
 #include "Hitchecker.h"
 #include "UI.h"
 #include "Camera.h"
-
-#include "Result.h"
+#include "Fade.h"
+#include "Score.h"
 #include "DxLib.h"
-
 #include "Effect.h"
 
-static int enemyNum = 10;					//	エネミーの数
-static int GIRL_Y = 0;						//	中華女子の初期Y座標
-static int LADY_Y = 0;						//	中華女性のY座標
-static int GIRL_MIN_Y = -80;				//	中華女子の最小Y座標
-static int COUNTDOWN = 7;					//	カウントダウンの秒数（+2）
-
-////中華少女の速度
-//static float girlSpeed = 80.0f;
+static int enemyNum = 22;					//	エネミーの数
+static int COUNTDOWN = 7;
 
 // ターゲットが飛んでくる間隔 (秒単位)
 const int TARGET_SHOT_INTERVAL = 2;
+
 // ターゲットの速度を初期化
 static float targetSpeed = 200.0f;
 
@@ -43,24 +35,21 @@ const int DOOR_VOLUME_PAL = 40;
 TestSceneNakamura::TestSceneNakamura()
 	:m_player(nullptr)
 	, m_camera(nullptr)
-	, m_mark(nullptr)
-	, m_effect(nullptr)
 	, m_targetCount(0)
 	, m_startTime(0)
-	, m_iceThrowFlag(false)
-	, m_iceHitFlagBuffer(false)
-	, m_girl_Y(GIRL_Y)
-	, m_lady_Y(LADY_Y)
-	, m_girlUpFlag(false)
-	, m_fadeInFinishFlag(false)
 	, m_fadeOutFlag(false)
 	, m_fadeOutFinishFlag(false)
-	, m_girl_hitReactionFlag(false)
-	, m_girl_missReactionFlag(false)
-	, m_girl_ReactionFlag(false)
-	//　確認用
-	, m_hitCount(0)
-	, m_hitFlag(false)
+	, m_endSoundHandle(0)
+	, m_finishSoundFlag(false)
+	, m_finishFadeCount(0)
+	, m_targetSpeed(0)
+	, m_scoreHandle(0)
+	, m_tensPlaceScore(0)
+	, m_onePlaceScore(0)
+	, m_rankBHandle(false)
+	, m_rankSound(0)
+	, m_enterPushFlag(false)
+	, m_spacePushFlag(false)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -68,333 +57,296 @@ TestSceneNakamura::TestSceneNakamura()
 	for (int i = 0; i < enemyNum; i++)
 	{
 		m_target[i] = nullptr;
-		m_score_ui[i] = nullptr;
-		m_hit_ui[i] = nullptr;
 	}
 	m_target[enemyNum] = nullptr;
+
+	for (int i = 0; i <= 2; i++)
+	{
+		m_rankSoundFlag[i] = false;
+	}
 
 	// 開始時のタイムを取得
 	m_startTime = GetNowCount() / 1000;
 	// ステートセット(カウントダウンから)
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
+
+	srand(time(NULL));//乱数の種を初期化
 }
 
 TestSceneNakamura::~TestSceneNakamura()
 {
 	delete m_player;	//	プレイヤーのポインタメンバ変数を消去
 	delete m_camera;	//	カメラのポインタメンバ変数を消去
-	delete m_mark;		//	マークのポインタメンバ変数を消去
+
 	//	メモリの解放処理
-	StopSoundMem(m_finishSoundHandle);
-	DeleteGraph(m_backGraphHandle);
-	DeleteGraph(m_finishGraphHandle);
-	DeleteGraph(m_manualGraphHandle);
-	DeleteGraph(m_girlGraphHandle);
-	DeleteGraph(m_girl_missReaction_GraphHandle);	//  女の子の画像メモリを開放する
-	DeleteGraph(m_girl_hitReaction_GraphHandle);	//  女の子の画像メモリを開放する
-	DeleteGraph(m_ladyGraphHandle);
 	DeleteSoundMem(m_soundHandle);
-	DeleteSoundMem(m_finishSoundHandle);
-	DeleteSoundMem(m_iceSoundHandle);
-	DeleteSoundMem(m_missSoundHandle);
-	DeleteSoundMem(m_hitSoundHandle);
-	DeleteSoundMem(m_doorSoundHandle);
+	DeleteSoundMem(m_endSoundHandle);
+	DeleteSoundMem(m_rankBHandle);
+	DeleteSoundMem(m_rankAHandle);
+	DeleteSoundMem(m_rankHandle);
+		
 	for (int i = 0; i < enemyNum; i++)
 	{
 		delete m_target[i];
-		delete m_score_ui[i];
-		delete m_hit_ui[i];
 	}
-	delete m_target[enemyNum];
 
-	m_effect->Delete();
-	delete m_effect;
+	delete m_target[enemyNum];
 }
 
 SceneBase* TestSceneNakamura::Update(float _deltaTime)
 {
 	// デバッグビルドのみデバッグ関数を呼び出す
 #ifdef _DEBUG
-	DebugKey();
+	//DebugKey();
 #endif
+
+	m_targetSpeed = rand() % 50 + 1;//ターゲットの速度を変える
+
+	m_player->SetScene(false);
 
 	switch (m_state)
 	{
 	case GAME_SCENE_STATE::COUNTDOWN:
-		if ((COUNTDOWN + 1) - (GetNowCount() / 1000 - m_startTime) <= 1)
+		if ((COUNTDOWN + 1) - (GetNowCount() / 1000 - COUNTDOWN) <= 1)
 		{
 			m_startTime = GetNowCount() / 1000;
 			m_state = GAME_SCENE_STATE::GAME;
 		}
 		break;
 	case GAME_SCENE_STATE::GAME:
-		// 机の更新
-		m_mark->Mark_Update();
-
-		if (m_targetCount == 0)
-		{
-			m_target[m_targetCount]->SetSetTime(m_startTime);
-		}
-
-
 		// エネミー射出管理
-		if (GetNowCount() / 1000 - m_startTime > TARGET_SHOT_INTERVAL)
+		//if (GetNowCount() / 1000 - m_startTime > COUNTDOWN)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する
+		if (m_player->GetPlayerState() == SWIM)
 		{
-			m_startTime = GetNowCount() / 1000;
-			if (m_target[m_targetCount]->GetIceState() == NO_SHOT)
+			if (CheckHitKey(KEY_INPUT_SPACE))
 			{
-				m_target[m_targetCount]->SetIceState(NOW_SHOT);
-				PlaySoundMem(m_iceSoundHandle, DX_PLAYTYPE_BACK);
-				ChangeVolumeSoundMem(m_volumePal + 20, m_iceSoundHandle);
+				m_startTime = GetNowCount() / 1000;
+				if (m_target[m_targetCount]->GetIceState() == NO_SHOT)//NO_SHOTの場合
+				{
+					m_target[m_targetCount]->SetIceState(NOW_SHOT);//ステータスにNOW_SHOTをセット 
+					Target::SetTargetSpeedX(m_targetSpeed);
+				}
+				if (m_target[m_targetCount]->GetIceState() == END_SHOT)//END_SHOTの場合
+				{
+					m_targetCount++;			//次のエネミーにカウントを進める
+				}
 			}
-			if (m_target[m_targetCount]->GetIceState() == END_SHOT)
-			{
-				m_girl_ReactionFlag = false;						// 女の子がリアクションしないようにする
-				m_girl_hitReactionFlag = false;
-				m_girl_missReactionFlag = false;
-				m_target[m_targetCount + 1]->SetSetTime(m_startTime);
-				m_targetCount++;
-			}
+
 		}
+
+		//スペースキーを押した間画像表示が変わる
+		if (CheckHitKey(KEY_INPUT_SPACE))
+		{
+			m_spacePushFlag = true;
+
+		}
+		else
+		{
+			m_spacePushFlag = false;
+		}
+
+		//エンターキーを押した間画像表示が変わる
+		if (CheckHitKey(KEY_INPUT_RETURN))
+		{
+			m_enterPushFlag = true;
+
+		}
+		else
+		{
+			m_enterPushFlag = false;
+		}
+
 
 		// 現在の番号に応じてエネミーの更新
 		m_target[m_targetCount]->Update(_deltaTime);
 		m_target[m_targetCount]->SetTargetCount(m_targetCount);
-		m_iceHitFlagBuffer = HitChecker::Check(*m_player, *m_target[m_targetCount]);
-		// x,y,z軸のそれぞれのポジションを取得
-		m_target[m_targetCount]->SetSinglePosX();
-		// m_iceHitFlagBufferがtrueになったら
-		if (!m_girl_ReactionFlag && m_target[m_targetCount]->GetIceState() == NOW_SHOT)
-		{
-			if (m_iceHitFlagBuffer)
-			{
-				m_girl_ReactionFlag = true;			// 女の子がリアクションする
-				m_girl_hitReactionFlag = true;		// 女の子がHITした時のリアクションをする
-			}
-			else if (m_target[m_targetCount]->GetPosX() <= -80)
-			{
-				m_girl_ReactionFlag = true;			// 女の子がリアクションする
-				m_girl_missReactionFlag = true;		// 女の子がmissした時のリアクションをする
-			}
-		}
-		m_target[m_targetCount]->Reaction(m_hit_ui[m_targetCount], m_iceHitFlagBuffer);
+
+		// アイコンのx軸のポジションを取得
+		m_target[m_targetCount]->SetSinglePosX();//ターゲットにｘ座標をセット
+
+		Score::calcScore(m_onePlaceScore, m_tensPlaceScore);
+
+		m_target[m_targetCount]->Reaction(m_target[m_targetCount], false);
 
 		m_player->Update(_deltaTime);
 
 		m_camera->Update(*m_player);
 
+		if (CheckHitKey(KEY_INPUT_F))
+		{
+			return new ResultHalf();        //    リザルトシーンに切り替える
 
-		// UIの中華娘を動かす
-		if (m_girlUpFlag)
-		{
-			m_girl_Y--;
-			if (m_girl_Y < GIRL_MIN_Y)
-			{
-				m_girl_Y = GIRL_MIN_Y;
-				m_girlUpFlag = false;
-			}
-		}
-		else if (!m_girlUpFlag)
-		{
-			m_girl_Y++;
-			if (m_girl_Y > 0)
-			{
-				m_girl_Y = 0;
-				m_girlUpFlag = true;
-			}
 		}
 
-
-
-		if (m_targetCount == enemyNum)
+		//　練習量分往復が完了したら
+		if (m_player->ResultSceneFlag)
 		{
 			m_finishFlag = TRUE;
 		}
 		if (m_finishFlag == TRUE)
 		{
-			m_fadeOutFlag = true;
+			m_finishSoundFlag = true;
 		}
 		if (m_fadeOutFinishFlag)
 		{
 			// scoreUIのスコアをResultのscore変数にセット
-			return new Result();				//	リザルトシーンに切り替える
+			return new ResultHalf();        //    リザルトシーンに切り替える
 		}
 		break;
 	default:
 		break;
 	}
-	return this;						//	ゲームシーンを表示し続ける
+	return this;							//	ゲームシーンを表示し続ける
 }
 
 
 void TestSceneNakamura::Draw()
 {
-	if (!m_fadeInFinishFlag)
+	//プールの表示位置変更
+	MV1SetPosition(m_poolModelHandle, VGet(0.0f, 0.0f, 180.0f));
+
+	//プールの描画
+	MV1DrawModel(m_poolModelHandle);
+
+	if (m_player->GetPlayerState() == SWIM)
 	{
-		// フェードイン処理
-		for (int i = 0; i < 255; i += FADE_IN_SPEED)
+		DrawGraph(0, 0, m_timingImgHandle, TRUE);
+
+		DrawGraph(0, 0, m_spaceHandle, TRUE);
+
+		DrawGraph(0, 0, m_enterHandle, TRUE);
+
+		// ターゲット(アイコン)
+		for (int i = 0; i <= m_targetCount; i++)
 		{
-			// 描画輝度をセット
-			SetDrawBright(i, i, i);
-
-			PlaySoundMem(m_doorSoundHandle, DX_PLAYTYPE_BACK, FALSE);
-			ChangeVolumeSoundMem(m_volumePal + DOOR_VOLUME_PAL, m_doorSoundHandle);
-
-			// グラフィックを描画
-			DrawGraph(0, 0, m_backGraphHandle, TRUE);
-			DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
-			DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
-			ScreenFlip();
+			m_target[i]->Draw();
 		}
-		m_fadeInFinishFlag = true;
-	}
-	//	背景
-	DrawGraph(0, 0, m_backGraphHandle, TRUE);
-	DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
-	//女の子のリアクション描画
-	if (m_girl_hitReactionFlag == true)				// hitしたならば
-	{
-		DrawGraph(300, m_girl_Y + 450, m_girl_hitReaction_GraphHandle, TRUE);
-	}
-	else if (m_girl_missReactionFlag == true)		// missしたならば
-	{
-		DrawGraph(300, m_girl_Y + 450, m_girl_missReaction_GraphHandle, TRUE);
-	}
-	DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
-	// 目印となる机
-	m_mark->Mark_Draw();
-	// ターゲット(アイス)
-	for (int i = 0; i <= m_targetCount; i++)
-	{
-		m_target[i]->Draw();
+		if (m_spacePushFlag)
+		{
+			DrawGraph(0, 0, m_spacePushHandle, TRUE);
+		}
+		if (m_enterPushFlag)
+		{
+			DrawGraph(0, 0, m_enterPushHandle, TRUE);
+		}
+		DrawGraph(1920 / 2 + 500+20, 400, m_mapChipHandle[m_tensPlaceScore], TRUE);
+		DrawGraph(0, 0, m_scoreHandle, TRUE);
+		DrawGraph(1920 / 2 + 580, 400, m_mapChipHandle[m_onePlaceScore], TRUE);
+
 	}
 
 	// プレーヤー
 	m_player->Draw();
 
-	// 終了時
-	if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
+	if (m_finishSoundFlag)
 	{
-		DrawGraph(0, 0, m_finishGraphHandle, TRUE);							//	最後のエネミーが射出され終わったら"ゲーム終了"の表示
-	}
-	for (int i = 0; i < enemyNum; ++i)
-	{
-		m_score_ui[i]->Draw();
-	}
-	for (int i = 0; i < enemyNum; ++i)
-	{
-		m_hit_ui[i]->Draw();
-	}
 
-	// エフェクトの再生
-	if (!(m_effect->GetNowPlaying() == 0) && m_target[m_targetCount]->GetHitIce())
-	{
-		m_effect->PlayEffekseer(VGet(0, 20, 0));
-		m_target[m_targetCount]->SetHitIce(false);
-	}
+		DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 2, 4.0, 4.0, GetColor(0, 0, 0), "終了！");
 
-	if (m_state == GAME_SCENE_STATE::COUNTDOWN)
-	{
-		// 透過して描画
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
-		DrawBox(0, 0, SCREEN_SIZE_W, SCREEN_SIZE_H, GetColor(0, 0, 0), TRUE);
-		// 透過を元に戻す
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
-	DrawGraph(0, 0, m_manualGraphHandle, TRUE);							//	操作説明を表示
-	// カウントダウンの描画
-	if (m_state == GAME_SCENE_STATE::COUNTDOWN)
-	{
-		int Count = (COUNTDOWN)-(GetNowCount() / 1000 - m_startTime);
-		DrawExtendFormatString(960, 540, 10.0, 10.0, GetColor(255, 0, 0), "%d", Count);
-	}
+		m_finishFadeCount = GetNowCount() / 1000;
 
-	/*m_obstructManager->Draw();*/
-	/*DrawString(0, 0, "ゲーム画面です", GetColor(255, 255, 255));*/
+		if (m_finishFadeCount > 1000)
+		{
+			m_fadeOutFlag = true;
+		}
+	}
 
 	// フェードアウト処理
 	if (m_fadeOutFlag)
 	{
-		for (int i = 0; i < 255; i += FADE_OUT_SPEED)
-		{
-			// 描画輝度をセット
-			SetDrawBright(255 - i, 255 - i, 255 - i);
-
-			// グラフィックを描画
-			DrawGraph(0, 0, m_backGraphHandle, FALSE);
-			DrawGraph(0, 0, m_finishGraphHandle, TRUE);
-			DrawGraph(0, m_girl_Y, m_girlGraphHandle, TRUE);
-			DrawGraph(0, m_lady_Y, m_ladyGraphHandle, TRUE);
-			ScreenFlip();
-		}
+		Fade::FadeOut(false);
 		m_fadeOutFinishFlag = true;
-
 	}
+
+	if (m_player->GetPlayerState() == DIVE)
+	{
+		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
+	}
+
+
+
 }
 
 void TestSceneNakamura::Sound()
 {
-	//	ゲーム終了時に効果音を流す
-	if (m_target[enemyNum - 1]->GetIceState() == Target_State::END_SHOT)
+	//練習BGMの再生
+	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_LOOP, FALSE);
+	ChangeVolumeSoundMem(m_volumePal + 50, m_soundHandle);
+
+	if (m_finishSoundFlag)
 	{
-		StopSoundMem(m_soundHandle);
-		PlaySoundMem(m_finishSoundHandle, DX_PLAYTYPE_BACK, FALSE);
-		ChangeVolumeSoundMem(m_volumePal + GONG_VOLUME_PAL, m_finishSoundHandle);
+		PlaySoundMem(m_endSoundHandle, DX_PLAYTYPE_NORMAL);
 	}
-	//	ゲーム中にBGMを流す
-	if (m_finishFlag == FALSE)
+
+	switch (Score::SetRank())
 	{
-		PlaySoundMem(m_soundHandle, DX_PLAYTYPE_BACK, FALSE);
-		ChangeVolumeSoundMem(m_volumePal, m_soundHandle);
+	case 0:
+		break;
+	case 1:
+
+		if (CheckSoundMem(m_rankBHandle) == 0 && m_rankSoundFlag[Score::SetRank() - 1] == false)
+		{
+			PlaySoundMem(m_rankBHandle, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			m_rankSoundFlag[Score::SetRank() - 1] = true;
+		}
+		break;
+	case 2:
+		if (CheckSoundMem(m_rankAHandle) == 0 && m_rankSoundFlag[Score::SetRank() - 1] == false)
+		{
+			PlaySoundMem(m_rankAHandle, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			m_rankSoundFlag[Score::SetRank() - 1] = true;
+		}
+		break;
+	case 3:
+		if (CheckSoundMem(m_rankHandle) == 0 && m_rankSoundFlag[Score::SetRank() - 1] == false)
+		{
+			PlaySoundMem(m_rankHandle, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			m_rankSoundFlag[Score::SetRank() - 1] = true;
+		}
+		break;
 	}
+
 }
 
 void TestSceneNakamura::Load()
 {
 	//	グラフィックハンドルにセット
-	m_finishGraphHandle = LoadGraph("data/img/gameEnd.png");
-	m_backGraphHandle = LoadGraph("data/img/gameBack.png");
-	m_soundHandle = LoadSoundMem("data/sound/gameBgm.ogg");
-	m_finishSoundHandle = LoadSoundMem("data/sound/gameEnd.wav");
-	m_girlGraphHandle = LoadGraph("data/img/chinaGirl.png");
-	m_girl_missReaction_GraphHandle = LoadGraph("data/img/chinaGirl_aseri(01).png");	//  女の子の反応の画像ハンドルをロード
-	m_girl_hitReaction_GraphHandle = LoadGraph("data/img/chinaGirl_iine.png");			//  女の子の反応の画像ハンドルをロード
-	m_ladyGraphHandle = LoadGraph("data/img/chinaLady.png");
-	m_manualGraphHandle = LoadGraph("data/img/manual.png");
+	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");		//練習BGMハンドル
+	m_timingImgHandle = LoadGraph("data/img/gameScene/timing2.png");		//判定バーの画像ハンドル
+	m_scoreHandle = LoadGraph("data/img/gameScene/score.png");
+	m_spaceHandle= LoadGraph("data/img/gameScene/space.png");
+	m_spacePushHandle= LoadGraph("data/img/gameScene/spacePush.png");
+	m_enterHandle= LoadGraph("data/img/gameScene/enter.png");
+	m_enterPushHandle = LoadGraph("data/img/gameScene/enterPush.png");
+	m_rankBHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
+	m_rankAHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
+	m_rankHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
 
+	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapChipHandle);
+
+	//	モデルハンドルにセット
+	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
 	//	サウンドハンドルにセット
-	m_iceSoundHandle = LoadSoundMem("data/sound/throwIce.mp3");
-	m_hitSoundHandle = LoadSoundMem("data/sound/hitIce.mp3");
-	m_missSoundHandle = LoadSoundMem("data/sound/missIce.mp3");
-	m_doorSoundHandle = LoadSoundMem("data/sound/door.ogg");
+	m_endSoundHandle = LoadSoundMem("data/sound/Game/finish.mp3");//練習のメニュー分の距離を達成した時に流れる効果音
 
-	int scoreHandle = LoadGraph("data/model/score_ui/score(1).png");
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成
-	m_mark = new Mark;				//	マーククラスのインスタンスを生成
 	for (int i = 0; i < (enemyNum + 1); i++)
 	{
 		m_target[i] = new Target;
 		m_target[i]->SetInterval(TARGET_SHOT_INTERVAL);
 		m_target[i]->SetAccel(targetSpeed);
-		m_target[i]->SetThrowSound(m_iceSoundHandle);
-		m_target[i]->SetHitSound(m_hitSoundHandle);
-		m_target[i]->SetMissSound(m_missSoundHandle);
-		// m_target[i]->SetAccelVec()
-	}
 
-	for (int i = 0; i < 2; ++i)
-	{
-		for (int j = 0; j < 5; ++j)
-		{
-			m_score_ui[j + (i * 5)] = new UI();
-			m_hit_ui[j + (i * 5)] = new UI();
-		}
 	}
-	// UIクラスのprivateメンバ変数に画像ハンドルをロード
-	m_score_ui[0]->Load();
-
-	m_effect = new PlayEffect("data/effects/FeatherBomb.efk", 5.0f);
 }
 
 void TestSceneNakamura::DebugKey()
@@ -402,36 +354,11 @@ void TestSceneNakamura::DebugKey()
 	// 確認用
 	if (CheckHitKey(KEY_INPUT_A))
 	{
-		if (m_hitCount < enemyNum)
-		{
-			m_hitFlag = true;
-			//m_hit_ui[m_hitCount]->ScoreUpdate(m_hit_ui[m_hitCount], m_hitFlag);
-			m_hitCount++;
-		}
 	}
 	if (CheckHitKey(KEY_INPUT_B))
 	{
-		if (m_hitCount < enemyNum)
-		{
-			m_hitFlag = false;
-			//m_hit_ui[m_hitCount]->ScoreUpdate(m_hit_ui[m_hitCount], m_hitFlag);
-			m_hitCount++;
-		}
-	}
-	if (m_iceThrowFlag)
-	{
-		DrawString(1800, 980, "発射", GetColor(255, 255, 255));
-	}
-	else
-	{
-		DrawString(1800, 980, "未発射", GetColor(255, 255, 255));
 	}
 	if (CheckHitKey(KEY_INPUT_RETURN))
 	{
-		m_checkKeyFlag = TRUE;
-	}
-	if (CheckHitKey(KEY_INPUT_RETURN) && m_checkKeyFlag == FALSE)	//	エンターが押されたら
-	{
-		m_finishFlag = TRUE;
 	}
 }

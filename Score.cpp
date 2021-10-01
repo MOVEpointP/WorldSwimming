@@ -41,6 +41,11 @@ int Score::SetRank()
 void Score::calcScore(int &m_oneScore, int &m_tenScore)
 {
 	m_oneScore = m_score % 10;
-	m_tenScore = (m_score - m_oneScore)/10;
+	m_tenScore = (m_score - m_oneScore) / 10;
+	if (m_score < 0)
+	{
+		m_oneScore = 0;
+	}
+
 }
 

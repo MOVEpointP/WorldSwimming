@@ -47,7 +47,11 @@ Target::Target()
 	m_perfectHandle = LoadGraph("data/img/gameScene/perfect.png");
 	m_comboHandle = LoadGraph("data/img/gameScene/combo.png");
 	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapchipHandle);
-	//m_mapchipHandle[0]= LoadGraph("data/img/gameScene/suuji.png");
+	m_goodSoundHandle = LoadSoundMem("data/sound/Game/good.mp3");		//スコアの効果音ハンドル
+	m_badSoundHandle = LoadSoundMem("data/sound/Game/bad.mp3");		//スコアの効果音ハンドル
+	m_perfectSoundHandle = LoadSoundMem("data/sound/Game/perfect.mp3");		//スコアの効果音ハンドル
+	//ロードする中身ちゃんとかいててね
+
 	m_target_accel = 0.1f;
 
 	// posはVector型なので、VGetで原点にセット
@@ -67,6 +71,11 @@ Target::~Target()
 	// 各種ハンドルのアンロード.
 	DeleteGraph(m_legImgHandle);
 	DeleteGraph(m_o2ImgHandle);
+
+	DeleteSoundMem(m_goodSoundHandle);
+	DeleteSoundMem(m_badSoundHandle);
+	DeleteSoundMem(m_perfectSoundHandle);
+
 }
 
 //-----------------------------------------------------------------------------
@@ -131,26 +140,20 @@ void Target::Draw()
 		}
 
 	}
-		//　判定結果を表示する間のカウント
-		m_timeCount++;
+	//　判定結果を表示する間のカウント
+	m_timeCount++;
 
-		if (m_timeCount >= 250)
-		{
-			m_targerJadgeWord = 0;
-			m_timeCount = 0;
-		}
+	if (m_timeCount >= 250)
+	{
+		m_targerJadgeWord = 0;
+		m_timeCount = 0;
+	}
 	
-		//　１コンボ以上の時にコンボ数を表示する
-		auto combo = Combo::GetCombo();
-		DrawGraph(1920 / 2 + 840, 500 + 50, m_mapchipHandle[Combo::GetCombo()], TRUE);
-		DrawGraph(1920 / 2 + 800, 500 + 50, m_mapchipHandle[Combo::GetTenCombo()], TRUE);
-		//DrawExtendFormatString(1920 / 2+840 - GetFontSize(), 500, 6.0, 10.0, GetColor(255, 255, 255), "%d", Combo::GetCombo());	//　判定結果表記
-		DrawGraph(0, -20, m_comboHandle, TRUE);
-
-		//DrawExtendFormatString(1920 / 2 + 850 - GetFontSize(), 730, 2.0, 2.0, GetColor(255, 255, 255), "%d", Score::GetScore());									//　判定結果表記
-																																		  
-		//DrawExtendFormatString(100, 600, 4.0, 5.0, GetColor(0, 100, 0), "Shiftで発射！", Score::GetScore());							//　判定結果表記
-
+	//　１コンボ以上の時にコンボ数を表示する
+	auto combo = Combo::GetCombo();
+	DrawGraph(1920 / 2 + 840, 500 + 50, m_mapchipHandle[Combo::GetCombo()], TRUE);
+	DrawGraph(1920 / 2 + 800, 500 + 50, m_mapchipHandle[Combo::GetTenCombo()], TRUE);
+	DrawGraph(0, -20, m_comboHandle, TRUE);
 }
 
 //-----------------------------------------------------------------------------
@@ -173,11 +176,11 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 		if (m_targetState == NOW_SHOT && pos.x >= 1100)//アイコンが近くにあるかどうか探索
 		{
 			//スコアを出していく
-			if (CheckHitKey(KEY_INPUT_SPACE))
+			if (CheckHitKey(KEY_INPUT_RETURN))
 			{
 				if ((m_before_good <= pos.x && pos.x <= m_perfect) || (m_after_good <= pos.x && pos.x <= m_final_good))//good
 				{
-
+					PlaySoundMem(m_goodSoundHandle, DX_PLAYTYPE_BACK);
 					m_targetScore += m_score_good;					// スコア変化なし
 					m_targerJadgeWord = 2;
 					pos = VGet(-2000, -1000, 200);					// 座標を移動して表示しなくする
@@ -187,7 +190,7 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 				}
 				else if (m_perfect < pos.x && pos.x < m_after_good)  // perfect
 				{
-
+					PlaySoundMem(m_perfectSoundHandle, DX_PLAYTYPE_BACK);
 					m_targetScore += m_score_perfect;                // スコアup
 
 					m_targerJadgeWord = 3;
@@ -198,6 +201,7 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 				}
 				else												 // bad（それ以外なら）
 				{
+					PlaySoundMem(m_badSoundHandle, DX_PLAYTYPE_BACK);
 					m_targetScore += m_score_bad;					 // スコアdown
 
 					m_targerJadgeWord = 1;
@@ -211,6 +215,7 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 			}
 			else if (pos.x > m_final_good)
 			{
+				PlaySoundMem(m_badSoundHandle, DX_PLAYTYPE_BACK);
 
 				m_targetScore += m_score_bad;	// スコアdown
 
