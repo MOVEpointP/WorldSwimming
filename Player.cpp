@@ -14,7 +14,6 @@ const float Player::ACCEL				=15.0f;		// 通常の加速.
 int Player::m_sHandle;
 
 //const float Player::ACCEL = 0.03f;		// 通常の加速.
-const float Player::MAX_SPEED			= 0.8f;			// 最高速度.
 const float Player::TRANING_SPEED       = 9.0f;	        // 練習時の倍速スピード.
 const float Player::DEFAULT_DECEL		= -0.01f;		// なにもしない時の減速.
 const float Player::BREAK_DECEL			= -0.05f;		// ブレーキ時の減速.
@@ -44,6 +43,7 @@ Player::Player()
 	, ResultSceneFlag(false)
 	, m_RoundTrip(-1)
 	, m_startTime(0)
+	,efkFlag(true)
 {	
 	// サウンドの読み込み
 	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
@@ -90,6 +90,26 @@ Player::Player()
 
 	//最初はDIVE画面にしたい
 	m_playerState = DIVE;
+
+
+	// 水しぶきエフェクト読み込み
+	m_playerOrbitEfk = new PlayEffect("data/effects/swim/sibuki.efk");
+	m_efkDir = VGet(0.0f, 2.0f, 0.0f);
+	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
+	m_efkstartTime = GetNowCount() / 1000;
+
+	// キラキラエフェクト読み込み
+	m_rankEfk[2] = new PlayEffect("data/effects/swim/Sranku.efk",15);
+	m_rankEfk[1]= new PlayEffect("data/effects/swim/Aranku.efk",15);
+	m_rankEfk[0] = new PlayEffect("data/effects/swim/Branku.efk", 15);
+	
+
+	m_rankEfkDir = VGet(0.0f, 1.5, 0.0f);
+
+	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
+
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -105,7 +125,17 @@ Player::~Player()
 	// サウンドのアンロード
 	DeleteSoundMem(m_sHandle);
 
-	
+	// エフェクトのアンロード
+	m_playerOrbitEfk->Delete();
+	delete m_playerOrbitEfk;
+
+	for (int i = 0; i <= 2; i++)
+	{
+		// エフェクトのアンロード
+		m_rankEfk[i]->Delete();
+	}
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -177,6 +207,31 @@ void Player::Update(float _deltaTime)
 				}
 				accelVec = VScale(dir, TRANING_SPEED);
 			}
+			//水しぶき（笑）のエフェクトを表示したり表示しなかったりしようとした残骸
+			if (efkFlag)
+			{
+				//m_efkTime = GetNowCount() / 1000 - m_efkstartTime;
+				//if (m_efkTime > 10)
+				//{
+				//	efkFlag = false;
+				//	m_efkstartTime = GetNowCount() / 1000;
+				//	m_efkTime = 0;
+
+				//}
+			}
+			else
+			{
+				m_efkTime = GetNowCount() / 1000 - m_efkstartTime;
+				if (m_efkTime > 10)
+				{
+					efkFlag = true;
+					m_efkstartTime = GetNowCount() / 1000;
+					m_efkTime = 0;
+
+				}
+
+			}
+
 		}
 
 		//練習と本番でモーションのスピードを調整する
@@ -202,6 +257,8 @@ void Player::Update(float _deltaTime)
 
 	// ポジションを更新.
 	pos = VAdd(pos, velocity);
+
+
 
 	if (KeyPush && ( m_playerState == DIVE2))
 	{
@@ -255,6 +312,8 @@ void Player::Update(float _deltaTime)
 //-----------------------------------------------------------------------------
 void Player::Draw()
 {
+
+
 	// DIVEの時はDIVE2と同じ飛び込みモデルを使う（ごり押しだからあとで訂正しようね）
 	if (m_playerState == DIVE)
 	{
@@ -275,6 +334,89 @@ void Player::Draw()
 		// ３Ｄモデルの描画
 		MV1DrawModel(m_modelHandle[m_playerState]);
 	}
+
+	//キラキラエフェクト描画
+	if (m_playerState == SWIM)
+	{
+		m_rankEfk[2]->SetPlayingEffectRotation(m_rankEfkDir);
+		m_rankEfk[1]->SetPlayingEffectRotation(m_rankEfkDir);
+		m_rankEfk[0]->SetPlayingEffectRotation(m_rankEfkDir);
+
+		if (efkFlag&& ResultSceneFlag==false)
+		{
+			if (m_playerOrbitEfk->GetNowPlaying() != 0)
+			{
+				m_playerOrbitEfk->PlayEffekseer(pos);
+			}
+		}
+		else
+		{
+			m_playerOrbitEfk->StopEffect();
+
+		}
+		// エフェクト再生中はプレイヤーの座標を追尾
+		m_playerOrbitEfk->SetPlayingEffectPos(pos);
+		//ランクがSになったらSのエフェクトを出す
+		if (Score::SetRank() == 3)
+		{
+			//ランクによってキラキラエフェクトを出す
+			if (m_rankEfk[2]->GetNowPlaying() != 0 )
+			{
+				m_rankEfk[2]->PlayEffekseer(pos);
+
+			}
+
+
+		}
+		else
+		{
+			m_rankEfk[2]->StopEffect();
+
+		}
+
+		//ランクがAになったらAのエフェクトを出す
+
+		if (Score::SetRank() == 2 )
+		{
+			if (m_rankEfk[1]->GetNowPlaying() != 0 )
+			{
+				m_rankEfk[1]->PlayEffekseer(pos);
+
+			}
+
+
+		}
+		else
+		{
+			m_rankEfk[1]->StopEffect();
+
+		}
+		//ランクがBになったらBのエフェクトを出す
+
+		if (Score::SetRank() == 1 )
+		{
+			//ランクによってキラキラエフェクトを出す
+			if (m_rankEfk[0]->GetNowPlaying() != 0)
+			{
+				m_rankEfk[0]->PlayEffekseer(pos);
+
+			}
+
+
+		}
+		else
+		{
+			m_rankEfk[0]->StopEffect();
+
+		}
+
+
+
+		m_rankEfk[2]->SetPlayingEffectPos(pos);
+		m_rankEfk[1]->SetPlayingEffectPos(pos);
+		m_rankEfk[0]->SetPlayingEffectPos(pos);
+	}
+
 
 }
 

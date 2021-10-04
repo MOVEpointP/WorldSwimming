@@ -58,7 +58,6 @@ TestSceneNakamura::TestSceneNakamura()
 	{
 		m_target[i] = nullptr;
 	}
-	m_target[enemyNum] = nullptr;
 
 	for (int i = 0; i <= 2; i++)
 	{
@@ -90,7 +89,6 @@ TestSceneNakamura::~TestSceneNakamura()
 		delete m_target[i];
 	}
 
-	delete m_target[enemyNum];
 }
 
 SceneBase* TestSceneNakamura::Update(float _deltaTime)
@@ -118,9 +116,32 @@ SceneBase* TestSceneNakamura::Update(float _deltaTime)
 		//if (GetNowCount() / 1000 - m_startTime > COUNTDOWN)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する
 		if (m_player->GetPlayerState() == SWIM)
 		{
+			//スペースキーを押した間画像表示が変わる
+			if (CheckHitKey(KEY_INPUT_SPACE))
+			{
+				m_spacePushFlag = true;
+
+			}
+			else
+			{
+				m_spacePushFlag = false;
+			}
+
+			//エンターキーを押した間画像表示が変わる
+			if (CheckHitKey(KEY_INPUT_RETURN))
+			{
+				m_enterPushFlag = true;
+
+			}
+			else
+			{
+				m_enterPushFlag = false;
+			}
+
 			if (CheckHitKey(KEY_INPUT_SPACE))
 			{
 				m_startTime = GetNowCount() / 1000;
+
 				if (m_target[m_targetCount]->GetIceState() == NO_SHOT)//NO_SHOTの場合
 				{
 					m_target[m_targetCount]->SetIceState(NOW_SHOT);//ステータスにNOW_SHOTをセット 
@@ -128,33 +149,13 @@ SceneBase* TestSceneNakamura::Update(float _deltaTime)
 				}
 				if (m_target[m_targetCount]->GetIceState() == END_SHOT)//END_SHOTの場合
 				{
+					m_target[m_targetCount]->m_drawTargetFlag = false;
 					m_targetCount++;			//次のエネミーにカウントを進める
 				}
 			}
 
 		}
 
-		//スペースキーを押した間画像表示が変わる
-		if (CheckHitKey(KEY_INPUT_SPACE))
-		{
-			m_spacePushFlag = true;
-
-		}
-		else
-		{
-			m_spacePushFlag = false;
-		}
-
-		//エンターキーを押した間画像表示が変わる
-		if (CheckHitKey(KEY_INPUT_RETURN))
-		{
-			m_enterPushFlag = true;
-
-		}
-		else
-		{
-			m_enterPushFlag = false;
-		}
 
 
 		// 現在の番号に応じてエネミーの更新
@@ -220,6 +221,7 @@ void TestSceneNakamura::Draw()
 		for (int i = 0; i <= m_targetCount; i++)
 		{
 			m_target[i]->Draw();
+
 		}
 		if (m_spacePushFlag)
 		{
@@ -241,7 +243,7 @@ void TestSceneNakamura::Draw()
 	if (m_finishSoundFlag)
 	{
 
-		DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 2, 4.0, 4.0, GetColor(0, 0, 0), "終了！");
+		DrawGraph(0, 0, m_endHandle, TRUE);
 
 		m_finishFadeCount = GetNowCount() / 1000;
 
@@ -258,9 +260,15 @@ void TestSceneNakamura::Draw()
 		m_fadeOutFinishFlag = true;
 	}
 
-	if (m_player->GetPlayerState() == DIVE)
+	if (!m_player->GetPlayerState() == SWIM)
 	{
-		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
+		DrawGraph(0, 0, m_diveSpaceHandle, TRUE);
+		if (CheckHitKey(KEY_INPUT_SPACE))
+		{
+			DrawGraph(0, 0, m_diveSpacePushHandle, TRUE);
+
+		}
+
 	}
 
 
@@ -330,6 +338,9 @@ void TestSceneNakamura::Load()
 	m_rankBHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
 	m_rankAHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
 	m_rankHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
+	m_diveSpaceHandle= LoadGraph("data/img/gameScene/Dive.png");
+	m_diveSpacePushHandle = LoadGraph("data/img/gameScene/DivePush.png");
+	m_endHandle= LoadGraph("data/img/gameScene/syuuryou.png");
 
 	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapChipHandle);
 

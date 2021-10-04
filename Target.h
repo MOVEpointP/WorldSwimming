@@ -47,6 +47,8 @@ public:
 
 	// あたり判定半径の取得.
 	float GetHitRadius() { return hitRadius; }
+	int m_countTime;
+	int m_drawTargetFlag;
 
 
 private:
@@ -83,7 +85,6 @@ private:
 	Target_State m_targetState;
 
 	int  m_targerJadgeWord;		//タイミングの判定文字
-	int  m_timeCount;				//判定表記を表示する時間をカウントする
 	int  m_targetScore;			//スコアを格納する変数
 	int  m_combo;				//コンボ数を格納する変数
 	static int  m_targetSpeed;	//それぞれのターゲットの流れる速度を決める変数
@@ -99,6 +100,13 @@ private:
 	int m_goodSoundHandle;
 	int m_perfectSoundHandle;
 	int m_badSoundHandle;
+	
+	int m_goodOrbitEfk;
+	int m_badOrbitEfk;
+	int m_perfecOrbitEfk;
+	bool efkFlag;
+	int efkHandle;
+	int m_startTime;
 };
 
 #endif // _TARGET_H_

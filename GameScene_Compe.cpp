@@ -91,7 +91,6 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 				m_timeFlag = true;
 			}
 		}
-		//プレイヤーがゴールした瞬間タイムがリセットされている/////???????
 		if (m_timeFlag == true)
 		{
 			m_timeplayer = GetNowCount() / 100- m_startTime;
@@ -174,13 +173,12 @@ void GameSceneCompe::Draw()
 		//国の画像表示
 		DrawGraph(0, 0, m_countryGraphHandle, TRUE);
 
-		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
 	}
 
 	if (m_player->GetPlayerState() == SWIM)
 	{
-			//国の画像を縮小
-			DrawExtendGraph(m_countryTopX, 0, m_countryUnderX, SCREEN_SIZE_H, m_countryGraphHandle, TRUE);
+		//国の画像を縮小
+		DrawExtendGraph(m_countryTopX, 0, m_countryUnderX, SCREEN_SIZE_H, m_countryGraphHandle, TRUE);
 
 	}
 	
@@ -197,6 +195,17 @@ void GameSceneCompe::Draw()
 		}
 		m_fadeOutFinishFlag = true;
 	}
+	if (!m_player->GetPlayerState() == SWIM)
+	{
+		DrawGraph(0, 0, m_diveSpaceHandle, TRUE);
+		if (CheckHitKey(KEY_INPUT_SPACE))
+		{
+			DrawGraph(0, 0, m_diveSpacePushHandle, TRUE);
+
+		}
+
+	}
+
 
 }
 
@@ -215,6 +224,9 @@ void GameSceneCompe::Load()
 	//	サウンドハンドルにセット
 	m_soundHandle = LoadSoundMem("data/sound/Game/honban.mp3");
 	m_timeFlame= LoadGraph("data/img/compe/TimeFlame.png");
+	m_diveSpacePushHandle = LoadGraph("data/img/gameScene/DivePush.png");
+	m_diveSpaceHandle = LoadGraph("data/img/gameScene/Dive.png");
+
 
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成

@@ -125,11 +125,11 @@ void Result::Draw()
 		}
 		m_fadeOutFinishFlag = true;
 	}
-	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 , m_mapChip[m_time-(m_time/10)*10], TRUE);
-	DrawGraph(SCREEN_SIZE_W / 2 + 200, SCREEN_SIZE_H / 3, m_mapChip[m_time/10], TRUE);
+	DrawGraph(SCREEN_SIZE_W / 2 -50, SCREEN_SIZE_H / 3 , m_mapChip[m_time-(m_time/10)*10], TRUE);
+	DrawGraph(SCREEN_SIZE_W / 2 - 150, SCREEN_SIZE_H / 3, m_mapChip[m_time/10], TRUE);
 	//タイム表示
 	//DrawExtendFormatString(SCREEN_SIZE_W / 2+300 - GetFontSize(), SCREEN_SIZE_H / 3+280, 4.0, 4.0, GetColor(0, 0, 0), "%d秒", m_time);
-	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 + 265, m_mapChip[m_playerRanking], TRUE);
+	DrawGraph(SCREEN_SIZE_W / 2 -50, SCREEN_SIZE_H / 3 + 260, m_mapChip[m_playerRanking], TRUE);
 	//プレイヤーの順位表示
 	//DrawExtendFormatString(SCREEN_SIZE_W / 2+450 - GetFontSize(), SCREEN_SIZE_H / 3+430, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_playerRanking);
 }

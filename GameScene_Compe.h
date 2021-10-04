@@ -43,5 +43,6 @@ private:
 	int m_countryTopX;				//国の画像での、左上のｘ座標
 	int m_countryUnderX;				//国の画像での、右下のｘ座標
 	int m_timeFlame;				//タイム表示用のフレーム
-
+	int m_diveSpaceHandle;          //スペースキーで飛び込みすることをつたえる画像を表示する画像ハンドル
+	int m_diveSpacePushHandle;      //スペースキーを押して飛び込みをしたら画像が切り替わる
 }; 
