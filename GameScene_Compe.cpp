@@ -116,7 +116,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		}
 
 		// シーン遷移
-		if (m_npc->GetRankCount() >= 5 && m_player->GetGoalFlag())
+		if (m_npc->GetRankCount() >= 6 && m_player->GetGoalFlag())
 		{
 			m_MaxGorl = true;
 		}
@@ -164,10 +164,6 @@ void GameSceneCompe::Draw()
 	MV1SetPosition(m_poolModelHandle, VGet(0.0f, 0.0f, 180.0f));
 	//プールの描画
 	MV1DrawModel(m_poolModelHandle);
-	// プレーヤー
-	m_player->Draw();
-	//npc
-	m_npc->Draw();
 	//LIVEの文字を表示
 	DrawExtendFormatString(m_liveX, m_liveY, 4.0, 4.0, GetColor(255, 0, 0), "LIVE");
 
@@ -187,6 +183,11 @@ void GameSceneCompe::Draw()
 	
 		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
 	}	
+
+	// プレーヤー
+	m_player->Draw();
+	//npc
+	m_npc->Draw();
 
 	//50m地点の画像表示
 	if (m_turnFlag == true)

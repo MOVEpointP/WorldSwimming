@@ -138,14 +138,14 @@ void Result::Draw()
 	//タイムの結果取得
 	Time::calcTime(m_oneTime, m_tenTime, m_decimalTime);
 	//タイム表示
-	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 , m_mapChip[m_oneTime], TRUE);
-	DrawGraph(SCREEN_SIZE_W / 2 + 200, SCREEN_SIZE_H / 3, m_mapChip[m_tenTime], TRUE);
-	DrawGraph(SCREEN_SIZE_W / 2 + 100, SCREEN_SIZE_H / 3, m_mapChip[m_decimalTime], TRUE);
+	DrawGraph(950, SCREEN_SIZE_H / 3 , m_mapChip[m_oneTime], TRUE);
+	DrawGraph(750, SCREEN_SIZE_H / 3, m_mapChip[m_tenTime], TRUE);
+	DrawGraph(650, SCREEN_SIZE_H / 3, m_mapChip[m_decimalTime], TRUE);
 
 	//DrawExtendFormatString(SCREEN_SIZE_W / 2+300 - GetFontSize(), SCREEN_SIZE_H / 3+280, 4.0, 4.0, GetColor(0, 0, 0), "%d秒", m_time);
 
 	//プレイヤーの順位表示
-	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 + 265, m_mapChip[m_playerRanking], TRUE);
+	DrawGraph(950, SCREEN_SIZE_H / 3 + 260, m_mapChip[m_playerRanking], TRUE);
 	//DrawExtendFormatString(SCREEN_SIZE_W / 2+450 - GetFontSize(), SCREEN_SIZE_H / 3+430, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_playerRanking);
 }
 

@@ -91,10 +91,11 @@ void Camera::Update(const Player& player)
 	case COMPE_FIRST:
 
 	
-		m_cameraPosX -= 0.1f;
+		m_cameraPosX -= 0.3f;
 
-		SetCameraPositionAndTarget_UpVecY(VGet(m_cameraPosX + 100, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+		SetCameraPositionAndTarget_UpVecY(VGet(m_cameraPosX+50, 70, player.GetPos().z - 35), /*player.GetPos()*/VGet(m_cameraPosX + 50, -10, player.GetPos().z + 50));
 
+		Player::SetCameraPos(m_cameraPosX);
 		break;
 
 	case COMPE_DIVE:

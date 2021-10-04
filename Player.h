@@ -48,6 +48,9 @@ public:
 	const VECTOR& GetDir() const { return dir; }
 	void SetDir(const VECTOR set) { dir = set; }
 
+	static void SetCameraPos(int _set) { m_cameraPosX = _set; }
+
+
 	// あたり判定半径の取得.
 	float GetHitRadius() { return hitRadius; }
 
@@ -56,6 +59,8 @@ public:
 
 	// プレイヤーのランキングを示す変数をプレイヤーのランキング保存変数に入れる
 	void SetPlayerRankingNum(const int playerRankingCount) { PlayerRank = playerRankingCount; }
+
+
 
 	// 現在のプレイヤーのランキングを取得するgetter
 	int GetPlayerNowRankingNum() { return PlayerRank; }
@@ -108,6 +113,8 @@ private:
 	//ランクに応じて表示されるキラキラエフェクト
 	class PlayEffect* m_rankEfk[3];
 	VECTOR m_rankEfkDir;
+
+	static int m_cameraPosX;
 
 	// 静的定数.
 	static const float ACCEL;
