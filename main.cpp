@@ -67,6 +67,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		// Effekseerの描画
 		DrawEffekseer3D();
 
+		// Effekseerにより再生中のエフェクトを更新する。
+		UpdateEffekseer2D();
+
+		// Effekseerにより再生中のエフェクトを描画する。
+		DrawEffekseer2D();
+
+
 		// BGM処理
 		Scene->Sound();
 
@@ -118,4 +125,6 @@ void InitializeEffekseer()
 	Effekseer_SetGraphicsDeviceLostCallbackFunctions();
 	SetUseZBuffer3D(TRUE);                                    // ZBufferを使用
 	SetWriteZBuffer3D(TRUE);                                  // ZBufferへの書き込みを許可
+	Effekseer_Set2DSetting(1920, 1080);
+
 }

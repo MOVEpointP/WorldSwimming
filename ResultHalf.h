@@ -46,6 +46,7 @@ class ResultHalf : public SceneBase
 		float TotalTime, PlayTime;//モーションの再生時間
 		int AttachIndex;//モーションの再生時間
 		int m_backgroundGraphHandle;
+		int m_mapChip[10];
 		enum rank
 		{
 			C,		//0

@@ -3,6 +3,7 @@
 #include "Score.h"
 #include "Combo.h"
 #include <cmath>
+#include "Effect.h"
 
 // 静的定数.
 const int Target::m_target_X      =		400;		// ターゲットの初期x座標
@@ -38,6 +39,10 @@ Target::Target()
 	, m_badHandle(-1)
 	, m_perfectHandle(-1)
 	,m_tens_place(0)
+	, m_countTime(0)
+	, m_startTime(0)
+	, efkHandle(-1)
+	,efkFlag(false)
 {
 	// 画像の読み込み
 	m_legImgHandle=LoadGraph("data/img/target/legs.png");
@@ -50,7 +55,7 @@ Target::Target()
 	m_goodSoundHandle = LoadSoundMem("data/sound/Game/good.mp3");		//スコアの効果音ハンドル
 	m_badSoundHandle = LoadSoundMem("data/sound/Game/bad.mp3");		//スコアの効果音ハンドル
 	m_perfectSoundHandle = LoadSoundMem("data/sound/Game/perfect.mp3");		//スコアの効果音ハンドル
-	//ロードする中身ちゃんとかいててね
+
 
 	m_target_accel = 0.1f;
 
@@ -60,6 +65,11 @@ Target::Target()
 	// 移動する力を（すべての座標）ゼロにする
 	velocity = VGet(0, 0, 0);
 	dir = VGet(1, 0, 0);
+
+	// エフェクト読み込み
+	m_goodOrbitEfk = LoadEffekseerEffect("data/effects/swim/good.efk",25.0f);
+	m_perfecOrbitEfk= LoadEffekseerEffect("data/effects/swim/perfecd.efk", 25.0f);
+	m_badOrbitEfk = LoadEffekseerEffect("data/effects/swim/bad.efk", 25.0f);
 
 }
 
@@ -110,7 +120,16 @@ void Target::Update(float _deltaTime)
 
 	// モデルに向いてほしい方向に回転.
 	MATRIX rotYMat = MGetRotY(180.0f * (float)(DX_PI / 180.0f));
-
+	//判定を描画するフラグがrueになったら時間を計る
+	if (m_drawTargetFlag)
+	{
+		m_countTime = GetNowCount() / 1000 - m_startTime;
+		efkFlag = false;
+	}
+	if (m_countTime  > 1)
+	{
+		m_drawTargetFlag = false;
+	}
 
 }
 
@@ -119,36 +138,63 @@ void Target::Update(float _deltaTime)
 //-----------------------------------------------------------------------------
 void Target::Draw()
 {
+
+
 	// 足のアイコンを描画
 	DrawGraph(m_posX, 400, m_legImgHandle, TRUE);
-	
+
 	// デバッグあたり判定.
 	if (m_targetState == END_SHOT)
 	{
 		//判定表記
 		if (m_targerJadgeWord == 2)		//goodなら
 		{
-			DrawGraph(0, 0, m_goodHandle, TRUE);
+			if (IsEffekseer2DEffectPlaying(efkHandle) != 0&&efkFlag)
+			{
+				efkHandle = PlayEffekseer2DEffect(m_goodOrbitEfk);
+				SetPosPlayingEffekseer2DEffect(efkHandle, 1600, 600, 0);
+			}
+
+			//判定を描画する時間が一秒経ったら消えるようにする
+			if (m_drawTargetFlag)
+			{
+
+				DrawGraph(0, 0, m_goodHandle, TRUE);
+
+			}
 		}																												  
 		else if (m_targerJadgeWord == 3)//perfectなら																	
-		{																												  
-			DrawGraph(0, 0, m_perfectHandle, TRUE);
+		{
+			if (IsEffekseer2DEffectPlaying(efkHandle) != 0 && efkFlag)
+			{
+				efkHandle = PlayEffekseer2DEffect(m_perfecOrbitEfk);
+				SetPosPlayingEffekseer2DEffect(efkHandle, 1600, 600, 0);
+
+			}
+
+			//判定を描画する時間が一秒経ったら消えるようにする
+			if (m_drawTargetFlag)
+			{
+				DrawGraph(0, 0, m_perfectHandle, TRUE);
+			}
 		}
 		else if (m_targerJadgeWord == 1)//badなら
 		{
-			DrawGraph(0, 0, m_badHandle, TRUE);
+			if (IsEffekseer2DEffectPlaying(efkHandle) != 0 && efkFlag)
+			{
+				efkHandle = PlayEffekseer2DEffect(m_badOrbitEfk);
+				SetPosPlayingEffekseer2DEffect(efkHandle, 1600, 600, 0);
+
+			}
+
+			//判定を描画する時間が一秒経ったら消えるようにする
+			if (m_drawTargetFlag)
+			{
+				DrawGraph(0, 0, m_badHandle, TRUE);
+			}
 		}
 
 	}
-	//　判定結果を表示する間のカウント
-	m_timeCount++;
-
-	if (m_timeCount >= 250)
-	{
-		m_targerJadgeWord = 0;
-		m_timeCount = 0;
-	}
-	
 	//　１コンボ以上の時にコンボ数を表示する
 	auto combo = Combo::GetCombo();
 	DrawGraph(1920 / 2 + 840, 500 + 50, m_mapchipHandle[Combo::GetCombo()], TRUE);
@@ -186,6 +232,11 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 					pos = VGet(-2000, -1000, 200);					// 座標を移動して表示しなくする
 					m_combo = 1;									// コンボ数加算
 					m_targetState = END_SHOT;
+					//判定を描画するフラグをtrueにする
+					//判定の描画をする最初の瞬間の時間を計測
+					m_drawTargetFlag = true;
+					m_startTime = GetNowCount() / 1000;
+					efkFlag = true;
 
 				}
 				else if (m_perfect < pos.x && pos.x < m_after_good)  // perfect
@@ -197,6 +248,12 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 					pos = VGet(-2000, -1000, 200);                   // 座標を移動して表示しなくする
 					m_combo = 1;                                     // コンボ数加算
 					m_targetState = END_SHOT;
+					//判定を描画するフラグをtrueにする
+					//判定の描画をする最初の瞬間の時間を計測
+					m_drawTargetFlag = true;
+					m_startTime = GetNowCount() / 1000;
+					efkFlag = true;
+
 
 				}
 				else												 // bad（それ以外なら）
@@ -209,6 +266,13 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 					m_combo = -Combo::GetCombo();									 // コンボ数リセット
 					m_tens_place = -Combo::GetTenCombo();
 					m_targetState = END_SHOT;
+					//判定を描画するフラグをtrueにする
+					//判定の描画をする最初の瞬間の時間を計測
+					m_drawTargetFlag = true;
+					m_startTime = GetNowCount() / 1000;
+					efkFlag = true;
+
+
 				}
 
 
@@ -224,6 +288,13 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 				m_combo = -Combo::GetCombo();					// コンボ数リセット
 				m_tens_place = -Combo::GetTenCombo();
 				m_targetState = END_SHOT;
+
+				//判定を描画するフラグをtrueにする
+				//判定の描画をする最初の瞬間の時間を計測
+				m_drawTargetFlag = true;
+				m_startTime = GetNowCount() / 1000;
+
+				efkFlag = true;
 
 			}
 

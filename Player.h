@@ -97,6 +97,17 @@ private:
 
 	// player用サウンド変数
 	static int m_sHandle;
+	//水しぶきのエフェクト
+	class PlayEffect * m_playerOrbitEfk;
+	VECTOR m_efkDir;
+	VECTOR m_efkPos;
+	bool efkFlag;
+	int m_efkTime;
+	int m_efkstartTime;
+
+	//ランクに応じて表示されるキラキラエフェクト
+	class PlayEffect* m_rankEfk[3];
+	VECTOR m_rankEfkDir;
 
 	// 静的定数.
 	static const float ACCEL;

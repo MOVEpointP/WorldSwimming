@@ -63,4 +63,8 @@ private:
 	bool m_spacePushFlag;
 	int m_spacePushHandle;
 	int m_enterPushHandle;
+	int m_diveSpaceHandle;
+	int m_diveSpacePushHandle;
+	int m_diveSpacePushFlag;
+	int m_endHandle;
 };
