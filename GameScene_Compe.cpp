@@ -43,6 +43,10 @@ GameSceneCompe::GameSceneCompe()
 	, m_countryTopX(0)
 	, m_countryUnderX(SCREEN_SIZE_W)
 	, m_turnGraphHandle(0)
+	, m_spaceDiveGraph(0)
+	, m_spacePushFlag(false)
+	, m_spaceDivePushGraph(false)
+	, m_liveGraph(0)
 {
 
 	// 次のシーンへ移行するかどうか
@@ -70,6 +74,8 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 #ifdef _DEBUG
 	DebugKey();
 #endif
+
+
 		m_player->SetScene(true);
 		m_player->Update(_deltaTime);
 		m_camera->Update(*m_player);
@@ -136,6 +142,14 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 			return new Result(m_playerRanking);				//	リザルトシーンに切り替える
 
 		}
+
+		//スペースキーを押した間画像表示が変わる
+		if (CheckHitKey(KEY_INPUT_SPACE))
+		{
+			m_spacePushFlag = true;
+
+		}
+
 	//}
 	//	break;
 	//default:
@@ -164,8 +178,6 @@ void GameSceneCompe::Draw()
 	MV1SetPosition(m_poolModelHandle, VGet(0.0f, 0.0f, 180.0f));
 	//プールの描画
 	MV1DrawModel(m_poolModelHandle);
-	//LIVEの文字を表示
-	DrawExtendFormatString(m_liveX, m_liveY, 4.0, 4.0, GetColor(255, 0, 0), "LIVE");
 
 	if (m_player->GetPlayerState() == COMPE_SWIM)
 	{
@@ -180,9 +192,19 @@ void GameSceneCompe::Draw()
 	{
 		//国の画像表示
 		DrawGraph(0, 0, m_countryGraphHandle, TRUE);
+		if (!m_spacePushFlag)
+		{
+			DrawGraph(0, 0, m_spaceDiveGraph, TRUE);
+		}
+		else if (m_spacePushFlag)
+		{
+			DrawGraph(0, 0, m_spaceDivePushGraph, TRUE);
+
+		}
+
 	
-		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
 	}	
+
 
 	// プレーヤー
 	m_player->Draw();
@@ -215,6 +237,9 @@ void GameSceneCompe::Draw()
 		m_fadeOutFinishFlag = true;
 	}
 
+
+	DrawGraph(0, 0, m_liveGraph, TRUE);
+
 }
 
 void GameSceneCompe::Sound()
@@ -231,6 +256,9 @@ void GameSceneCompe::Load()
 	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
 	m_turnGraphHandle= LoadGraph("data/img/compe/50m.png");
 	m_goalGraphHandle = LoadGraph("data/img/compe/100m.png");
+	m_spaceDiveGraph = LoadGraph("data/img/gameScene/Dive.png");
+	m_spaceDivePushGraph = LoadGraph("data/img/gameScene/DivePush.png");
+	m_liveGraph=LoadGraph("data/img/compe/sekai.png");
 
 	//	サウンドハンドルにセット
 	m_soundHandle = LoadSoundMem("data/sound/Game/honban.mp3");
