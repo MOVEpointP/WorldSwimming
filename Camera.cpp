@@ -8,6 +8,8 @@
 
 #define USE_LERP_CAMERA 1
 
+VECTOR Camera::dir = VGet(0, 0, 0);
+
 //-----------------------------------------------------------------------------
 // @brief  コンストラクタ.
 //-----------------------------------------------------------------------------
@@ -69,8 +71,6 @@ void Camera::Update(const Player& player)
 	case DIVE:
 
 		SetCameraPositionAndTarget_UpVecY(VGet(100, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
-
-
 		break;
 
 
@@ -79,6 +79,7 @@ void Camera::Update(const Player& player)
 		if (player.GetPos().z >= 225)
 		{
 			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, 275), /*player.GetPos()*/VGet(0, -10, 275));
+
 		}
 		else
 		{
@@ -110,14 +111,18 @@ void Camera::Update(const Player& player)
 		if (player.GetPos().z >= 225)
 		{
 			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, 275), /*player.GetPos()*/VGet(0, -10, 275));
+			player.SetEfkDir(VGet(0, 1.5, 0));
+
 		}
 		else if (player.GetPos().z >= 225/2)
 		{
 			SetCameraPositionAndTarget_UpVecY(VGet(0, 50, player.GetPos().z + 90), /*player.GetPos()*/VGet(0, 20, player.GetPos().z + 50));
+			player.SetEfkDir(VGet(0, 2.5, 0));
 		}
 		else
 		{
 			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, player.GetPos().z + 50), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+			player.SetEfkDir(VGet(0, 1.5, 0));
 		}
 		break;
 

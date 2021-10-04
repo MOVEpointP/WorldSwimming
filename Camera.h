@@ -23,9 +23,13 @@ public:
 	// プレイヤーの泳ぎ状態のgetter/setter.
 	void SetPlayerState(int _playerState) { m_playerState = _playerState; }
 
+	//カメラの角度のgetter
+	static const VECTOR& GetDir()  { return dir; }
+
 private:
 
 	VECTOR	pos;						// ポジション.
+	static VECTOR  dir;
 	int m_playerState;					// プレイヤーの泳ぎ状態
 	float m_cameraPosX;
 	float m_cameraPosY;

@@ -72,6 +72,8 @@ public:
 
 	bool GoalFlag;	//プレイヤーがゴールしたときはtrue、ゴールしてないときはfalseになる
 
+	//エフェクトのDirのsetter
+	static void SetEfkDir(const VECTOR _set) { m_rankEfkDir = _set; }
 
 private:
 
@@ -112,7 +114,7 @@ private:
 
 	//ランクに応じて表示されるキラキラエフェクト
 	class PlayEffect* m_rankEfk[3];
-	VECTOR m_rankEfkDir;
+	static VECTOR m_rankEfkDir;
 
 	static int m_cameraPosX;
 

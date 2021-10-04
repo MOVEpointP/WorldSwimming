@@ -7,6 +7,7 @@
 #include "NPC.h"
 #include "Score.h"
 #include "GameScene_Compe.h"
+#include "Camera.h"
 
 // 静的定数.
 const float Player::ACCEL				=15.0f;		// 通常の加速.
@@ -26,6 +27,7 @@ const float Player::COLIDE_DECEL_FAC	= 0.4f;			// 障害物にぶつかったと
 const int VOLUME_PAL = 100;
 
 int Player::m_cameraPosX = 0;
+VECTOR Player::m_rankEfkDir=VGet(0,0,0);
 
 //-----------------------------------------------------------------------------
 // @brief  コンストラクタ.
@@ -174,7 +176,6 @@ void Player::Update(float _deltaTime)
 		pos = VGet(0, 30, 20);
 
 	}
-
 
 	//COMPE_FIRST　且つ　○秒経ったらモード切り替え
 	if (m_playerState == COMPE_FIRST && m_cameraPosX==-70)
@@ -383,20 +384,20 @@ void Player::Draw()
 		m_rankEfk[1]->SetPlayingEffectRotation(m_rankEfkDir);
 		m_rankEfk[0]->SetPlayingEffectRotation(m_rankEfkDir);
 
-		if (efkFlag&& ResultSceneFlag==false)
-		{
-			if (m_playerOrbitEfk->GetNowPlaying() != 0)
-			{
-				m_playerOrbitEfk->PlayEffekseer(pos);
-			}
-		}
-		else
-		{
-			m_playerOrbitEfk->StopEffect();
+		//if (efkFlag&& ResultSceneFlag==false)
+		//{
+		//	if (m_playerOrbitEfk->GetNowPlaying() != 0)
+		//	{
+		//		m_playerOrbitEfk->PlayEffekseer(pos);
+		//	}
+		//}y3
+		//else
+		//{
+		//	m_playerOrbitEfk->StopEffect();
 
-		}
-		// エフェクト再生中はプレイヤーの座標を追尾
-		m_playerOrbitEfk->SetPlayingEffectPos(pos);
+		//}
+		//// エフェクト再生中はプレイヤーの座標を追尾
+		//m_playerOrbitEfk->SetPlayingEffectPos(pos);
 		//ランクがSになったらSのエフェクトを出す
 		if (Score::SetRank() == 3)
 		{
@@ -404,6 +405,8 @@ void Player::Draw()
 			if (m_rankEfk[2]->GetNowPlaying() != 0 )
 			{
 				m_rankEfk[2]->PlayEffekseer(pos);
+				//m_rankEfkDir.z =
+
 
 			}
 
