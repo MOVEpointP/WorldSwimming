@@ -18,6 +18,9 @@ public:
 	void Sound()override;			//	音楽
 	void Load()override;			//	初期化
 	void DebugKey();
+
+	static void SetTurnFlag(int _turnFlag) { m_turnFlag = _turnFlag; }
+
 private:
 	class Player* m_player;			//	プレイヤークラスへのポインタメンバ変数
 	class Camera* m_camera;			//	カメラクラスへのポインタメンバ変数
@@ -27,6 +30,8 @@ private:
 	int m_startTime;				//	ゲームの開始時間
 	int m_soundHandle;				//	ゲーム画面・サウンドハンドル
 	int m_countryGraphHandle;		//国表示画像ハンドル
+	int m_turnGraphHandle;					//ターンした時の50m表記用のハンドル
+	int m_goalGraphHandle;
 	int m_poolModelHandle;			//プールのモデルハンドル
 	bool m_checkKeyFlag;			//	キーが押されたままかを判定するフラグ
 	bool m_finishFlag;				//	ゲーム終了判定フラグ
@@ -43,5 +48,6 @@ private:
 	int m_countryTopX;				//国の画像での、左上のｘ座標
 	int m_countryUnderX;				//国の画像での、右下のｘ座標
 	int m_timeFlame;				//タイム表示用のフレーム
+	static int m_turnFlag;
 
 }; 

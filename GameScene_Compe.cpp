@@ -23,6 +23,9 @@ const int m_liveX = 45;
 const int m_liveY = 38;//ライブ表記の座標
 const int m_countryTime = 2;//国の画像を表示する時間
 
+int GameSceneCompe::m_turnFlag= false;
+
+
 GameSceneCompe::GameSceneCompe()
 	: m_player(nullptr)
 	, m_camera(nullptr)
@@ -39,7 +42,9 @@ GameSceneCompe::GameSceneCompe()
 	, m_countryFadeFlag(false)
 	, m_countryTopX(0)
 	, m_countryUnderX(SCREEN_SIZE_W)
+	, m_turnGraphHandle(0)
 {
+
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
 	// ステートセット(カウントダウンから)
@@ -82,7 +87,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		}
 
 		//プレイヤーが泳ぎ始めたら国家の表示
-		if (m_player->GetPlayerState() == SWIM)
+		if (m_player->GetPlayerState() == COMPE_SWIM)
 		{
 			if (m_timeFlag == false&& !m_player->GetGoalFlag())
 			{
@@ -91,7 +96,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 				m_timeFlag = true;
 			}
 		}
-		//プレイヤーがゴールした瞬間タイムがリセットされている/////???????
+		//プレイヤーがゴールした瞬間タイムがリセットされている
 		if (m_timeFlag == true)
 		{
 			m_timeplayer = GetNowCount() / 100- m_startTime;
@@ -99,9 +104,8 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		}
 
 		// 国表示の判定
-		if (m_player->GetPlayerState() == SWIM)
+		if (m_player->GetPlayerState() == COMPE_SWIM)
 		{
-
 			if (m_countryTopX < SCREEN_SIZE_W/2 && m_countryUnderX > SCREEN_SIZE_W / 2)
 			{
 
@@ -112,7 +116,7 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		}
 
 		// シーン遷移
-		if (m_npc->GetRankCount() >= 4)
+		if (m_npc->GetRankCount() >= 5 && m_player->GetGoalFlag())
 		{
 			m_MaxGorl = true;
 		}
@@ -154,6 +158,8 @@ void GameSceneCompe::Draw()
 		}
 		m_fadeInFinishFlag = true;
 	}
+
+
 	//プールの表示位置変更
 	MV1SetPosition(m_poolModelHandle, VGet(0.0f, 0.0f, 180.0f));
 	//プールの描画
@@ -164,26 +170,36 @@ void GameSceneCompe::Draw()
 	m_npc->Draw();
 	//LIVEの文字を表示
 	DrawExtendFormatString(m_liveX, m_liveY, 4.0, 4.0, GetColor(255, 0, 0), "LIVE");
-	if (m_player->GetPlayerState() == SWIM)
+
+	if (m_player->GetPlayerState() == COMPE_SWIM)
 	{
+		// タイム表示
 		DrawGraph(0, 0, m_timeFlame,TRUE);
 		DrawExtendFormatString(1920 -250, 1080 - 100, 4.0, 4.0, GetColor(255,255,255), "%d.%d", m_timeplayer/10, m_timeplayer%10);
+
+		//国の画像を縮小
+		DrawExtendGraph(m_countryTopX, 0, m_countryUnderX, SCREEN_SIZE_H, m_countryGraphHandle, TRUE);
 	}
-	if (m_player->GetPlayerState() == DIVE2)
+	else if (m_player->GetPlayerState() == COMPE_DIVE)
 	{
 		//国の画像表示
 		DrawGraph(0, 0, m_countryGraphHandle, TRUE);
-
-		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
-	}
-
-	if (m_player->GetPlayerState() == SWIM)
-	{
-			//国の画像を縮小
-			DrawExtendGraph(m_countryTopX, 0, m_countryUnderX, SCREEN_SIZE_H, m_countryGraphHandle, TRUE);
-
-	}
 	
+		DrawExtendFormatString(1920 / 2 - 170 - GetFontSize(), 1080 - 100, 4.0, 4.0, GetColor(0, 0, 0), "SPACEで飛びこむ");
+	}	
+
+	//50m地点の画像表示
+	if (m_turnFlag == true)
+	{
+		DrawGraph(0, 0, m_turnGraphHandle, TRUE);
+
+	}
+
+	if (m_player->GetGoalFlag())
+	{
+		DrawGraph(0, 0, m_goalGraphHandle, TRUE);
+
+	}
 
 	// フェードアウト処理
 	if (m_fadeOutFlag)
@@ -212,13 +228,16 @@ void GameSceneCompe::Load()
 	//	グラフィックハンドルにセット
 	m_countryGraphHandle = LoadGraph("data/img/compe/country.png");
 	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
+	m_turnGraphHandle= LoadGraph("data/img/compe/50m.png");
+	m_goalGraphHandle = LoadGraph("data/img/compe/100m.png");
+
 	//	サウンドハンドルにセット
 	m_soundHandle = LoadSoundMem("data/sound/Game/honban.mp3");
 	m_timeFlame= LoadGraph("data/img/compe/TimeFlame.png");
 
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成
-	m_npc = new NPC;				//	NPCクラスのインスタンスを生成
+	m_npc	 = new NPC;				//	NPCクラスのインスタンスを生成
 
 }
 

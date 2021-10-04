@@ -12,6 +12,10 @@
 // @brief  コンストラクタ.
 //-----------------------------------------------------------------------------
 Camera::Camera()
+	:m_cameraPosX(0.0f)
+	, m_cameraPosY(0.0f)
+	, m_cameraPosZ(0.0f)
+	, m_playerState(0)
 {
 	//奥行0.1～1000までをカメラの描画範囲とする
 	// ３D空間に何かを描画する際に、カメラからどれだけ離れたところ（Near）から、
@@ -21,6 +25,7 @@ Camera::Camera()
 	// Vgetはベクトルの取得
 	// 原点の値をセット
 	pos = VGet(0, 0, 0);
+
 }
 
 //-----------------------------------------------------------------------------
@@ -36,7 +41,6 @@ Camera::~Camera()
 //-----------------------------------------------------------------------------
 void Camera::Update(const Player& player)
 {
-
 #if !USE_LERP_CAMERA
 	// z軸上で、プレイヤーから一定距離離れた状態でプレイヤーを常に見続けるよう位置調整
 	//pos = VGet(0, player.GetPos().y + 20.0f, player.GetPos().z - 30.0f);
@@ -62,18 +66,13 @@ void Camera::Update(const Player& player)
 	switch (player.GetPlayerState())
 	{
 
-	case DIVE2:
+	case DIVE:
 
-		if (player.GetPos().z >= 225)
-		{
-			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, 275), /*player.GetPos()*/VGet(0, -10, 275));
-		}
-		else
-		{
-			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, player.GetPos().z + 50), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
-		}
+		SetCameraPositionAndTarget_UpVecY(VGet(100, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+
 
 		break;
+
 
 	case SWIM:
 
@@ -85,13 +84,43 @@ void Camera::Update(const Player& player)
 		{
 			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, player.GetPos().z + 50), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
 		}
-		
-		break;
-
-	case DIVE:
-
-		SetCameraPositionAndTarget_UpVecY(VGet(0, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
 
 		break;
+
+
+	case COMPE_FIRST:
+
+	
+		m_cameraPosX -= 0.1f;
+
+		SetCameraPositionAndTarget_UpVecY(VGet(m_cameraPosX + 100, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+
+		break;
+
+	case COMPE_DIVE:
+
+ 			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, player.GetPos().z + 50), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+
+		break;
+
+
+	case COMPE_SWIM:
+
+		if (player.GetPos().z >= 225)
+		{
+			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, 275), /*player.GetPos()*/VGet(0, -10, 275));
+		}
+		else if (player.GetPos().z >= 225/2)
+		{
+			SetCameraPositionAndTarget_UpVecY(VGet(0, 50, player.GetPos().z + 90), /*player.GetPos()*/VGet(0, 20, player.GetPos().z + 50));
+		}
+		else
+		{
+			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, player.GetPos().z + 50), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+		}
+		break;
+
 	}
+
+
 }

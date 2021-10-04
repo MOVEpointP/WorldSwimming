@@ -20,6 +20,7 @@ const int transModeration = -1;
 const int FADE_IN_SPEED = 3;
 //	フェードアウトの速度
 const int FADE_OUT_SPEED = 3;
+
 Result::Result(int playerRanking)
 	:m_score(0)
 	, m_playerRanking(playerRanking)
@@ -32,6 +33,9 @@ Result::Result(int playerRanking)
 	, m_click_sound_handle(0)
 	, m_bgmSoundHandle(0)
 	,m_time(0)
+	,m_oneTime(0)
+	,m_tenTime(0)
+	,m_decimalTime(0)
 {
 	// 透過量変数を122に設定
 	m_transpVal = MAX_TRANSP_VAL;
@@ -53,6 +57,8 @@ Result::~Result()
 
 SceneBase* Result::Update(float _deltaTime)
 {
+
+
 	if (CheckHitKey(KEY_INPUT_UP))
 	{
 		m_volumePal++;
@@ -76,6 +82,8 @@ SceneBase* Result::Update(float _deltaTime)
 		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL);		//	音が再生し終わるまで待機
 		return new TestTitleSceneUeyama;
 	}
+
+
 	return this;
 }
 
@@ -117,6 +125,7 @@ void Result::Draw()
 		{
 			// 描画輝度をセット
 			SetDrawBright(255 - i, 255 - i, 255 - i);
+
 			// グラフィックを描画
 			DrawGraph(0, 0, m_backgroundGraphHandle, FALSE);
 			DrawGraph(0, 0, m_guidanceGraphHandle, TRUE);
@@ -125,12 +134,18 @@ void Result::Draw()
 		}
 		m_fadeOutFinishFlag = true;
 	}
-	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 , m_mapChip[m_time-(m_time/10)*10], TRUE);
-	DrawGraph(SCREEN_SIZE_W / 2 + 200, SCREEN_SIZE_H / 3, m_mapChip[m_time/10], TRUE);
+
+	//タイムの結果取得
+	Time::calcTime(m_oneTime, m_tenTime, m_decimalTime);
 	//タイム表示
+	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 , m_mapChip[m_oneTime], TRUE);
+	DrawGraph(SCREEN_SIZE_W / 2 + 200, SCREEN_SIZE_H / 3, m_mapChip[m_tenTime], TRUE);
+	DrawGraph(SCREEN_SIZE_W / 2 + 100, SCREEN_SIZE_H / 3, m_mapChip[m_decimalTime], TRUE);
+
 	//DrawExtendFormatString(SCREEN_SIZE_W / 2+300 - GetFontSize(), SCREEN_SIZE_H / 3+280, 4.0, 4.0, GetColor(0, 0, 0), "%d秒", m_time);
-	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 + 265, m_mapChip[m_playerRanking], TRUE);
+
 	//プレイヤーの順位表示
+	DrawGraph(SCREEN_SIZE_W / 2 + 300, SCREEN_SIZE_H / 3 + 265, m_mapChip[m_playerRanking], TRUE);
 	//DrawExtendFormatString(SCREEN_SIZE_W / 2+450 - GetFontSize(), SCREEN_SIZE_H / 3+430, 4.0, 4.0, GetColor(0, 0, 0), "%d", m_playerRanking);
 }
 

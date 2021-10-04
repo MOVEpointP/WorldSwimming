@@ -7,11 +7,13 @@
 
 #include "DxLib.h"
 
-#define DIVE2	0
-#define SWIM	1
-#define TURN	2
-#define RESULT 	3
-#define DIVE    4		//本番のダイブ2カメ
+#define DIVE		0		//練習中のダイブ
+#define SWIM		1		//練習本編
+#define TURN		2       //ターン
+#define RESULT 		3		//リザルト
+#define COMPE_FIRST	4		//本番最初のカメラ
+#define COMPE_DIVE  5		//本番中のダイブ
+#define COMPE_SWIM  6		//本番のSWIM
 
 class ObstructBase;
 class NPC;
@@ -68,7 +70,7 @@ public:
 
 private:
 
-	int		m_modelHandle[4];			//	モデルハンドル
+	int		m_modelHandle[7];			//	モデルハンドル
 	int		m_diveModelHandle;		//	ダイブモデルハンドル.
 	int		m_swimModelHandle;		//　泳ぎモデルハンドル.
 	int		m_resultModelHandle;	//	ガイナ立ちモデルハンドル.
@@ -82,7 +84,7 @@ private:
 	VECTOR	dir;			// 回転方向.
 	VECTOR  playerDir;
 	float	hitRadius;		// あたり判定の半径.
-	float TotalTime[3], PlayTime;//モーションの再生時間
+	float TotalTime[7], PlayTime;//モーションの再生時間
 	int AttachIndex;//モーションの
 	int m_speedDisplay;		//倍速表示の矢印を動かす
 	bool m_moveAnimFlag;//モーションを一時停止するフラグ

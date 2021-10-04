@@ -2,7 +2,6 @@
 #define _RESULT_H_
 
 #include "SceneBase.h"
-#include "UI.h"
 
 #include "DxLib.h"
 
@@ -42,6 +41,9 @@ private:
 	bool m_fadeOutFinishFlag;			//	フェードアウトの終了判定フラグ
 	int m_time;
 	int m_mapChip[10];
+	int m_oneTime;						//タイム1の位を格納する変数
+	int m_tenTime;						//タイム10の位を格納する変数
+	int m_decimalTime;					//少数第1位を格納する変数
 
 	enum rank
 	{

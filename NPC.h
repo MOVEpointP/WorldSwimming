@@ -5,13 +5,18 @@
 #ifndef _NPC_H_
 #define _NPC_H_
 
+#define NPC_NUMBER 7
+
 #include "DxLib.h"
 
-#define DIVE2	0
-#define SWIM	1
-#define TURN	2
-#define RESULT	3
-#define DIVE	4
+#define DIVE		0		//本番最初のカメラ
+#define SWIM		1		//練習本編
+#define TURN		2       //ターン
+#define RESULT 		3		//リザルト
+#define COMPE_FIRST	4		//練習中ののダイブ
+#define COMPE_DIVE  5		//本番中のダイブ
+#define COMPE_SWIM  6		//本番のSWIM
+
 class NPC final
 {
 public:
@@ -26,23 +31,28 @@ public:
 	void addRankCount();
 	// プレイヤーのランキングを更新するための変数を返す
 	int GetRankCount() { return m_rankcount; }
+
+	static void SetDiveFlag(int _diveFlag) { m_diveFlag = _diveFlag; }
 	// ゴールをしたNPCの人数
 private:
-	int		m_modelHandle[3][4];			//	モデルハンドル  [NPCの人数] [モーション]
+	int		m_modelHandle[NPC_NUMBER][7];			//	モデルハンドル  [NPCの人数] [モーション]
 	int		m_NPCState;
 	float   m_motionSpeed;					//　モデルのモーションスピード
-	VECTOR	pos[3];							// ポジション.
-	VECTOR	velocity[3];					// 移動力.
-	VECTOR	dir[3];							// 回転方向.
-	VECTOR  NPCDir[3];
-	float TotalTime[3], PlayTime;			//モーションの再生時間
+	VECTOR	pos[NPC_NUMBER];							// ポジション.
+	VECTOR	velocity[NPC_NUMBER];					// 移動力.
+	VECTOR	dir[NPC_NUMBER];							// 回転方向.
+	VECTOR  NPCDir[NPC_NUMBER];
+	float TotalTime[NPC_NUMBER], PlayTime;			//モーションの再生時間
 	int AttachIndex;						//モーションの
 	class Player* m_player;					//プレイヤークラスへのポインタメンバ変数
 	// 静的定数.
 	static const float ACCEL;
-	bool m_gorlflag[3];
+	bool m_gorlflag[NPC_NUMBER];
 	int m_rankcount;
-	float m_npcGoalAccel[3];					// NPCのスピード調整
+	float m_npcGoalAccel[NPC_NUMBER];					// NPCのスピード調整
+	int		m_npcState;
+	int m_startTime;
+	static int m_diveFlag;
 };
 
 #endif //_NPC_H_

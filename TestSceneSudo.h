@@ -20,6 +20,9 @@ public:
 	void Draw()override;			//	描画
 	void Sound()override;			//	音楽
 	void Load()override;			//	初期化
+	void DebugKey();
+
+	int GetTargetCount() { return m_targetCount; }
 
 private:
 	class Player* m_player;			//	プレイヤークラスへのポインタメンバ変数
@@ -27,7 +30,7 @@ private:
 	class Camera* m_camera;			//	カメラクラスへのポインタメンバ変数
 	GAME_SCENE_STATE m_state;		//  ゲームシーンのステータスを入れる
 
-	int m_targetCount;				//	アイスの飛ばした個数
+	int m_targetCount;				//	アイコンの飛ばした個数
 	int m_startTime;				//	ゲームの開始時間
 
 	int m_soundHandle;				//	ゲーム画面・サウンドハンドル
@@ -46,12 +49,18 @@ private:
 	int m_tensPlaceScore;
 	int m_onePlaceScore;
 	int m_scoreHandle;
-	int m_mapchipHandle[10];
+	int m_mapChipHandle[10];
 
 	int m_rankBHandle;
 	int m_rankAHandle;
 	int m_rankHandle;//スコアの効果音
 	int m_rankSoundFlag[3];
 	int m_rankSound;
-	
+
+	int m_spaceHandle;
+	int m_enterHandle;
+	bool m_enterPushFlag;
+	bool m_spacePushFlag;
+	int m_spacePushHandle;
+	int m_enterPushHandle;
 };

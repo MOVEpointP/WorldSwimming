@@ -3,15 +3,15 @@
 #include "Target.h"
 #include "Player.h"
 #include "Hitchecker.h"
-#include "UI.h"
 #include "Camera.h"
 #include "Fade.h"
 #include "Score.h"
 #include "DxLib.h"
 #include "Effect.h"
+#include "GameScene_Compe.h"
 
 static int enemyNum = 22;					//	エネミーの数
-static int COUNTDOWN = 7;					
+static int COUNTDOWN = 7;
 
 // ターゲットが飛んでくる間隔 (秒単位)
 const int TARGET_SHOT_INTERVAL = 2;
@@ -32,6 +32,7 @@ const int FADE_OUT_SPEED = 3;
 const int GONG_VOLUME_PAL = 30;
 const int DOOR_VOLUME_PAL = 40;
 
+
 TestSceneSudo::TestSceneSudo()
 	:m_player(nullptr)
 	, m_camera(nullptr)
@@ -47,7 +48,9 @@ TestSceneSudo::TestSceneSudo()
 	, m_tensPlaceScore(0)
 	, m_onePlaceScore(0)
 	, m_rankBHandle(false)
-	,m_rankSound(0)
+	, m_rankSound(0)
+	, m_enterPushFlag(false)
+	, m_spacePushFlag(false)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -68,9 +71,9 @@ TestSceneSudo::TestSceneSudo()
 	// ステートセット(カウントダウンから)
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
 
-
 	srand(time(NULL));//乱数の種を初期化
 }
+
 
 TestSceneSudo::~TestSceneSudo()
 {
@@ -80,7 +83,8 @@ TestSceneSudo::~TestSceneSudo()
 	//	メモリの解放処理
 	DeleteSoundMem(m_soundHandle);
 	DeleteSoundMem(m_endSoundHandle);
-	
+	DeleteSoundMem(m_rankBHandle);
+	DeleteSoundMem(m_rankAHandle);
 	DeleteSoundMem(m_rankHandle);
 
 	for (int i = 0; i < enemyNum; i++)
@@ -88,10 +92,9 @@ TestSceneSudo::~TestSceneSudo()
 		delete m_target[i];
 	}
 
-
 	delete m_target[enemyNum];
-
 }
+
 
 SceneBase* TestSceneSudo::Update(float _deltaTime)
 {
@@ -104,6 +107,13 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 
 	m_player->SetScene(false);
 
+	//デバック用
+	if (CheckHitKey(KEY_INPUT_0))
+	{
+		return new GameSceneCompe();
+	}
+
+
 	switch (m_state)
 	{
 	case GAME_SCENE_STATE::COUNTDOWN:
@@ -113,29 +123,55 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 			m_state = GAME_SCENE_STATE::GAME;
 		}
 		break;
+
 	case GAME_SCENE_STATE::GAME:
 		// エネミー射出管理
 		//if (GetNowCount() / 1000 - m_startTime > COUNTDOWN)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する
-		if(CheckHitKey(KEY_INPUT_LSHIFT))
-	{
-			m_startTime = GetNowCount() / 1000;
-			if (m_target[m_targetCount]->GetIceState() == NO_SHOT)//NO_SHOTの場合
+		if (m_player->GetPlayerState() == SWIM)
+		{
+			if (CheckHitKey(KEY_INPUT_SPACE))
 			{
-				m_target[m_targetCount]->SetIceState(NOW_SHOT);//ステータスにNOW_SHOTをセット 
-				Target::SetTargetSpeedX(m_targetSpeed);
-			}
-			if (m_target[m_targetCount]->GetIceState() == END_SHOT)//END_SHOTの場合
-			{
-				m_targetCount++;			//次のエネミーにカウントを進める
+				m_startTime = GetNowCount() / 1000;
+				if (m_target[m_targetCount]->GetIceState() == NO_SHOT)//NO_SHOTの場合
+				{
+					m_target[m_targetCount]->SetIceState(NOW_SHOT);//ステータスにNOW_SHOTをセット 
+					Target::SetTargetSpeedX(m_targetSpeed);
+				}
+				if (m_target[m_targetCount]->GetIceState() == END_SHOT)//END_SHOTの場合
+				{
+					m_targetCount++;			//次のエネミーにカウントを進める
+				}
 			}
 		}
+
+		//スペースキーを押した間画像表示が変わる
+		if (CheckHitKey(KEY_INPUT_SPACE))
+		{
+			m_spacePushFlag = true;
+
+		}
+		else
+		{
+			m_spacePushFlag = false;
+		}
+
+		//エンターキーを押した間画像表示が変わる
+		if (CheckHitKey(KEY_INPUT_RETURN))
+		{
+			m_enterPushFlag = true;
+		}
+		else
+		{
+			m_enterPushFlag = false;
+		}
+
 
 		// 現在の番号に応じてエネミーの更新
 		m_target[m_targetCount]->Update(_deltaTime);
 		m_target[m_targetCount]->SetTargetCount(m_targetCount);
 
 		// アイコンのx軸のポジションを取得
-        m_target[m_targetCount]->SetSinglePosX();//ターゲットにｘ座標をセット
+		m_target[m_targetCount]->SetSinglePosX();//ターゲットにｘ座標をセット
 
 		Score::calcScore(m_onePlaceScore, m_tensPlaceScore);
 
@@ -145,7 +181,8 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 
 		m_camera->Update(*m_player);
 
-		if (CheckHitKey(KEY_INPUT_RETURN))
+
+		if (CheckHitKey(KEY_INPUT_F))
 		{
 			return new ResultHalf();        //    リザルトシーンに切り替える
 
@@ -166,8 +203,10 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 			return new ResultHalf();        //    リザルトシーンに切り替える
 		}
 		break;
+
 	default:
 		break;
+
 	}
 	return this;							//	ゲームシーンを表示し続ける
 }
@@ -181,22 +220,39 @@ void TestSceneSudo::Draw()
 	//プールの描画
 	MV1DrawModel(m_poolModelHandle);
 
-	DrawGraph(0, 0, m_timingImgHandle, TRUE);
-
-	// ターゲット(アイス)
-	for (int i = 0; i <= m_targetCount; i++)
+	if (m_player->GetPlayerState() == SWIM)
 	{
-		m_target[i]->Draw();
+		DrawGraph(0, 0, m_timingImgHandle, TRUE);
+
+		DrawGraph(0, 0, m_spaceHandle, TRUE);
+
+		DrawGraph(0, 0, m_enterHandle, TRUE);
+
+		// ターゲット(アイコン)
+		for (int i = 0; i <= m_targetCount; i++)
+		{
+			m_target[i]->Draw();
+		}
+		if (m_spacePushFlag)
+		{
+			DrawGraph(0, 0, m_spacePushHandle, TRUE);
+		}
+		if (m_enterPushFlag)
+		{
+			DrawGraph(0, 0, m_enterPushHandle, TRUE);
+		}
+
+		DrawGraph(1920 / 2 + 500 + 20, 400, m_mapChipHandle[m_tensPlaceScore], TRUE);
+		DrawGraph(0, 0, m_scoreHandle, TRUE);
+		DrawGraph(1920 / 2 + 580, 400, m_mapChipHandle[m_onePlaceScore], TRUE);
+
 	}
 
 	// プレーヤー
 	m_player->Draw();
 
-
-
 	if (m_finishSoundFlag)
 	{
-
 		DrawExtendFormatString(SCREEN_SIZE_W / 2 - GetFontSize(), SCREEN_SIZE_H / 2, 4.0, 4.0, GetColor(0, 0, 0), "終了！");
 
 		m_finishFadeCount = GetNowCount() / 1000;
@@ -206,9 +262,6 @@ void TestSceneSudo::Draw()
 			m_fadeOutFlag = true;
 		}
 	}
-	DrawGraph(1920 / 2 + 580, 400, m_mapchipHandle[m_onePlaceScore], TRUE);
-	DrawGraph(1920 / 2 + 500, 400, m_mapchipHandle[m_tensPlaceScore], TRUE);
-	DrawGraph(0, 0, m_scoreHandle, TRUE);
 
 	// フェードアウト処理
 	if (m_fadeOutFlag)
@@ -229,7 +282,7 @@ void TestSceneSudo::Sound()
 {
 	//練習BGMの再生
 	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_LOOP, FALSE);
-	ChangeVolumeSoundMem(m_volumePal+50, m_soundHandle);
+	ChangeVolumeSoundMem(m_volumePal + 50, m_soundHandle);
 
 	if (m_finishSoundFlag)
 	{
@@ -281,11 +334,15 @@ void TestSceneSudo::Load()
 	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");		//練習BGMハンドル
 	m_timingImgHandle = LoadGraph("data/img/gameScene/timing2.png");		//判定バーの画像ハンドル
 	m_scoreHandle = LoadGraph("data/img/gameScene/score.png");
+	m_spaceHandle = LoadGraph("data/img/gameScene/space.png");
+	m_spacePushHandle = LoadGraph("data/img/gameScene/spacePush.png");
+	m_enterHandle = LoadGraph("data/img/gameScene/enter.png");
+	m_enterPushHandle = LoadGraph("data/img/gameScene/enterPush.png");
 	m_rankBHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
 	m_rankAHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
 	m_rankHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル
 
-	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapchipHandle);
+	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapChipHandle);
 
 	//	モデルハンドルにセット
 	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
@@ -299,11 +356,19 @@ void TestSceneSudo::Load()
 		m_target[i] = new Target;
 		m_target[i]->SetInterval(TARGET_SHOT_INTERVAL);
 		m_target[i]->SetAccel(targetSpeed);
-		
 	}
-	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");
-
-
 }
 
-
+void TestSceneSudo::DebugKey()
+{
+	// 確認用
+	if (CheckHitKey(KEY_INPUT_A))
+	{
+	}
+	if (CheckHitKey(KEY_INPUT_B))
+	{
+	}
+	if (CheckHitKey(KEY_INPUT_RETURN))
+	{
+	}
+}

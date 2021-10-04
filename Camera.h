@@ -27,7 +27,9 @@ private:
 
 	VECTOR	pos;						// ポジション.
 	int m_playerState;					// プレイヤーの泳ぎ状態
-	int m_playerPosZ;
+	float m_cameraPosX;
+	float m_cameraPosY;
+	float m_cameraPosZ;
 };
 
 #endif // _CAMERA_H_
