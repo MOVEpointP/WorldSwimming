@@ -8,7 +8,7 @@
 
 // 静的定数.
 const float NPC::ACCEL = 15.0f;		// 通常の加速.
-int NPC::m_diveFlag = 0;	//スタティックのメンバ変数の初期化
+bool NPC::m_diveFlag = 0;	//スタティックのメンバ変数の初期化
 
 
 //	音量
@@ -19,6 +19,8 @@ const int VOLUME_PAL = 100;
 NPC::NPC()
 	:m_NPCState(0)
 	, m_startTime(0)
+	, m_measureDistanceFlag(false)
+
 {
 	for (int i = 0; i <= NPC_NUMBER-1; i++)
 	{
@@ -52,17 +54,17 @@ NPC::NPC()
 		TotalTime[COMPE_SWIM] = MV1GetAttachAnimTotalTime(m_modelHandle[i][COMPE_SWIM], AttachIndex);
 
 		dir[i] = VGet(0, 0, 1);
-		m_gorlflag[i] = false;
+		m_goalFlag[i] = false;
 		NPCDir[i] = VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f);
 	}
 	m_rankcount = 0;
 	//再生時間の初期化
 	PlayTime = 0.0f;
-	pos[0] = VGet(23/*0*/, 30, 20);
-	pos[1] = VGet(50/*23*/, 30, 20);
-	pos[2] = VGet(80/* -55*/, 30, 20);
-	pos[3] = VGet(-30/*0*/, 30, 20);
-	pos[4] = VGet(-60/*0*/, 30, 20);
+	pos[0] = VGet(27, 30, 20);
+	pos[1] = VGet(53, 30, 20);
+	pos[2] = VGet(78, 30, 20);
+	pos[3] = VGet(-28, 30, 20);
+	pos[4] = VGet(-52, 30, 20);
 
 	// ３Dモデルのポジション設定
 	MV1SetPosition(m_modelHandle[0][m_NPCState], pos[0]);
@@ -91,6 +93,14 @@ NPC::NPC()
 
 	// 開始時のタイムを取得
 	m_startTime = GetNowCount() / 100;
+
+	// 水しぶきエフェクト読み込み
+	m_playerOrbitEfk = new PlayEffect("data/effects/swim/sibuki.efk");
+	m_efkDir = VGet(0.0f, 2.0f, 0.0f);
+	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
+	m_efkstartTime = GetNowCount() / 1000;
+
+	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 
 }
 
@@ -166,73 +176,100 @@ void NPC::Update(float _deltaTime)
 			for (int i = 0; i < NPC_NUMBER; i++)
 			{
 				// z座標が320を超えたら所定の位置に戻る
-				if (VSize(pos[i]) > VSize(VGet(0, 0, 320.0f)))
+				if (pos[i].z > 320)
 				{
+					m_measureDistanceFlag = true;
+					//スタート地点は50
+					// つまりゴールはposZ<50になればよい？
+					// それかposz(50）で押し戻しする or アクセルストップ
+					//if(posZ>320)
+					//なんか309のじてんで反転してる子がいる
+					//posZ=0(初期化
 					dir[i] = VGet(0, 0, -1);
 					NPCDir[i] = VGet(0.0f, 0.0f, 0.0f);
 				}
 			}
 			//　プール右端についたらゴールをしたフラグを返す　NPC一体目
-			if (VSize(pos[0]) < VSize(VGet(0, 0, 50.0f)))
+			if (pos[0].z < 50 && m_measureDistanceFlag)
 			{
-				if (m_gorlflag[0] == false)
+				if (m_goalFlag[0] == false)
 				{
-					m_gorlflag[0] = true;
+					m_goalFlag[0] = true;
 					m_rankcount++;
-					pos[0].z = 50;
 
 				}
 			}
 			//　プール右端についたらゴールをしたフラグを返す　NPC二体目
-			if (VSize(pos[1]) < VSize(VGet(0, 0, 57.0f)))
+			if (pos[1].z < 50 && m_measureDistanceFlag)
 			{
-				if (m_gorlflag[1] == false)
+				if (m_goalFlag[1] == false)
 				{
-					m_gorlflag[1] = true;
+					m_goalFlag[1] = true;
 					m_rankcount++;
-					pos[1].z = 50;
 				}
 			}
 			//　プール右端についたらゴールをしたフラグを返す　NPC三体目
-			if (VSize(pos[2]) < VSize(VGet(0, 0, 86.0f)))
+			if (pos[2].z < 50 && m_measureDistanceFlag)
 			{
-				if (m_gorlflag[2] == false)
+				if (m_goalFlag[2] == false)
 				{
-					m_gorlflag[2] = true;
+					m_goalFlag[2] = true;
 					m_rankcount++;
-					pos[2].z = 50;
 				}
 			}
-			if (VSize(pos[3]) < VSize(VGet(-30-1, 0, 50.0f)))
+			if (pos[3].z < 50 && m_measureDistanceFlag)
 			{
-				if (m_gorlflag[3] == false)
+				if (m_goalFlag[3] == false)
 				{
-					m_gorlflag[3] = true;
+					m_goalFlag[3] = true;
 					m_rankcount++;
-					pos[3].z = 50;
 
 				}
 			}
-			if (VSize(pos[4]) < VSize(VGet(-60-1, 0, 50.0f)))
+			if (pos[4].z < 50 && m_measureDistanceFlag)
 			{
-				if (m_gorlflag[4] == false)
+				if (m_goalFlag[4] == false)
 				{
-					m_gorlflag[4] = true;
+					m_goalFlag[4] = true;
 					m_rankcount++;
-					pos[4].z = 50;
 
 				}
 			}
-
 
 			for (int i = 0; i < NPC_NUMBER; i++)
 			{
-				if (m_gorlflag[i] == false)
+				if (m_goalFlag[i] == false)
 				{
 					accelVec[i] = VScale(dir[i], ACCEL + (i + 2)+ m_npcGoalAccel[i]);
 
 				}
 			}
+
+			//水しぶき（笑）のエフェクトを表示したり表示しなかったりしようとした残骸
+			if (efkFlag)
+			{
+				//m_efkTime = GetNowCount() / 1000 - m_efkstartTime;
+				//if (m_efkTime > 10)
+				//{
+				//	efkFlag = false;
+				//	m_efkstartTime = GetNowCount() / 1000;
+				//	m_efkTime = 0;
+
+				//}
+			}
+			else
+			{
+				m_efkTime = GetNowCount() / 1000 - m_efkstartTime;
+				if (m_efkTime > 10)
+				{
+					efkFlag = true;
+					m_efkstartTime = GetNowCount() / 1000;
+					m_efkTime = 0;
+
+				}
+
+			}
+
 		}
 		//練習と本番でモーションのスピードを調整する
 		 m_motionSpeed = 0.4f;
@@ -311,6 +348,8 @@ void NPC::Update(float _deltaTime)
 		// 再生時間をセットする
 		MV1SetAttachAnimTime(m_modelHandle[i][m_NPCState], AttachIndex, PlayTime);
 	}
+
+
 }
 //-----------------------------------------------------------------------------
 // @brief  描画.

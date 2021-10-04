@@ -107,11 +107,6 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 
 	m_player->SetScene(false);
 
-	//デバック用
-	if (CheckHitKey(KEY_INPUT_0))
-	{
-		return new GameSceneCompe();
-	}
 
 
 	switch (m_state)

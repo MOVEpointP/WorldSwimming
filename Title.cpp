@@ -2,6 +2,7 @@
 #include "DxLib.h"
 #include "GameScene_easy.h"
 #include "TestSceneSudo.h"
+#include "TestSceneNakamura.h"
 
 // 最大透過量
 const int MAX_TRANSP_VAL = 255;
@@ -57,8 +58,8 @@ SceneBase* Title::Update(float _deltaTime)
 		// ENTERで次のステートへ
 	if (CheckHitKey(KEY_INPUT_RETURN))
 	{
-		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL, FALSE);//？フラグ作るかどうか
-		return new TestSceneSudo();
+		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL, FALSE);
+		return new TestSceneNakamura();
 	}
 	return this;
 }

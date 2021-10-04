@@ -47,12 +47,22 @@ private:
 	class Player* m_player;					//プレイヤークラスへのポインタメンバ変数
 	// 静的定数.
 	static const float ACCEL;
-	bool m_gorlflag[NPC_NUMBER];
+	bool m_goalFlag[NPC_NUMBER];
 	int m_rankcount;
 	float m_npcGoalAccel[NPC_NUMBER];					// NPCのスピード調整
 	int		m_npcState;
 	int m_startTime;
-	static int m_diveFlag;
+	static bool m_diveFlag;
+	bool m_measureDistanceFlag;
+
+	//水しぶきのエフェクト
+	class PlayEffect* m_playerOrbitEfk;
+	VECTOR m_efkDir;
+	VECTOR m_efkPos;
+	bool efkFlag;
+	int m_efkTime;
+	int m_efkstartTime;
+
 };
 
 #endif //_NPC_H_

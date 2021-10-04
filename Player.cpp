@@ -6,6 +6,7 @@
 #include "Effect.h"
 #include "NPC.h"
 #include "Score.h"
+#include "GameScene_Compe.h"
 
 // 静的定数.
 const float Player::ACCEL				=15.0f;		// 通常の加速.
@@ -23,6 +24,8 @@ const float Player::COLIDE_DECEL_FAC	= 0.4f;			// 障害物にぶつかったと
 
 //	音量
 const int VOLUME_PAL = 100;
+
+int Player::m_cameraPosX = 0;
 
 //-----------------------------------------------------------------------------
 // @brief  コンストラクタ.
@@ -52,6 +55,9 @@ Player::Player()
 	m_modelHandle[1] = MV1LoadModel("data/model/player/Swimming01.mv1");
 	m_modelHandle[2] = MV1LoadModel("data/model/player/taisou.mv1");
 	m_modelHandle[3] = MV1LoadModel("data/model/player/result.mv1");
+	m_modelHandle[4] = MV1LoadModel("data/model/player/dive.mv1");
+	m_modelHandle[5] = MV1LoadModel("data/model/player/dive.mv1");
+	m_modelHandle[6] = MV1LoadModel("data/model/player/Swimming01.mv1");
 
 	m_RoundTrip = LoadGraph("data/img/gameScene/oufuku.png");
 	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapchipHandle);
@@ -59,20 +65,29 @@ Player::Player()
 
 	//３Ｄモデルの０番目のアニメーションをアタッチし、
 	//アタッチしたアニメーションの総再生時間を取得する
-	AttachIndex = MV1AttachAnim(m_modelHandle[0], 0, -1, FALSE);
-	TotalTime[DIVE2] = MV1GetAttachAnimTotalTime(m_modelHandle[0], AttachIndex);
-	AttachIndex = MV1AttachAnim(m_modelHandle[1], 0, -1, FALSE);
-	TotalTime[SWIM] = MV1GetAttachAnimTotalTime(m_modelHandle[1], AttachIndex);
-	AttachIndex = MV1AttachAnim(m_modelHandle[2], 0, -1, FALSE);
-	TotalTime[TURN] = MV1GetAttachAnimTotalTime(m_modelHandle[2], AttachIndex);
-	AttachIndex = MV1AttachAnim(m_modelHandle[3], 0, -1, FALSE);
-	//TotalTime[RESULT] = MV1GetAttachAnimTotalTime(m_modelHandle[3], AttachIndex);
+	AttachIndex = MV1AttachAnim(m_modelHandle[DIVE], 0, -1, FALSE);
+	TotalTime[DIVE] = MV1GetAttachAnimTotalTime(m_modelHandle[DIVE], AttachIndex);
 
+	AttachIndex = MV1AttachAnim(m_modelHandle[SWIM], 0, -1, FALSE);
+	TotalTime[SWIM] = MV1GetAttachAnimTotalTime(m_modelHandle[SWIM], AttachIndex);
+
+	AttachIndex = MV1AttachAnim(m_modelHandle[TURN], 0, -1, FALSE);
+	TotalTime[TURN] = MV1GetAttachAnimTotalTime(m_modelHandle[TURN], AttachIndex);
+
+	AttachIndex = MV1AttachAnim(m_modelHandle[COMPE_FIRST], 0, -1, FALSE);
+	TotalTime[COMPE_FIRST] = MV1GetAttachAnimTotalTime(m_modelHandle[COMPE_FIRST], AttachIndex);
+
+	AttachIndex = MV1AttachAnim(m_modelHandle[COMPE_DIVE], 0, -1, FALSE);
+	TotalTime[COMPE_DIVE] = MV1GetAttachAnimTotalTime(m_modelHandle[COMPE_DIVE], AttachIndex);
+
+	AttachIndex = MV1AttachAnim(m_modelHandle[COMPE_SWIM], 0, -1, FALSE);
+	TotalTime[COMPE_SWIM] = MV1GetAttachAnimTotalTime(m_modelHandle[COMPE_SWIM], AttachIndex);
+	
 	//再生時間の初期化
 	PlayTime = 0.0f;
 
 	// posはVector型なので、VGetで原点にセット
-	pos = VGet(0, 30, 20);
+	pos = VGet(-2, 30, 20);
 	//pos = VGet(0, 13, 50);
 	// ３Dモデルのポジション設定
 	MV1SetPosition(m_modelHandle[m_playerState], pos);
@@ -87,9 +102,6 @@ Player::Player()
 
 	// 開始時のタイムを取得
 	m_startTime = GetNowCount() / 100;
-
-	//最初はDIVE画面にしたい
-	m_playerState = DIVE;
 
 
 	// 水しぶきエフェクト読み込み
@@ -122,6 +134,11 @@ Player::~Player()
 	MV1DeleteModel(m_modelHandle[1]);
 	MV1DeleteModel(m_modelHandle[2]);
 	MV1DeleteModel(m_modelHandle[3]);
+	MV1DeleteModel(m_modelHandle[4]);
+	MV1DeleteModel(m_modelHandle[5]);
+	MV1DeleteModel(m_modelHandle[6]);
+
+
 	// サウンドのアンロード
 	DeleteSoundMem(m_sHandle);
 
@@ -149,14 +166,25 @@ void Player::Update(float _deltaTime)
 	// 加速処理.
 	VECTOR accelVec = VGet(0, 0, 0);
 
-	//SWIMじゃない　且つ　○秒経ったらカメラ切り替え
-	if (GetNowCount()/100 - m_startTime > 40&& m_playerState!=SWIM)
+	//本番シーンの処理
+	// 本番の最初のシーンに切り替える
+	if (m_playerState == DIVE && m_moveFlag)
 	{
-		m_playerState = DIVE2;
+		m_playerState = COMPE_FIRST;
+		pos = VGet(0, 30, 20);
+
+	}
+
+
+	//COMPE_FIRST　且つ　○秒経ったらモード切り替え
+	if (m_playerState == COMPE_FIRST && m_cameraPosX==-70)
+	{
+		m_playerState = COMPE_DIVE;
+		NPC::SetDiveFlag(true);
 	}
 
 	// キーが押されておらず、かつスペースキーが押されたら
-	if (CheckHitKey(KEY_INPUT_SPACE)&& !KeyPush)
+	if ((m_playerState == DIVE || m_playerState == COMPE_DIVE) && CheckHitKey(KEY_INPUT_SPACE) && !KeyPush)
 	{
 		PlaySoundMem(m_sHandle, DX_PLAYTYPE_BACK);
 		ChangeVolumeSoundMem(VOLUME_PAL, m_sHandle);
@@ -165,14 +193,19 @@ void Player::Update(float _deltaTime)
 
 	if (KeyPush)
 	{
-		if (m_playerState == SWIM)
+		// プレイヤーが泳いでいたら
+		if (m_playerState == SWIM || m_playerState == COMPE_SWIM)
 		{
 			// z座標が320を超えたら所定の位置に戻る
 			if (VSize(pos) > VSize(VGet(0, 0, 320.0f)))
 			{
 				dir = VGet(0, 0, -1);
 				playerDir = VGet(0.0f, 0.0f, 0.0f);
+				if (m_moveFlag == true)//本番だったら
+				{
+					GameSceneCompe::SetTurnFlag(true);
 
+				}
 			}
 			else if (VSize(pos) < VSize(VGet(0, 0, 50.0f)))
 			{
@@ -192,6 +225,8 @@ void Player::Update(float _deltaTime)
 						GoalFlag = true;
 					}
 					ResultSceneFlag = true;
+					m_moveFlag = false;
+
 				}
 
 				if (ResultSceneFlag == false)
@@ -204,6 +239,8 @@ void Player::Update(float _deltaTime)
 				if (m_modeCount == 1)
 				{
 					ResultSceneFlag = true;
+					m_moveFlag = true;
+
 				}
 				accelVec = VScale(dir, TRANING_SPEED);
 			}
@@ -260,7 +297,7 @@ void Player::Update(float _deltaTime)
 
 
 
-	if (KeyPush && ( m_playerState == DIVE2))
+	if (KeyPush && (m_playerState == COMPE_DIVE || m_playerState == DIVE))
 	{
 		pos.y -= 0.1;
 	}
@@ -272,7 +309,7 @@ void Player::Update(float _deltaTime)
 	//// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
 	if (PlayTime >= TotalTime[m_playerState])
 	{
-		if ( m_playerState == DIVE2)
+		if (m_playerState == DIVE)
 		{
 			m_playerState = SWIM;
 			pos.z = 50;
@@ -284,6 +321,23 @@ void Player::Update(float _deltaTime)
 		{
 			PlayTime = 0.0f;
 
+		}
+
+		//本番シーンの処理
+		if (m_playerState == COMPE_DIVE)
+		{
+			m_playerState = COMPE_SWIM;
+			pos.z = 50;
+
+			PlayTime = 0.0f;
+		}
+		else if (m_playerState == COMPE_SWIM)
+		{
+			PlayTime = 0.0f;
+		}
+		else if (m_playerState == COMPE_FIRST)
+		{
+			PlayTime = 0.0f;
 		}
 
 	}
@@ -314,29 +368,16 @@ void Player::Draw()
 {
 
 
-	// DIVEの時はDIVE2と同じ飛び込みモデルを使う（ごり押しだからあとで訂正しようね）
-	if (m_playerState == DIVE)
-	{
-		// ３Ｄモデルのスケールを拡大
-		MV1SetScale(m_modelHandle[DIVE2], VGet(5.0f, 5.0f, 5.0f));
-		// ３ＤモデルのX軸の回転値を180度にセットする
-		MV1SetRotationXYZ(m_modelHandle[DIVE2], playerDir);
-		// ３Ｄモデルの描画
-		MV1DrawModel(m_modelHandle[DIVE2]);
-
-	}
-	else
-	{
 		// ３Ｄモデルのスケールを拡大
 		MV1SetScale(m_modelHandle[m_playerState], VGet(5.0f, 5.0f, 5.0f));
 		// ３ＤモデルのX軸の回転値を180度にセットする
 		MV1SetRotationXYZ(m_modelHandle[m_playerState], playerDir);
 		// ３Ｄモデルの描画
 		MV1DrawModel(m_modelHandle[m_playerState]);
-	}
+
 
 	//キラキラエフェクト描画
-	if (m_playerState == SWIM)
+	if (m_playerState == SWIM|| m_playerState == COMPE_SWIM)
 	{
 		m_rankEfk[2]->SetPlayingEffectRotation(m_rankEfkDir);
 		m_rankEfk[1]->SetPlayingEffectRotation(m_rankEfkDir);
