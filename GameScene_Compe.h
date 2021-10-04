@@ -49,5 +49,9 @@ private:
 	int m_countryUnderX;				//国の画像での、右下のｘ座標
 	int m_timeFlame;				//タイム表示用のフレーム
 	static int m_turnFlag;
+	int m_spaceDiveGraph;
+	bool m_spacePushFlag;
+	bool m_spaceDivePushGraph;
+	int m_liveGraph;
 
 }; 
