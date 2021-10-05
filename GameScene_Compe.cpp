@@ -238,7 +238,11 @@ void GameSceneCompe::Draw()
 	}
 
 
-	DrawGraph(0, 0, m_liveGraph, TRUE);
+	if (m_MaxGorl == false)
+	{
+		DrawGraph(0, 0, m_liveGraph, TRUE);
+
+	}
 
 }
 
