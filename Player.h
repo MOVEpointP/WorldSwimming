@@ -101,11 +101,12 @@ private:
 	//　プレイヤーのランキングの順位を保存する変数
 	int PlayerRank;
 	int m_startTime;
+	int m_countTime;
 
 	// player用サウンド変数
 	static int m_sHandle;
 	//水しぶきのエフェクト
-	class PlayEffect * m_playerOrbitEfk;
+	class PlayEffect * m_playerOrbitEfk[3];
 	VECTOR m_efkDir;
 	VECTOR m_efkPos;
 	bool efkFlag;

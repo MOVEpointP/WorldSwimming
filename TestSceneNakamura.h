@@ -26,7 +26,7 @@ public:
 
 private:
 	class Player* m_player;			//	プレイヤークラスへのポインタメンバ変数
-	class Target* m_target[25];		//  ターゲットを格納する配列
+	class Target* m_target;		//  ターゲットを格納する配列
 	class Camera* m_camera;			//	カメラクラスへのポインタメンバ変数
 	GAME_SCENE_STATE m_state;		//  ゲームシーンのステータスを入れる
 

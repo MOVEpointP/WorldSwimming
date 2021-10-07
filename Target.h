@@ -29,7 +29,7 @@ public:
 	const VECTOR& GetPos() const { return pos; }
 	void SetPos(const VECTOR set) { pos = set; }
 	void SetSinglePosX() { m_posX = pos.x; }	                                   //ターゲットの座標をセット
-	static void SetTargetSpeedX(int _targetSpeed) { m_targetSpeed = _targetSpeed; }//スピードをセット
+	//static void SetTargetSpeedX(int _targetSpeed) { m_targetSpeed = _targetSpeed; }//スピードをセット
 
 	// ディレクションのgetter/setter.
 	const VECTOR& GetDir() const { return dir; }
@@ -87,8 +87,8 @@ private:
 	int  m_targerJadgeWord;		//タイミングの判定文字
 	int  m_targetScore;			//スコアを格納する変数
 	int  m_combo;				//コンボ数を格納する変数
-	static int  m_targetSpeed;	//それぞれのターゲットの流れる速度を決める変数
-	int     m_shotInterval;     // エネミーを飛ばす間隔
+	int  m_targetSpeed;	//それぞれのターゲットの流れる速度を決める変数  @@@staticだった
+	int  m_shotInterval;     // エネミーを飛ばす間隔
 
 	float	hitRadius;		// あたり判定の半径.
 	int m_goodHandle;
@@ -107,6 +107,7 @@ private:
 	bool efkFlag;
 	int efkHandle;
 	int m_startTime;
+	int m_targetStandby;//半透明の足アイコンの画像ハンドル
 };
 
 #endif // _TARGET_H_

@@ -54,22 +54,18 @@ TestSceneNakamura::TestSceneNakamura()
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
 	// エネミー・スコアUI初期化
-	for (int i = 0; i < enemyNum; i++)
-	{
-		m_target[i] = nullptr;
-	}
+	m_target = nullptr;
 
 	for (int i = 0; i <= 2; i++)
 	{
 		m_rankSoundFlag[i] = false;
 	}
 
-	// 開始時のタイムを取得
-	m_startTime = GetNowCount() / 1000;
+	//// 開始時のタイムを取得
+	//m_startTime = GetNowCount() / 1000;
 	// ステートセット(カウントダウンから)
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
 
-	srand(time(NULL));//乱数の種を初期化
 }
 
 TestSceneNakamura::~TestSceneNakamura()
@@ -84,11 +80,7 @@ TestSceneNakamura::~TestSceneNakamura()
 	DeleteSoundMem(m_rankAHandle);
 	DeleteSoundMem(m_rankHandle);
 		
-	for (int i = 0; i < enemyNum; i++)
-	{
-		delete m_target[i];
-	}
-
+	delete m_target;
 }
 
 SceneBase* TestSceneNakamura::Update(float _deltaTime)
@@ -98,7 +90,6 @@ SceneBase* TestSceneNakamura::Update(float _deltaTime)
 	//DebugKey();
 #endif
 
-	m_targetSpeed = rand() % 50 + 1;//ターゲットの速度を変える
 
 	m_player->SetScene(false);
 
@@ -116,7 +107,7 @@ SceneBase* TestSceneNakamura::Update(float _deltaTime)
 		//if (GetNowCount() / 1000 - m_startTime > COUNTDOWN)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する
 		if (m_player->GetPlayerState() == SWIM)
 		{
-			//スペースキーを押した間画像表示が変わる
+			//スペースキーを押した間画像(アイコン射出ボタンの画像）表示が変わる
 			if (CheckHitKey(KEY_INPUT_SPACE))
 			{
 				m_spacePushFlag = true;
@@ -127,7 +118,7 @@ SceneBase* TestSceneNakamura::Update(float _deltaTime)
 				m_spacePushFlag = false;
 			}
 
-			//エンターキーを押した間画像表示が変わる
+			//エンターキーを押した間画像(アイコン判定ボタンの画像）表示が変わる
 			if (CheckHitKey(KEY_INPUT_RETURN))
 			{
 				m_enterPushFlag = true;
@@ -138,36 +129,21 @@ SceneBase* TestSceneNakamura::Update(float _deltaTime)
 				m_enterPushFlag = false;
 			}
 
-			if (CheckHitKey(KEY_INPUT_SPACE))
-			{
-				m_startTime = GetNowCount() / 1000;
+			// 現在の番号に応じてエネミーの更新
+			m_target->Update(_deltaTime);
 
-				if (m_target[m_targetCount]->GetIceState() == NO_SHOT)//NO_SHOTの場合
-				{
-					m_target[m_targetCount]->SetIceState(NOW_SHOT);//ステータスにNOW_SHOTをセット 
-					Target::SetTargetSpeedX(m_targetSpeed);
-				}
-				if (m_target[m_targetCount]->GetIceState() == END_SHOT)//END_SHOTの場合
-				{
-					m_target[m_targetCount]->m_drawTargetFlag = false;
-					m_targetCount++;			//次のエネミーにカウントを進める
-				}
-			}
+			m_target->Reaction(m_target, false);
 
 		}
 
 
 
-		// 現在の番号に応じてエネミーの更新
-		m_target[m_targetCount]->Update(_deltaTime);
-		m_target[m_targetCount]->SetTargetCount(m_targetCount);
 
 		// アイコンのx軸のポジションを取得
-		m_target[m_targetCount]->SetSinglePosX();//ターゲットにｘ座標をセット
+		//m_target[m_targetCount]->SetSinglePosX();//ターゲットにｘ座標をセット
 
 		Score::calcScore(m_onePlaceScore, m_tensPlaceScore);
 
-		m_target[m_targetCount]->Reaction(m_target[m_targetCount], false);
 
 		m_player->Update(_deltaTime);
 
@@ -218,11 +194,8 @@ void TestSceneNakamura::Draw()
 		DrawGraph(0, 0, m_enterHandle, TRUE);
 
 		// ターゲット(アイコン)
-		for (int i = 0; i <= m_targetCount; i++)
-		{
-			m_target[i]->Draw();
+		m_target->Draw();
 
-		}
 		if (m_spacePushFlag)
 		{
 			DrawGraph(0, 0, m_spacePushHandle, TRUE);
@@ -266,13 +239,8 @@ void TestSceneNakamura::Draw()
 		if (CheckHitKey(KEY_INPUT_SPACE))
 		{
 			DrawGraph(0, 0, m_diveSpacePushHandle, TRUE);
-
 		}
-
 	}
-
-
-
 }
 
 void TestSceneNakamura::Sound()
@@ -351,13 +319,10 @@ void TestSceneNakamura::Load()
 
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成
-	for (int i = 0; i < (enemyNum + 1); i++)
-	{
-		m_target[i] = new Target;
-		m_target[i]->SetInterval(TARGET_SHOT_INTERVAL);
-		m_target[i]->SetAccel(targetSpeed);
 
-	}
+	m_target = new Target();
+	//m_target->SetInterval(TARGET_SHOT_INTERVAL);
+	//m_target->SetAccel(targetSpeed);
 }
 
 void TestSceneNakamura::DebugKey()

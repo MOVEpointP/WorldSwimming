@@ -49,14 +49,12 @@ Player::Player()
 	, m_RoundTrip(-1)
 	, m_startTime(0)
 	,efkFlag(true)
+	,m_countTime(0)
 {	
-	// サウンドの読み込み
-	m_sHandle = LoadSoundMem("data/sound/sara_shrow.wav");
-
 	m_modelHandle[0] = MV1LoadModel("data/model/player/dive.mv1");
 	m_modelHandle[1] = MV1LoadModel("data/model/player/Swimming01.mv1");
-	m_modelHandle[2] = MV1LoadModel("data/model/player/taisou.mv1");
-	m_modelHandle[3] = MV1LoadModel("data/model/player/result.mv1");
+	//m_modelHandle[2] = MV1LoadModel("data/model/player/taisou.mv1");
+	//m_modelHandle[3] = MV1LoadModel("data/model/player/result.mv1");
 	m_modelHandle[4] = MV1LoadModel("data/model/player/dive.mv1");
 	m_modelHandle[5] = MV1LoadModel("data/model/player/dive.mv1");
 	m_modelHandle[6] = MV1LoadModel("data/model/player/Swimming01.mv1");
@@ -102,14 +100,15 @@ Player::Player()
 
 	playerDir = VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f);
 
-	// 開始時のタイムを取得
-	m_startTime = GetNowCount() / 100;
 
 
 	// 水しぶきエフェクト読み込み
-	m_playerOrbitEfk = new PlayEffect("data/effects/swim/sibuki.efk");
+	m_playerOrbitEfk[0] = new PlayEffect("data/effects/swim/hamon.efk");
+	m_playerOrbitEfk[1] = new PlayEffect("data/effects/swim/hamon.efk");
+	m_playerOrbitEfk[2] = new PlayEffect("data/effects/swim/hamon.efk");
+
 	m_efkDir = VGet(0.0f, 2.0f, 0.0f);
-	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
+	//m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 	m_efkstartTime = GetNowCount() / 1000;
 
 	// キラキラエフェクト読み込み
@@ -120,10 +119,8 @@ Player::Player()
 
 	m_rankEfkDir = VGet(0.0f, 1.5, 0.0f);
 
-	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 
-
-
+	//m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 }
 
 //-----------------------------------------------------------------------------
@@ -145,8 +142,13 @@ Player::~Player()
 	DeleteSoundMem(m_sHandle);
 
 	// エフェクトのアンロード
-	m_playerOrbitEfk->Delete();
-	delete m_playerOrbitEfk;
+	m_playerOrbitEfk[0]->Delete();
+	m_playerOrbitEfk[1]->Delete();
+	m_playerOrbitEfk[2]->Delete();
+
+	delete m_playerOrbitEfk[0];
+	delete m_playerOrbitEfk[1];
+	delete m_playerOrbitEfk[2];
 
 	for (int i = 0; i <= 2; i++)
 	{
@@ -197,6 +199,7 @@ void Player::Update(float _deltaTime)
 		// プレイヤーが泳いでいたら
 		if (m_playerState == SWIM || m_playerState == COMPE_SWIM)
 		{
+
 			// z座標が320を超えたら所定の位置に戻る
 			if (VSize(pos) > VSize(VGet(0, 0, 320.0f)))
 			{
@@ -232,7 +235,7 @@ void Player::Update(float _deltaTime)
 
 				if (ResultSceneFlag == false)
 				{
-					accelVec = VScale(dir, (ACCEL+ (Score::GetScore()%10)));//スコアの分だけ早くなる
+					accelVec = VScale(dir, (ACCEL+ (Score::SetRank()*10)));//スコアの分だけ早くなる
 				}
 			}
 			else if (m_moveFlag == false)//練習だったら
@@ -244,30 +247,6 @@ void Player::Update(float _deltaTime)
 
 				}
 				accelVec = VScale(dir, TRANING_SPEED);
-			}
-			//水しぶき（笑）のエフェクトを表示したり表示しなかったりしようとした残骸
-			if (efkFlag)
-			{
-				//m_efkTime = GetNowCount() / 1000 - m_efkstartTime;
-				//if (m_efkTime > 10)
-				//{
-				//	efkFlag = false;
-				//	m_efkstartTime = GetNowCount() / 1000;
-				//	m_efkTime = 0;
-
-				//}
-			}
-			else
-			{
-				m_efkTime = GetNowCount() / 1000 - m_efkstartTime;
-				if (m_efkTime > 10)
-				{
-					efkFlag = true;
-					m_efkstartTime = GetNowCount() / 1000;
-					m_efkTime = 0;
-
-				}
-
 			}
 
 		}
@@ -312,6 +291,10 @@ void Player::Update(float _deltaTime)
 	{
 		if (m_playerState == DIVE)
 		{
+			// 開始時のタイムを取得
+			m_startTime = GetNowCount() / 100;
+
+
 			m_playerState = SWIM;
 			pos.z = 50;
 
@@ -358,6 +341,7 @@ void Player::Update(float _deltaTime)
 	//MATRIX rotYMat = MGetRotY(180.0f * (float)(DX_PI / 180.0f));
 	//tmpMat = MMult(tmpMat, rotYMat);
 	//MV1SetRotationMatrix(m_modelHandle[m_playerState], tmpMat);
+	m_countTime = GetNowCount() / 100 - m_startTime;
 
 
 }
@@ -375,6 +359,8 @@ void Player::Draw()
 		MV1SetRotationXYZ(m_modelHandle[m_playerState], playerDir);
 		// ３Ｄモデルの描画
 		MV1DrawModel(m_modelHandle[m_playerState]);
+		DrawExtendFormatString(1920 - 600, 1080 - 100, 4.0, 4.0, GetColor(255, 255, 255), "m_countTime:%d", m_countTime);
+		DrawExtendFormatString(1920 - 600, 1080 - 200, 4.0, 4.0, GetColor(255, 255, 255), "startTime:%d", m_startTime);
 
 
 	//キラキラエフェクト描画
@@ -384,17 +370,26 @@ void Player::Draw()
 		m_rankEfk[1]->SetPlayingEffectRotation(m_rankEfkDir);
 		m_rankEfk[0]->SetPlayingEffectRotation(m_rankEfkDir);
 
-		//if (efkFlag&& ResultSceneFlag==false)
-		//{
-		//	if (m_playerOrbitEfk->GetNowPlaying() != 0)
-		//	{
-		//		m_playerOrbitEfk->PlayEffekseer(pos);
-		//	}
-		//}y3
-		//else
-		//{
-		//	m_playerOrbitEfk->StopEffect();
+		if (m_playerOrbitEfk[0]->GetNowPlaying() != 0)
+		{
+			m_playerOrbitEfk[0]->PlayEffekseer(VAdd(pos, VGet(0, 0, -3)));
 
+		}
+		//一秒遅れて水の波紋エフェクトを表示させる	
+		if (m_countTime >3)
+		{
+			if (m_playerOrbitEfk[1]->GetNowPlaying() != 0)
+			{
+				m_playerOrbitEfk[1]->PlayEffekseer(VAdd(pos, VGet(0, 0, -7)));
+			}
+
+		}
+		//if (m_countTime > 10)
+		//{
+		//	if (m_playerOrbitEfk[2]->GetNowPlaying() != 0)
+		//	{
+		//		m_playerOrbitEfk[2]->PlayEffekseer(VAdd(pos, VGet(0, 0, -5)));
+		//	}
 		//}
 		//// エフェクト再生中はプレイヤーの座標を追尾
 		//m_playerOrbitEfk->SetPlayingEffectPos(pos);

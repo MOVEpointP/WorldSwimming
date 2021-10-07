@@ -4,9 +4,10 @@
 #include "Combo.h"
 #include <cmath>
 #include "Effect.h"
+#include "stdlib.h"
 
 // 静的定数.
-const int Target::m_target_X      =		400;		// ターゲットの初期x座標
+const int Target::m_target_X      =		30;		// ターゲットの初期x座標
 const int Target::m_target_Y      =		 10;		// ターゲットの初期y座標
 const int Target::m_target_Z      =		  0;		// ターゲットの初期z座標
 								  
@@ -19,7 +20,7 @@ const int Target::m_perfect       =	   1325;      	// パーフェクト判定
 const int Target::m_after_good    =    1375;		// グッド判定（後）
 const int Target::m_final_good    =    1500;		// グッド判定（最後）
 
-int Target::m_targetSpeed = 0;
+//const int Target::m_targetSpeed = 0;
 
 //-----------------------------------------------------------------------------
 // @brief  コンストラクタ.
@@ -46,16 +47,16 @@ Target::Target()
 {
 	// 画像の読み込み
 	m_legImgHandle=LoadGraph("data/img/target/legs.png");
-	m_o2ImgHandle=LoadGraph("data/img/target/O2.png");
+	//m_o2ImgHandle=LoadGraph("data/img/target/O2.png");
 	m_goodHandle = LoadGraph("data/img/gameScene/good.png");
 	m_badHandle = LoadGraph("data/img/gameScene/bad.png");
 	m_perfectHandle = LoadGraph("data/img/gameScene/perfect.png");
 	m_comboHandle = LoadGraph("data/img/gameScene/combo.png");
 	LoadDivGraph("data/img/gameScene/suuji.png", 10, 10, 1, 60, 60, m_mapchipHandle);
 	m_goodSoundHandle = LoadSoundMem("data/sound/Game/good.mp3");		//スコアの効果音ハンドル
-	m_badSoundHandle = LoadSoundMem("data/sound/Game/bad.mp3");		//スコアの効果音ハンドル
+	m_badSoundHandle = LoadSoundMem("data/sound/Game/bad.mp3");		//スコアの効果音ハンドル@@@
 	m_perfectSoundHandle = LoadSoundMem("data/sound/Game/perfect.mp3");		//スコアの効果音ハンドル
-
+	m_targetStandby = LoadGraph("data/img/target/legsStandby.png");//半透明の足アイコンの画像@@@
 
 	m_target_accel = 0.1f;
 
@@ -70,6 +71,8 @@ Target::Target()
 	m_goodOrbitEfk = LoadEffekseerEffect("data/effects/swim/good.efk",25.0f);
 	m_perfecOrbitEfk= LoadEffekseerEffect("data/effects/swim/perfecd.efk", 25.0f);
 	m_badOrbitEfk = LoadEffekseerEffect("data/effects/swim/bad.efk", 25.0f);
+
+	srand(time(NULL));//乱数の種を初期化
 
 }
 
@@ -93,16 +96,40 @@ Target::~Target()
 //-----------------------------------------------------------------------------
 void Target::Update(float _deltaTime)
 {
-	
+
 	 accelVec = VGet(0, 0, 0);
 
 	//	射出フラグがtrueになったら
 	if (m_targetState == NOW_SHOT)
 	{
-		m_target_accel += m_targetSpeed;			
+
+		pos.x += m_targetSpeed;			
 		accelVec = VScale(dir, m_target_accel);		
 	}
+
+
 	
+ 	if (CheckHitKey(KEY_INPUT_SPACE))
+	{
+
+		if (m_targetState == NO_SHOT)//NO_SHOTの場合
+		{
+			m_targetSpeed = rand() % 20+10;//ターゲットの速度を変える
+
+			m_targetState = NOW_SHOT;//ステータスにNOW_SHOTをセット 
+		}
+	}
+
+	if (m_targetState == END_SHOT)//END_SHOTの場合
+	{
+		pos = VGet(m_target_X, m_target_Y, m_target_Z);
+
+		m_targetState = NO_SHOT;//ステータスにNOW_SHOTをセット 
+
+	}
+
+
+
 	// ベロシティ加速計算.
 	velocity = VAdd(velocity, accelVec);
 
@@ -129,6 +156,7 @@ void Target::Update(float _deltaTime)
 	if (m_countTime  > 1)
 	{
 		m_drawTargetFlag = false;
+		m_countTime = 0;
 	}
 
 }
@@ -139,9 +167,35 @@ void Target::Update(float _deltaTime)
 void Target::Draw()
 {
 
+	if (m_targetState == NOW_SHOT)
+	{
+		// 足のアイコンを描画
+		DrawGraph(pos.x, 400, m_legImgHandle, TRUE);
 
-	// 足のアイコンを描画
-	DrawGraph(m_posX, 400, m_legImgHandle, TRUE);
+	}
+	else
+	{
+		DrawGraph(pos.x, 400, m_targetStandby, TRUE);
+	}
+	//判定を描画する時間が一秒経ったら消えるようにする
+	if (m_drawTargetFlag&& m_targerJadgeWord == 2)
+	{
+
+		DrawGraph(0, 0, m_goodHandle, TRUE);
+
+	}
+	//判定を描画する時間が一秒経ったら消えるようにする
+	if (m_drawTargetFlag&& m_targerJadgeWord == 3)
+	{
+		DrawGraph(0, 0, m_perfectHandle, TRUE);
+	}
+
+	//判定を描画する時間が一秒経ったら消えるようにする
+	if (m_drawTargetFlag&& m_targerJadgeWord == 1)
+	{
+		DrawGraph(0, 0, m_badHandle, TRUE);
+	}
+
 
 	// デバッグあたり判定.
 	if (m_targetState == END_SHOT)
@@ -155,13 +209,6 @@ void Target::Draw()
 				SetPosPlayingEffekseer2DEffect(efkHandle, 1600, 600, 0);
 			}
 
-			//判定を描画する時間が一秒経ったら消えるようにする
-			if (m_drawTargetFlag)
-			{
-
-				DrawGraph(0, 0, m_goodHandle, TRUE);
-
-			}
 		}																												  
 		else if (m_targerJadgeWord == 3)//perfectなら																	
 		{
@@ -172,11 +219,6 @@ void Target::Draw()
 
 			}
 
-			//判定を描画する時間が一秒経ったら消えるようにする
-			if (m_drawTargetFlag)
-			{
-				DrawGraph(0, 0, m_perfectHandle, TRUE);
-			}
 		}
 		else if (m_targerJadgeWord == 1)//badなら
 		{
@@ -185,12 +227,6 @@ void Target::Draw()
 				efkHandle = PlayEffekseer2DEffect(m_badOrbitEfk);
 				SetPosPlayingEffekseer2DEffect(efkHandle, 1600, 600, 0);
 
-			}
-
-			//判定を描画する時間が一秒経ったら消えるようにする
-			if (m_drawTargetFlag)
-			{
-				DrawGraph(0, 0, m_badHandle, TRUE);
 			}
 		}
 
@@ -210,10 +246,10 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 
 	if (_hitFlag)
 	{
-		m_plusX = (20 + m_targetCount * 20);	// ｘ座標をセット
+		//m_plusX = (20 + m_targetCount * 20);	// ｘ座標をセット
 		pos = VGet(m_plusX, 100, -200);			// 座標をセット
 
-		m_targetState = END_SHOT;
+		//m_targetState = END_SHOT;
 	}
 	else
 	{
@@ -229,12 +265,13 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 					PlaySoundMem(m_goodSoundHandle, DX_PLAYTYPE_BACK);
 					m_targetScore += m_score_good;					// スコア変化なし
 					m_targerJadgeWord = 2;
-					pos = VGet(-2000, -1000, 200);					// 座標を移動して表示しなくする
-					m_combo = 1;									// コンボ数加算
+					//pos = VGet(-2000, -1000, 200);					// 座標を移動して表示しなくする
+					m_combo = 1;	
+					m_drawTargetFlag = true;
+					// コンボ数加算
 					m_targetState = END_SHOT;
 					//判定を描画するフラグをtrueにする
 					//判定の描画をする最初の瞬間の時間を計測
-					m_drawTargetFlag = true;
 					m_startTime = GetNowCount() / 1000;
 					efkFlag = true;
 
@@ -245,7 +282,7 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 					m_targetScore += m_score_perfect;                // スコアup
 
 					m_targerJadgeWord = 3;
-					pos = VGet(-2000, -1000, 200);                   // 座標を移動して表示しなくする
+					//pos = VGet(-2000, -1000, 200);                   // 座標を移動して表示しなくする
 					m_combo = 1;                                     // コンボ数加算
 					m_targetState = END_SHOT;
 					//判定を描画するフラグをtrueにする
@@ -262,7 +299,7 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 					m_targetScore += m_score_bad;					 // スコアdown
 
 					m_targerJadgeWord = 1;
-					pos = VGet(-2000, -1000, 200);					 // 座標を移動して表示しなくする
+					//pos = VGet(-2000, -1000, 200);					 // 座標を移動して表示しなくする
 					m_combo = -Combo::GetCombo();									 // コンボ数リセット
 					m_tens_place = -Combo::GetTenCombo();
 					m_targetState = END_SHOT;
@@ -284,7 +321,7 @@ void Target::Reaction(Target* _target, bool _hitFlag)
 				m_targetScore += m_score_bad;	// スコアdown
 
 				m_targerJadgeWord = 1;
-				pos = VGet(-2000, -1000, 200);	// 座標を移動して表示しなくする
+				//pos = VGet(-2000, -1000, 200);	// 座標を移動して表示しなくする
 				m_combo = -Combo::GetCombo();					// コンボ数リセット
 				m_tens_place = -Combo::GetTenCombo();
 				m_targetState = END_SHOT;
