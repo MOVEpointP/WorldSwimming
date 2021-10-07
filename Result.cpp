@@ -1,7 +1,7 @@
 #include "Result.h"
-#include "TestTitleSceneUeyama.h"
 #include "Score.h"
 #include "Time.h"
+#include "Title.h"
 const int TRANSP_MODERATION = -1;
 const int LOGO_X = 0;
 const int LOGO_Y = 0;
@@ -80,7 +80,7 @@ SceneBase* Result::Update(float _deltaTime)
 	{
 		ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_click_sound_handle);
 		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL);		//	âπÇ™çƒê∂ÇµèIÇÌÇÈÇ‹Ç≈ë“ã@
-		return new TestTitleSceneUeyama;
+		return new Title;
 	}
 
 

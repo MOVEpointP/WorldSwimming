@@ -23,7 +23,7 @@ const int m_liveX = 45;
 const int m_liveY = 38;//ライブ表記の座標
 const int m_countryTime = 2;//国の画像を表示する時間
 
-int GameSceneCompe::m_turnFlag= false;
+int GameSceneCompe::m_turnFlag = false;
 
 
 GameSceneCompe::GameSceneCompe()
@@ -56,7 +56,7 @@ GameSceneCompe::GameSceneCompe()
 	// ステートセット(カウントダウンから)
 	m_state = GAME_SCENE_STATE::COUNTDOWN;
 	KeyPush = false;
-	
+
 }
 
 GameSceneCompe::~GameSceneCompe()
@@ -78,92 +78,92 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 #endif
 
 
-		m_player->SetScene(true);
-		m_player->Update(_deltaTime);
-		m_camera->Update(*m_player);
-		m_npc->Update(_deltaTime);
-		// プレイヤーのランキング保存変数にNPCが何体ゴールしたかの数を入れる
-		// プレイヤーがゴールした時(フラグをgetterで取得しています)
-		static bool isProcess = false;
-		if (m_player->GetGoalFlag() && !isProcess)
-		{
-			m_npc->addRankCount();
-			// 加算したRankCountを取得してリザルトに順位として表示
-			m_playerRanking = m_npc->GetRankCount();
-			isProcess = true;
-			m_timeFlag = false;
-		}
+	m_player->SetScene(true);
+	m_player->Update(_deltaTime);
+	m_camera->Update(*m_player);
+	m_npc->Update(_deltaTime);
+	// プレイヤーのランキング保存変数にNPCが何体ゴールしたかの数を入れる
+	// プレイヤーがゴールした時(フラグをgetterで取得しています)
+	static bool isProcess = false;
+	if (m_player->GetGoalFlag() && !isProcess)
+	{
+		m_npc->addRankCount();
+		// 加算したRankCountを取得してリザルトに順位として表示
+		m_playerRanking = m_npc->GetRankCount();
+		isProcess = true;
+		m_timeFlag = false;
+	}
 
-		//プレイヤーが泳ぎ始めたら国家の表示
-		if (m_player->GetPlayerState() == COMPE_SWIM)
+	//プレイヤーが泳ぎ始めたら国家の表示
+	if (m_player->GetPlayerState() == COMPE_SWIM)
+	{
+		if (m_timeFlag == false && !m_player->GetGoalFlag())
 		{
-			if (m_timeFlag == false&& !m_player->GetGoalFlag())
-			{
-				// 開始時のタイムを取得
-				m_startTime = GetNowCount() / 100;
-				m_timeFlag = true;
-			}
+			// 開始時のタイムを取得
+			m_startTime = GetNowCount() / 100;
+			m_timeFlag = true;
 		}
-		//プレイヤーがゴールした瞬間タイムがリセットされている
-		if (m_timeFlag == true)
-		{
-			m_timeplayer = GetNowCount() / 100- m_startTime;
-			Time::SetTime(m_timeplayer);			//タイムの値をセットする
-		}
+	}
+	//プレイヤーがゴールした瞬間タイムがリセットされている
+	if (m_timeFlag == true)
+	{
+		m_timeplayer = GetNowCount() / 100 - m_startTime;
+		Time::SetTime(m_timeplayer);			//タイムの値をセットする
+	}
 
-		// 国表示の判定
-		if (m_player->GetPlayerState() == COMPE_SWIM)
+	// 国表示の判定
+	if (m_player->GetPlayerState() == COMPE_SWIM)
+	{
+		if (m_countryTopX < SCREEN_SIZE_W / 2 && m_countryUnderX > SCREEN_SIZE_W / 2)
 		{
-			if (m_countryTopX < SCREEN_SIZE_W/2 && m_countryUnderX > SCREEN_SIZE_W / 2)
-			{
 
-				m_countryTopX += 30;
-				m_countryUnderX -= 30;
-
-			}
-		}
-
-		// シーン遷移
-		if (m_npc->GetRankCount() >= 6 && m_player->GetGoalFlag())
-		{
-			m_MaxGorl = true;
-		}
-		//全員ゴール且つ100m表記が終わってからフェードアウト
-		if (m_MaxGorl &&m_100mGraphX < 15)
-		{
-			m_fadeOutFlag = true;
-		}
-		if (m_fadeOutFinishFlag)//全員がゴール且つ100m表記の画像が表示されたら
-		{
-			// 処理したかフラグを元に戻す
-			isProcess = false;
-			return new Result(m_playerRanking);				//	リザルトシーンに切り替える
-		}
-		//リザルト画面がすぐ見たい用
-		if (m_checkKeyFlag)
-		{
-			return new Result(m_playerRanking);				//	リザルトシーンに切り替える
+			m_countryTopX += 30;
+			m_countryUnderX -= 30;
 
 		}
+	}
 
-		//スペースキーを押した間画像表示が変わる
-		if (CheckHitKey(KEY_INPUT_SPACE))
-		{
-			m_spacePushFlag = true;
+	// シーン遷移
+	if (m_npc->GetRankCount() >= 6 && m_player->GetGoalFlag())
+	{
+		m_MaxGorl = true;
+	}
+	//全員ゴール且つ100m表記が終わってからフェードアウト
+	if (m_MaxGorl && m_100mGraphX < 15)
+	{
+		m_fadeOutFlag = true;
+	}
+	if (m_fadeOutFinishFlag)//全員がゴール且つ100m表記の画像が表示されたら
+	{
+		// 処理したかフラグを元に戻す
+		isProcess = false;
+		return new Result(m_playerRanking);				//	リザルトシーンに切り替える
+	}
+	//リザルト画面がすぐ見たい用
+	if (m_checkKeyFlag)
+	{
+		return new Result(m_playerRanking);				//	リザルトシーンに切り替える
 
-		}
+	}
 
-		//50m地点の画像をスライドさせる
-		if (m_turnFlag&& m_50mGraphX>15)
-		{
-			m_50mGraphX-=15;
-		}
-		if (m_player->GetGoalFlag() && m_100mGraphX > 15)
-		{
-			m_turnFlag = false;
-			m_100mGraphX -= 15;
+	//スペースキーを押した間画像表示が変わる
+	if (CheckHitKey(KEY_INPUT_SPACE))
+	{
+		m_spacePushFlag = true;
 
-		}
+	}
+
+	//50m地点の画像をスライドさせる
+	if (m_turnFlag && m_50mGraphX > 15)
+	{
+		m_50mGraphX -= 15;
+	}
+	if (m_player->GetGoalFlag() && m_100mGraphX > 15)
+	{
+		m_turnFlag = false;
+		m_100mGraphX -= 15;
+
+	}
 
 
 	//}
@@ -198,8 +198,8 @@ void GameSceneCompe::Draw()
 	if (m_player->GetPlayerState() == COMPE_SWIM)
 	{
 		// タイム表示
-		DrawGraph(0, 0, m_timeFlame,TRUE);
-		DrawExtendFormatString(1920 -250, 1080 - 100, 4.0, 4.0, GetColor(255,255,255), "%d.%d", m_timeplayer/10, m_timeplayer%10);
+		DrawGraph(0, 0, m_timeFlame, TRUE);
+		DrawExtendFormatString(1920 - 250, 1080 - 100, 4.0, 4.0, GetColor(255, 255, 255), "%d.%d", m_timeplayer / 10, m_timeplayer % 10);
 
 		//国の画像を縮小
 		DrawExtendGraph(m_countryTopX, 0, m_countryUnderX, SCREEN_SIZE_H, m_countryGraphHandle, TRUE);
@@ -217,8 +217,8 @@ void GameSceneCompe::Draw()
 			DrawGraph(0, 0, m_spaceDivePushGraph, TRUE);
 		}
 
-	
-	}	
+
+	}
 
 
 	// プレーヤー
@@ -266,7 +266,7 @@ void GameSceneCompe::Sound()
 {
 	//	本番BGM
 	PlaySoundMem(m_soundHandle, DX_PLAYTYPE_BACK, FALSE);
-	ChangeVolumeSoundMem(m_volumePal + 150, m_soundHandle);	
+	ChangeVolumeSoundMem(m_volumePal + 150, m_soundHandle);
 }
 
 void GameSceneCompe::Load()
@@ -274,19 +274,19 @@ void GameSceneCompe::Load()
 	//	グラフィックハンドルにセット
 	m_countryGraphHandle = LoadGraph("data/img/compe/country.png");
 	m_poolModelHandle = MV1LoadModel("data/model/stage/stage2/poolModel2.pmx");
-	m_turnGraphHandle= LoadGraph("data/img/compe/50m.png");
+	m_turnGraphHandle = LoadGraph("data/img/compe/50m.png");
 	m_goalGraphHandle = LoadGraph("data/img/compe/100m.png");
 	m_spaceDiveGraph = LoadGraph("data/img/gameScene/Dive.png");
 	m_spaceDivePushGraph = LoadGraph("data/img/gameScene/DivePush.png");
-	m_liveGraph=LoadGraph("data/img/compe/sekai.png");
+	m_liveGraph = LoadGraph("data/img/compe/sekai.png");
 
 	//	サウンドハンドルにセット
 	m_soundHandle = LoadSoundMem("data/sound/Game/honban.mp3");
-	m_timeFlame= LoadGraph("data/img/compe/TimeFlame.png");
+	m_timeFlame = LoadGraph("data/img/compe/TimeFlame.png");
 
 	m_player = new Player;			//	プレイヤークラスのインスタンスを生成
 	m_camera = new Camera;			//	カメラクラスのインスタンスを生成
-	m_npc	 = new NPC;				//	NPCクラスのインスタンスを生成
+	m_npc = new NPC;				//	NPCクラスのインスタンスを生成
 
 }
 

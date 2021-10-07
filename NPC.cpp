@@ -22,7 +22,7 @@ NPC::NPC()
 	, m_measureDistanceFlag(false)
 
 {
-	for (int i = 0; i <= NPC_NUMBER-1; i++)
+	for (int i = 0; i <= NPC_NUMBER - 1; i++)
 	{
 		m_modelHandle[i][0] = MV1LoadModel("data/model/npc/dive.mv1");
 		m_modelHandle[i][1] = MV1LoadModel("data/model/npc/Swimming01.mv1");
@@ -136,35 +136,33 @@ void NPC::Update(float _deltaTime)
 	//本番シーンの処理
 
 		// 本番の最初のシーンに切り替える
-		if (m_NPCState == DIVE )
-		{
-			m_NPCState = COMPE_FIRST;
-	
-		}
-		//COMPE_FIRST　且つ　○秒経ったらカメラ切り替え
-		if (m_NPCState == COMPE_FIRST && m_diveFlag)
-		{
-			m_NPCState = COMPE_DIVE;
-		}
+	if (m_NPCState == DIVE)
+	{
+		m_NPCState = COMPE_FIRST;
+
+	}
+	//COMPE_FIRST　且つ　○秒経ったらカメラ切り替え
+	if (m_NPCState == COMPE_FIRST && m_diveFlag)
+	{
+		m_NPCState = COMPE_DIVE;
+	}
 
 
 	// キーが押されておらず、かつスペースキーが押されたら
-	if ((m_NPCState == DIVE || m_NPCState == COMPE_DIVE)&&CheckHitKey(KEY_INPUT_SPACE) && !KeyPush)
+	if ((m_NPCState == DIVE || m_NPCState == COMPE_DIVE) && CheckHitKey(KEY_INPUT_SPACE) && !KeyPush)
 	{
 		KeyPush = true;
 	}
 
-	if (KeyPush&& m_NPCState !=COMPE_FIRST)
+	if (KeyPush && m_NPCState != COMPE_FIRST)
 	{
 
-		//再生時間の初期化
-		for (int i = 0; i < NPC_NUMBER; i++)
-		{
-			PlayTime[i] = 0.0f;
-			//泳ぐ速度によってモーションのスピードを調整する
-			m_motionSpeed[i] = 0.4f + m_npcGoalAccel[i];
-
-		}
+			//再生時間の初期化
+			for (int i = 0; i < NPC_NUMBER; i++)
+			{
+				//泳ぐ速度によってモーションのスピードを調整する
+				m_motionSpeed[i] = 0.4f + m_npcGoalAccel[i];
+			}
 
 		for (int i = 0; i < NPC_NUMBER; i++)
 		{
@@ -186,10 +184,10 @@ void NPC::Update(float _deltaTime)
 			//NPCのスピードに変化をつける
 			m_npcGoalAccel[0] += 0.002f;
 			m_npcGoalAccel[1] += 0.006f;
-			m_npcGoalAccel[2] += 0.01f ;
-			m_npcGoalAccel[3] += 0.002f ;
-			m_npcGoalAccel[4] += 0.015f ;
-			
+			m_npcGoalAccel[2] += 0.01f;
+			m_npcGoalAccel[3] += 0.002f;
+			m_npcGoalAccel[4] += 0.015f;
+
 
 			for (int i = 0; i < NPC_NUMBER; i++)
 			{
@@ -256,9 +254,9 @@ void NPC::Update(float _deltaTime)
 
 			for (int i = 0; i < NPC_NUMBER; i++)
 			{
-				if (m_goalFlag[i] == false)
+				if (!m_goalFlag[i])
 				{
-					accelVec[i] = VScale(dir[i], ACCEL + (i + 2)+ m_npcGoalAccel[i]);
+					accelVec[i] = VScale(dir[i], ACCEL + (i + 2) + m_npcGoalAccel[i]);
 
 				}
 			}
@@ -296,12 +294,12 @@ void NPC::Update(float _deltaTime)
 	{
 		// ベロシティ加速計算.
 		velocity[i] = VAdd(velocity[i], accelVec[i]);
-	}	
+	}
 	for (int i = 0; i < NPC_NUMBER; i++)
 	{
 		// 上下方向にいかないようにベロシティを整える
 		velocity[i] = VGet(velocity[i].x * _deltaTime, 0, velocity[i].z * _deltaTime);
-		
+
 		// ポジションを更新.
 		pos[i] = VAdd(pos[i], velocity[i]);
 
@@ -314,48 +312,48 @@ void NPC::Update(float _deltaTime)
 		MV1SetPosition(m_modelHandle[i][m_NPCState], pos[i]);
 	}
 	//// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
-		for (int i = 0; i <=  NPC_NUMBER; i++)
+	for (int i = 0; i <= NPC_NUMBER; i++)
+	{
+		if (PlayTime[i] > TotalTime[m_NPCState])
 		{
-			if (PlayTime[i] > TotalTime[m_NPCState])
+			if (m_NPCState == DIVE)
 			{
-				if (m_NPCState == DIVE)
+				pos[i].z = 50;
+
+				PlayTime[i] = 0.0f;
+
+				if (i >= NPC_NUMBER - 1)
 				{
-					pos[i].z = 50;
-	
-					PlayTime[i] = 0.0f;
-	
-					if (i >= NPC_NUMBER-1)
-					{
-						m_NPCState = SWIM;
-					}
+					m_NPCState = SWIM;
 				}
 			}
-			//本番シーンの処理
-			if (m_NPCState == COMPE_DIVE)
+		}
+		//本番シーンの処理
+		if (m_NPCState == COMPE_DIVE)
+		{
+			if (PlayTime[0] > TotalTime[m_NPCState])
 			{
-				if (PlayTime[0] > TotalTime[m_NPCState])
+				for (int i = 0; i < NPC_NUMBER; i++)
 				{
-					for (int i = 0; i < NPC_NUMBER; i++)
-					{
 
 					pos[i].z = 50;
 					PlayTime[i] = 0.0f;
 					m_NPCState = COMPE_SWIM;
 
-					}
 				}
+			}
 
-			}
-			else if (m_NPCState == COMPE_FIRST)
-			{
-				PlayTime[i] = 0.0f;
-
-			}
-			if(PlayTime[i] > TotalTime[m_NPCState])
-			{
-				PlayTime[i] = 0.0f;
-			}
 		}
+		else if (m_NPCState == COMPE_FIRST)
+		{
+			PlayTime[i] = 0.0f;
+
+		}
+		if (PlayTime[i] > TotalTime[m_NPCState])
+		{
+			PlayTime[i] = 0.0f;
+		}
+	}
 
 
 	for (int i = 0; i < m_NPCState; i++)
