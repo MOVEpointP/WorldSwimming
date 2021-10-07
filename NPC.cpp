@@ -8,7 +8,7 @@
 
 // 静的定数.
 const float NPC::ACCEL = 15.0f;		// 通常の加速.
-bool NPC::m_diveFlag = 0;	//スタティックのメンバ変数の初期化
+bool NPC::m_diveFlag = false;	//スタティックのメンバ変数の初期化
 
 
 //	音量
@@ -58,8 +58,15 @@ NPC::NPC()
 		NPCDir[i] = VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f);
 	}
 	m_rankcount = 0;
-	//再生時間の初期化
-	PlayTime = 0.0f;
+
+	// NPCの加速変化用変数初期化
+	m_npcGoalAccel[0] = 0.15f;
+	m_npcGoalAccel[1] = 0.05f;
+	m_npcGoalAccel[2] = 0.03f;
+	m_npcGoalAccel[3] = 0.05f;
+	m_npcGoalAccel[4] = 0.1f;
+
+
 	pos[0] = VGet(27, 30, 20);
 	pos[1] = VGet(53, 30, 20);
 	pos[2] = VGet(78, 30, 20);
@@ -80,14 +87,6 @@ NPC::NPC()
 	velocity[3] = VGet(0, 0, 0);
 	velocity[4] = VGet(0, 0, 0);
 
-
-	// NPCの加速変化用変数初期化
-	m_npcGoalAccel[0] = 0.1f ;
-	m_npcGoalAccel[1] = 0.05f;
-	m_npcGoalAccel[2] = 0.00f;
-	m_npcGoalAccel[3] = 0.00f;
-	m_npcGoalAccel[4] = 0.00f;
-
 	// キーを押されていない状態にする
 	KeyPush = false;
 
@@ -99,7 +98,6 @@ NPC::NPC()
 	m_efkDir = VGet(0.0f, 2.0f, 0.0f);
 	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 	m_efkstartTime = GetNowCount() / 1000;
-
 	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 
 }
@@ -117,8 +115,6 @@ NPC::~NPC()
 		MV1DeleteModel(m_modelHandle[i][3]);
 		MV1DeleteModel(m_modelHandle[i][4]);
 		MV1DeleteModel(m_modelHandle[i][5]);
-
-
 	}
 }
 
@@ -139,9 +135,6 @@ void NPC::Update(float _deltaTime)
 
 	//本番シーンの処理
 
-	for (int i = 0; i < NPC_NUMBER; i++)
-	{
-
 		// 本番の最初のシーンに切り替える
 		if (m_NPCState == DIVE )
 		{
@@ -153,7 +146,6 @@ void NPC::Update(float _deltaTime)
 		{
 			m_NPCState = COMPE_DIVE;
 		}
-	}
 
 
 	// キーが押されておらず、かつスペースキーが押されたら
@@ -161,16 +153,42 @@ void NPC::Update(float _deltaTime)
 	{
 		KeyPush = true;
 	}
+
 	if (KeyPush&& m_NPCState !=COMPE_FIRST)
 	{
+
+		//再生時間の初期化
+		for (int i = 0; i < NPC_NUMBER; i++)
+		{
+			PlayTime[i] = 0.0f;
+			//泳ぐ速度によってモーションのスピードを調整する
+			m_motionSpeed[i] = 0.4f + m_npcGoalAccel[i];
+
+		}
+
+		for (int i = 0; i < NPC_NUMBER; i++)
+		{
+			if (m_NPCState == COMPE_DIVE)
+			{
+				// 再生時間を進める
+				PlayTime[i] += 0.4f;
+
+			}
+			else
+			{
+				// 再生時間を進める
+				PlayTime[i] += m_motionSpeed[i];
+			}
+		}
+
 		if (m_NPCState == SWIM || m_NPCState == COMPE_SWIM)
 		{
 			//NPCのスピードに変化をつける
 			m_npcGoalAccel[0] += 0.002f;
 			m_npcGoalAccel[1] += 0.006f;
 			m_npcGoalAccel[2] += 0.01f ;
-			m_npcGoalAccel[3] += 0.01f ;
-			m_npcGoalAccel[4] += 0.01f ;
+			m_npcGoalAccel[3] += 0.002f ;
+			m_npcGoalAccel[4] += 0.015f ;
 			
 
 			for (int i = 0; i < NPC_NUMBER; i++)
@@ -271,12 +289,9 @@ void NPC::Update(float _deltaTime)
 			}
 
 		}
-		//練習と本番でモーションのスピードを調整する
-		 m_motionSpeed = 0.4f;
 
-		// 再生時間を進める
-		PlayTime += m_motionSpeed;
 	}
+
 	for (int i = 0; i < NPC_NUMBER; i++)
 	{
 		// ベロシティ加速計算.
@@ -294,59 +309,59 @@ void NPC::Update(float _deltaTime)
 		{
 			pos[i].y -= 0.1f;
 		}
+
 		// ３Dモデルのポジション設定
 		MV1SetPosition(m_modelHandle[i][m_NPCState], pos[i]);
 	}
 	//// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
-	if (PlayTime > TotalTime[m_NPCState])
-	{
 		for (int i = 0; i <=  NPC_NUMBER; i++)
 		{
-			//NPCの位置がずれてる理由かもしれない
-			if (m_NPCState == DIVE)
+			if (PlayTime[i] > TotalTime[m_NPCState])
 			{
-				pos[i].z = 50;
-
-				PlayTime = 0.0f;
-
-				if (i == NPC_NUMBER-1)
+				if (m_NPCState == DIVE)
 				{
-					m_NPCState = SWIM;
-
+					pos[i].z = 50;
+	
+					PlayTime[i] = 0.0f;
+	
+					if (i >= NPC_NUMBER-1)
+					{
+						m_NPCState = SWIM;
+					}
 				}
 			}
-		}
-		if (m_NPCState == SWIM)
-		{
-			PlayTime = 0.0f;
-		}
-
-		//本番シーンの処理
-		if (m_NPCState == COMPE_DIVE)
-		{
-			m_NPCState = COMPE_SWIM;
-
-			for (int i = 0; i < NPC_NUMBER; i++)
+			//本番シーンの処理
+			if (m_NPCState == COMPE_DIVE)
 			{
-				pos[i].z = 50;
+				if (PlayTime[0] > TotalTime[m_NPCState])
+				{
+					for (int i = 0; i < NPC_NUMBER; i++)
+					{
+
+					pos[i].z = 50;
+					PlayTime[i] = 0.0f;
+					m_NPCState = COMPE_SWIM;
+
+					}
+				}
+
 			}
+			else if (m_NPCState == COMPE_FIRST)
+			{
+				PlayTime[i] = 0.0f;
 
-			PlayTime = 0.0f;
-		}
-		else if (m_NPCState == COMPE_SWIM)
-		{
-			PlayTime = 0.0f;
-		}
-		else if (m_NPCState == COMPE_FIRST)
-		{
-			PlayTime = 0.0f;
+			}
+			if(PlayTime[i] > TotalTime[m_NPCState])
+			{
+				PlayTime[i] = 0.0f;
+			}
 		}
 
-	}
-	for (int i = 0; i < NPC_NUMBER; i++)
+
+	for (int i = 0; i < m_NPCState; i++)
 	{
 		// 再生時間をセットする
-		MV1SetAttachAnimTime(m_modelHandle[i][m_NPCState], AttachIndex, PlayTime);
+		MV1SetAttachAnimTime(m_modelHandle[i][m_NPCState], AttachIndex, PlayTime[i]);
 	}
 
 

@@ -36,8 +36,8 @@ GameSceneCompe::GameSceneCompe()
 	, m_MaxGorl(false)
 	, m_playerRanking(0)
 	, m_countryDrawFlag(false)
-	,m_timeplayer(0)
-	,m_timeFlag(false)
+	, m_timeplayer(0)
+	, m_timeFlag(false)
 	, m_countryTime(0)
 	, m_countryFadeFlag(false)
 	, m_countryTopX(0)
@@ -47,6 +47,8 @@ GameSceneCompe::GameSceneCompe()
 	, m_spacePushFlag(false)
 	, m_spaceDivePushGraph(false)
 	, m_liveGraph(0)
+	, m_50mGraphX(80)
+	, m_100mGraphX(80)
 {
 
 	// 次のシーンへ移行するかどうか
@@ -126,11 +128,12 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 		{
 			m_MaxGorl = true;
 		}
-		if (m_MaxGorl == true)
+		//全員ゴール且つ100m表記が終わってからフェードアウト
+		if (m_MaxGorl &&m_100mGraphX < 15)
 		{
 			m_fadeOutFlag = true;
 		}
-		if (m_fadeOutFinishFlag)
+		if (m_fadeOutFinishFlag)//全員がゴール且つ100m表記の画像が表示されたら
 		{
 			// 処理したかフラグを元に戻す
 			isProcess = false;
@@ -149,6 +152,19 @@ SceneBase* GameSceneCompe::Update(float _deltaTime)
 			m_spacePushFlag = true;
 
 		}
+
+		//50m地点の画像をスライドさせる
+		if (m_turnFlag&& m_50mGraphX>15)
+		{
+			m_50mGraphX-=15;
+		}
+		if (m_player->GetGoalFlag() && m_100mGraphX > 15)
+		{
+			m_turnFlag = false;
+			m_100mGraphX -= 15;
+
+		}
+
 
 	//}
 	//	break;
@@ -199,7 +215,6 @@ void GameSceneCompe::Draw()
 		else if (m_spacePushFlag)
 		{
 			DrawGraph(0, 0, m_spaceDivePushGraph, TRUE);
-
 		}
 
 	
@@ -212,15 +227,15 @@ void GameSceneCompe::Draw()
 	m_npc->Draw();
 
 	//50m地点の画像表示
-	if (m_turnFlag == true)
+	if (m_turnFlag)
 	{
-		DrawGraph(0, 0, m_turnGraphHandle, TRUE);
+		DrawGraph(m_50mGraphX, 0, m_turnGraphHandle, TRUE);
 
 	}
 
 	if (m_player->GetGoalFlag())
 	{
-		DrawGraph(0, 0, m_goalGraphHandle, TRUE);
+		DrawGraph(m_100mGraphX, 0, m_goalGraphHandle, TRUE);
 
 	}
 
@@ -238,8 +253,9 @@ void GameSceneCompe::Draw()
 	}
 
 
-	if (m_MaxGorl == false)
+	if (!m_MaxGorl)
 	{
+		// liveの文字を表記
 		DrawGraph(0, 0, m_liveGraph, TRUE);
 
 	}

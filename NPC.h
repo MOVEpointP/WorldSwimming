@@ -37,12 +37,12 @@ public:
 private:
 	int		m_modelHandle[NPC_NUMBER][7];			//	モデルハンドル  [NPCの人数] [モーション]
 	int		m_NPCState;
-	float   m_motionSpeed;					//　モデルのモーションスピード
+	float   m_motionSpeed[NPC_NUMBER];					//　モデルのモーションスピード
 	VECTOR	pos[NPC_NUMBER];							// ポジション.
 	VECTOR	velocity[NPC_NUMBER];					// 移動力.
 	VECTOR	dir[NPC_NUMBER];							// 回転方向.
 	VECTOR  NPCDir[NPC_NUMBER];
-	float TotalTime[NPC_NUMBER], PlayTime;			//モーションの再生時間
+	float TotalTime[NPC_NUMBER], PlayTime[NPC_NUMBER];			//モーションの再生時間
 	int AttachIndex;						//モーションの
 	class Player* m_player;					//プレイヤークラスへのポインタメンバ変数
 	// 静的定数.

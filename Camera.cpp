@@ -70,7 +70,7 @@ void Camera::Update(const Player& player)
 
 	case DIVE:
 
-		SetCameraPositionAndTarget_UpVecY(VGet(100, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+		SetCameraPositionAndTarget_UpVecY(VGet(0, 50, player.GetPos().z - 25), /*player.GetPos()*/VGet(0, -15, player.GetPos().z + 50));
 		break;
 
 

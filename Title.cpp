@@ -3,6 +3,8 @@
 #include "GameScene_easy.h"
 #include "TestSceneSudo.h"
 #include "TestSceneNakamura.h"
+#include "Fade.h"
+
 
 // 最大透過量
 const int MAX_TRANSP_VAL = 255;
@@ -26,6 +28,7 @@ Title::Title()
 	, m_guidanceYFlag(false)
 	, m_TitleLogoxFlag(false)
 	, m_WaterxFlag(false)
+	, m_gameSceneFlag(false)
 
 {
 	// 透過量変数を122に設定
@@ -54,53 +57,71 @@ Title::~Title()
 SceneBase* Title::Update(float _deltaTime)
 {
 
+	if (m_gameSceneFlag)
+	{
+		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL, FALSE);
+		return new TestSceneNakamura();
+	}
+
+
 	// ステートメントごとに処理を変更
 		// ENTERで次のステートへ
 	if (CheckHitKey(KEY_INPUT_RETURN))
 	{
-		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL, FALSE);
-		return new TestSceneNakamura();
+		m_gameSceneFlag = true;
+
 	}
 	return this;
 }
 
 void Title::Draw()
 {
-	if (!m_fadeInFinishFlag)
+	//エンターが押されたら
+	if (m_gameSceneFlag)
 	{
-		// フェードイン処理
-		for (int i = 0; i < 255; i += FADE_IN_SPEED)
-		{
-			// 描画輝度をセット
-			SetDrawBright(i, i, i);
-
-			// グラフィックを描画
-			DrawGraph(0, 0, m_backGraphHandle, TRUE);
-			DrawGraph(m_TitleLogox, 0, m_logoGraphHandle, TRUE);
-			DrawGraph(m_Waterx, 0, m_water, TRUE);
-
-			ScreenFlip();
-		}
-		m_fadeInFinishFlag = true;
+		Fade::FadeOut(m_backGraphHandle);
+		Fade::FadeIn(m_manualGraphHandle);
 	}
-	// 透過量更新
-	UpdateTransparent();
+	else
+	{
+		//タイトル画面の表示
+		if (!m_fadeInFinishFlag)
+		{
+			// フェードイン処理
+			for (int i = 0; i < 255; i += FADE_IN_SPEED)
+			{
+				// 描画輝度をセット
+				SetDrawBright(i, i, i);
 
-	// バックグラウンド
-	DrawGraph(0, 0, m_backGraphHandle, TRUE);
-	// 透過して描画
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_transpVal);
-	// タイトルロゴ
-	DrawGraph(m_TitleLogox, 0, m_logoGraphHandle, TRUE);
-	DrawGraph(m_Waterx, 0, m_water, TRUE);
-	// 透過を元に戻す
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+				// グラフィックを描画
+				DrawGraph(0, 0, m_backGraphHandle, TRUE);
+				DrawGraph(m_TitleLogox, 0, m_logoGraphHandle, TRUE);
+				DrawGraph(m_Waterx, 0, m_water, TRUE);
 
-	// 透過して描画
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_transVal_Enter);
-	DrawGraph(0, m_guidanceY, m_guidanceGraphHandle, TRUE);		//	PUSH ENTER
-	// 透過を元に戻す
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+				ScreenFlip();
+			}
+			m_fadeInFinishFlag = true;
+		}
+		// 透過量更新
+		UpdateTransparent();
+
+		// バックグラウンド
+		DrawGraph(0, 0, m_backGraphHandle, TRUE);
+		// 透過して描画
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_transpVal);
+		// タイトルロゴ
+		DrawGraph(m_TitleLogox, 0, m_logoGraphHandle, TRUE);
+		DrawGraph(m_Waterx, 0, m_water, TRUE);
+		// 透過を元に戻す
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		// 透過して描画
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_transVal_Enter);
+		DrawGraph(0, m_guidanceY, m_guidanceGraphHandle, TRUE);		//	PUSH ENTER
+		// 透過を元に戻す
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	}
 }
 
 /// <summary>
@@ -121,6 +142,7 @@ void Title::Load()
 	m_logoGraphHandle = LoadGraph("data/img/Title/Title_logo.png");			//	グラフィックハンドルにタイトル画面のイメージをセット
 	m_guidanceGraphHandle = LoadGraph("data/img/Title/Title_guidance.png");	//	グラフィックハンドルにタイトル画面のイメージをセット
 	m_water = LoadGraph("data/img/Title/title_Water.png");                 //	グラフィックハンドルにタイトル画面のイメージをセット
+	m_manualGraphHandle = LoadGraph("data/img/gameScene/manual.png");
 
 	m_soundHandle = LoadSoundMem("data/sound/Title/SwimTitleBgm.wav");
 	m_click_sound_handle = LoadSoundMem("data/sound/Title/SwimTitleSE.wav");	//	ENTERで進む際のサウンドをロード

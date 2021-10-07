@@ -32,10 +32,10 @@ Result::Result(int playerRanking)
 	, m_evaluation(0)
 	, m_click_sound_handle(0)
 	, m_bgmSoundHandle(0)
-	,m_time(0)
-	,m_oneTime(0)
-	,m_tenTime(0)
-	,m_decimalTime(0)
+	, m_time(0)
+	, m_oneTime(0)
+	, m_tenTime(0)
+	, m_decimalTime(0)
 {
 	// 透過量変数を122に設定
 	m_transpVal = MAX_TRANSP_VAL;
@@ -138,9 +138,9 @@ void Result::Draw()
 	//タイムの結果取得
 	Time::calcTime(m_oneTime, m_tenTime, m_decimalTime);
 	//タイム表示
-	DrawGraph(950, SCREEN_SIZE_H / 3 , m_mapChip[m_oneTime], TRUE);
-	DrawGraph(750, SCREEN_SIZE_H / 3, m_mapChip[m_tenTime], TRUE);
-	DrawGraph(650, SCREEN_SIZE_H / 3, m_mapChip[m_decimalTime], TRUE);
+	DrawGraph(950, SCREEN_SIZE_H / 3 , m_mapChip[m_decimalTime], TRUE);
+	DrawGraph(750, SCREEN_SIZE_H / 3, m_mapChip[m_oneTime], TRUE);
+	DrawGraph(650, SCREEN_SIZE_H / 3, m_mapChip[m_tenTime], TRUE);
 
 	//DrawExtendFormatString(SCREEN_SIZE_W / 2+300 - GetFontSize(), SCREEN_SIZE_H / 3+280, 4.0, 4.0, GetColor(0, 0, 0), "%d秒", m_time);
 
@@ -159,7 +159,7 @@ void Result::Sound()
 		break;
 	case 2:
 		/*PlaySoundMem(m_scoreSoundHandle, DX_PLAYTYPE_BACK, TRUE);
-		ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_scoreSoundHandle);*/
+		ChangeVolumeSoundMem(m5_volumePal + VOLUME_PAL_SUP, m_scoreSoundHandle);*/
 		break;
 	case 3:
 		PlaySoundMem(m_evaluationSoundHandle[m_evaluation], DX_PLAYTYPE_BACK, TRUE);
@@ -195,7 +195,7 @@ void Result::Load()
 	if (Score::SetRank() == S)
 	{
 		m_evaluation = 2;
-		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_S.png");			//	@@@@グラフィックハンドルにリザルト画面のイメージをセット
+		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_S.png");			//	グラフィックハンドルにリザルト画面のイメージをセット
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/SwimScoreSE_S.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
 	m_backgroundGraphHandle = LoadGraph("data/img/result_02_png/swimResult/FinalResults.png");				//	グラフィックハンドルにリザルト画面の背景イメージをセット
