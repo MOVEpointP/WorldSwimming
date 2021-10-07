@@ -28,6 +28,8 @@ private:
 	int m_soundHandle;					//	タイトル画面・サウンドハンドル
 	int m_water;
 	int m_click_sound_handle;			//  ENTERで進むときのサウンドハンドル						
+	int m_manualGraphHandle;			//マニュアルのグラフハンドル
+
 	int m_permeationAmount;			// 毎フレーム透過量
 	int m_transpVal;				// 透過量
 	int m_transVal_Enter;				//	フェードアウト中の透過量
@@ -44,4 +46,5 @@ private:
 	bool m_guidanceYFlag;
 	float m_Waterx;               //	水画像のx座標
 	bool m_WaterxFlag;
+	bool m_gameSceneFlag;
 };

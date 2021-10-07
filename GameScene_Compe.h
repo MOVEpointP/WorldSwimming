@@ -33,6 +33,8 @@ private:
 	int m_turnGraphHandle;					//ターンした時の50m表記用のハンドル
 	int m_goalGraphHandle;
 	int m_poolModelHandle;			//プールのモデルハンドル
+	int m_mapChipHandle[10];
+
 	bool m_checkKeyFlag;			//	キーが押されたままかを判定するフラグ
 	bool m_finishFlag;				//	ゲーム終了判定フラグ
 	bool m_fadeInFinishFlag;		//	フェードインの終了判定フラグ
@@ -53,5 +55,9 @@ private:
 	bool m_spacePushFlag;
 	bool m_spaceDivePushGraph;
 	int m_liveGraph;
-
+	int m_50mGraphX;
+	int m_100mGraphX;
+	int m_oneTime;						//タイム一の位
+	int	m_tenTime;;						//タイム十の位
+	int m_decimalTime;;					//タイム小数点代位一位
 }; 

@@ -159,8 +159,8 @@ void ResultHalf::Draw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	if (m_checkResultFlag >= 1)
 	{
-		DrawGraph(SCREEN_SIZE_W / 2 - 50, SCREEN_SIZE_H / 3+50, m_mapChip[m_score - (m_score / 10) * 10], TRUE);
-		DrawGraph(SCREEN_SIZE_W / 2 - 150, SCREEN_SIZE_H / 3+50, m_mapChip[m_score / 10], TRUE);
+		DrawGraph(SCREEN_SIZE_W / 2 , SCREEN_SIZE_H / 3, m_mapChip[m_score - (m_score / 10) * 10], TRUE);
+		DrawGraph(SCREEN_SIZE_W / 2 -100, SCREEN_SIZE_H / 3, m_mapChip[m_score / 10], TRUE);
 	}
 	if (m_checkResultFlag >= 3)
 	{
@@ -238,9 +238,9 @@ void ResultHalf::Load()
 		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_S.png");			//	@@@@グラフィックハンドルにリザルト画面のイメージをセット
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/SwimScoreSE_S.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
-	m_backgroundGraphHandle = LoadGraph("data/img/result_02_png/swimResult/Result _01_backGround.png");				//	グラフィックハンドルにリザルト画面の背景イメージをセット
+	m_backgroundGraphHandle = LoadGraph("data/img/result_02_png/swimResult/HalfResult.png");				//	グラフィックハンドルにリザルト画面の背景イメージをセット
 	m_bgmSoundHandle = LoadSoundMem("data/sound/Result/SwimFinalResultsBGM.mp3");			//	サウンドハンドルにリザルト画面のBGMをセット
 	m_guidanceGraphHandle = LoadGraph("data/img/result_02_png/swimResult/EnterToTitle.png");;			//	ロゴのグラフィックハンドル
-	LoadDivGraph("data/img/result_02_png/swimResult/mapchip02.png", 10, 10, 1, 150, 150, m_mapChip); //スコアを表示する画像ハンドル
+	LoadDivGraph("data/img/result_02_png/swimResult/mapchip.png", 10, 10, 1, 150, 150, m_mapChip); //スコアを表示する画像ハンドル
 
 }
