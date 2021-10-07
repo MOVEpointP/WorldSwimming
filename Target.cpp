@@ -109,7 +109,7 @@ void Target::Update(float _deltaTime)
 
 
 	
- 	if (CheckHitKey(KEY_INPUT_SPACE))
+ 	if (m_drawTargetFlag == false)
 	{
 
 		if (m_targetState == NO_SHOT)//NO_SHOT�̏ꍇ

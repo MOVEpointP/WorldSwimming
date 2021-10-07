@@ -1,7 +1,5 @@
 #include "Title.h"
 #include "DxLib.h"
-#include "GameScene_easy.h"
-#include "TestSceneSudo.h"
 #include "TestSceneNakamura.h"
 #include "Fade.h"
 

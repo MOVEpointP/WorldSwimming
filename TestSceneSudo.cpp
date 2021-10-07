@@ -124,19 +124,19 @@ SceneBase* TestSceneSudo::Update(float _deltaTime)
 		//if (GetNowCount() / 1000 - m_startTime > COUNTDOWN)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する
 		if (m_player->GetPlayerState() == SWIM)
 		{
-			if (CheckHitKey(KEY_INPUT_SPACE))
-			{
-				m_startTime = GetNowCount() / 1000;
-				if (m_target[m_targetCount]->GetIceState() == NO_SHOT)//NO_SHOTの場合
-				{
-					m_target[m_targetCount]->SetIceState(NOW_SHOT);//ステータスにNOW_SHOTをセット 
-					Target::SetTargetSpeedX(m_targetSpeed);
-				}
-				if (m_target[m_targetCount]->GetIceState() == END_SHOT)//END_SHOTの場合
-				{
-					m_targetCount++;			//次のエネミーにカウントを進める
-				}
-			}
+			//if (CheckHitKey(KEY_INPUT_SPACE))
+			//{
+			//	m_startTime = GetNowCount() / 1000;
+			//	if (m_target[m_targetCount]->GetIceState() == NO_SHOT)//NO_SHOTの場合
+			//	{
+			//		m_target[m_targetCount]->SetIceState(NOW_SHOT);//ステータスにNOW_SHOTをセット 
+			//		Target::SetTargetSpeedX(m_targetSpeed);
+			//	}
+			//	if (m_target[m_targetCount]->GetIceState() == END_SHOT)//END_SHOTの場合
+			//	{
+			//		m_targetCount++;			//次のエネミーにカウントを進める
+			//	}
+			//}
 		}
 
 		//スペースキーを押した間画像表示が変わる
