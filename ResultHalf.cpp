@@ -133,7 +133,7 @@ SceneBase* ResultHalf::Update(float _deltaTime)
 
 void ResultHalf::Draw()
 {
-	DrawGraph(0, 0, m_backgroundGraphHandle, FALSE);
+	DrawGraph(5, 20, m_backgroundGraphHandle, FALSE);
 
 	if (!m_fadeInFinishFlag)
 	{
@@ -233,7 +233,7 @@ void ResultHalf::Load()
 	if (Score::SetRank() == S)
 	{
 		m_evaluation = 2;
-		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_S.png");			//	@@@@グラフィックハンドルにリザルト画面のイメージをセット
+		m_evaluationGraphHandle[m_evaluation] = LoadGraph("data/img/result_02_png/swimResult/Result_S.png");			//	グラフィックハンドルにリザルト画面のイメージをセット
 		m_evaluationSoundHandle[m_evaluation] = LoadSoundMem("data/sound/SwimScoreSE_S.mp3");			//	サウンドハンドルにリザルト画面の効果音をセット
 	}
 	m_backgroundGraphHandle = LoadGraph("data/img/result_02_png/swimResult/HalfResult.png");				//	グラフィックハンドルにリザルト画面の背景イメージをセット

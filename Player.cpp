@@ -8,6 +8,7 @@
 #include "Score.h"
 #include "GameScene_Compe.h"
 #include "Camera.h"
+#include "Combo.h"
 
 // 静的定数.
 const float Player::ACCEL				=15.0f;		// 通常の加速.
@@ -50,6 +51,9 @@ Player::Player()
 	, m_startTime(0)
 	,efkFlag(true)
 	,m_countTime(0)
+	,KeyPush(false)
+	,m_comboAccel(0.0f)
+	, m_playerMptionAccel(0)
 {	
 	m_modelHandle[0] = MV1LoadModel("data/model/player/dive.mv1");
 	m_modelHandle[1] = MV1LoadModel("data/model/player/Swimming01.mv1");
@@ -95,8 +99,6 @@ Player::Player()
 	velocity = VGet(0, 0, 0);
 	// 
 	dir = VGet(0, 0, 1);
-	// キーを押されていない状態にする
-	KeyPush = false;
 
 	playerDir = VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f);
 
@@ -176,11 +178,10 @@ void Player::Update(float _deltaTime)
 	{
 		m_playerState = COMPE_FIRST;
 		pos = VGet(0, 30, 20);
-
 	}
 
 	//COMPE_FIRST　且つ　○秒経ったらモード切り替え
-	if (m_playerState == COMPE_FIRST && m_cameraPosX==-70)
+	if (m_playerState == COMPE_FIRST && m_cameraPosX == -70)
 	{
 		m_playerState = COMPE_DIVE;
 		NPC::SetDiveFlag(true);
@@ -200,27 +201,32 @@ void Player::Update(float _deltaTime)
 		if (m_playerState == SWIM || m_playerState == COMPE_SWIM)
 		{
 
+			if (m_playerState == COMPE_SWIM)
+			{
+				m_comboAccel += (Combo::MaxCombo()*0.0001f);
+			}
+
 			// z座標が320を超えたら所定の位置に戻る
 			if (VSize(pos) > VSize(VGet(0, 0, 320.0f)))
 			{
 				dir = VGet(0, 0, -1);
 				playerDir = VGet(0.0f, 0.0f, 0.0f);
+
 				if (m_moveFlag == true)//本番だったら
 				{
 					GameSceneCompe::SetTurnFlag(true);
-
 				}
 			}
 			else if (VSize(pos) < VSize(VGet(0, 0, 50.0f)))
 			{
-			/*	pos = VGet(0, 13, 30);*/
+				/*pos = VGet(0, 13, 30);*/
 				//velocity = VGet(0, 0, 0);
 				m_modeCount++;//往復分カウントする
 				dir.z = 1;
 			}
 
 			//本番か練習か
-			if (m_moveFlag == true)//本番だったら
+			if (m_moveFlag == true)//本番
 			{
 				if (m_modeCount == 1)
 				{
@@ -235,10 +241,11 @@ void Player::Update(float _deltaTime)
 
 				if (ResultSceneFlag == false)
 				{
-					accelVec = VScale(dir, (ACCEL+ (Score::SetRank()*10)));//スコアの分だけ早くなる
+					//スコアと最大コンボの分だけ早くなる
+					accelVec = VScale(dir, (ACCEL+ Score::GetScore()/10)+ m_comboAccel);
 				}
 			}
-			else if (m_moveFlag == false)//練習だったら
+			else if (m_moveFlag == false)//練習
 			{
 				if (m_modeCount == 1)
 				{
@@ -249,17 +256,27 @@ void Player::Update(float _deltaTime)
 				accelVec = VScale(dir, TRANING_SPEED);
 			}
 
+			m_comboAccel += Combo::GetCombo()/1000;
+			
 		}
 
-		//練習と本番でモーションのスピードを調整する
-		if (m_moveFlag == true)
+		//練習と本番でモーションのスピードを調整する@
+		if (m_moveFlag == true&& m_playerState!=COMPE_DIVE)//本番
+		{
+			m_motionSpeed = 0.4f + m_playerMptionAccel;
+
+			m_playerMotionAccelTmp[0] = Score::GetScore()/ 10 + m_comboAccel;
+
+			// 前回の比較より1増えてたら
+			if (m_playerMotionAccelTmp[0] - m_playerMotionAccelTmp[1] > 2.0f)
+			{
+				m_playerMotionAccelTmp[1] = Score::GetScore() / 10 + m_comboAccel;
+				m_playerMptionAccel += 0.1f;
+			}
+		}
+		else//練習
 		{
 			m_motionSpeed = 0.4f;
-
-		}
-		else if (m_moveFlag == false)
-		{
-			m_motionSpeed = 0.3f;
 		}
 		// 再生時間を進める
 		PlayTime += m_motionSpeed;
@@ -274,8 +291,6 @@ void Player::Update(float _deltaTime)
 
 	// ポジションを更新.
 	pos = VAdd(pos, velocity);
-
-
 
 	if (KeyPush && (m_playerState == COMPE_DIVE || m_playerState == DIVE))
 	{
@@ -304,7 +319,6 @@ void Player::Update(float _deltaTime)
 		if (m_playerState == SWIM)
 		{
 			PlayTime = 0.0f;
-
 		}
 
 		//本番シーンの処理

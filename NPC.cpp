@@ -17,17 +17,17 @@ const int VOLUME_PAL = 100;
 // @brief  コンストラクタ.
 //-----------------------------------------------------------------------------
 NPC::NPC()
-	:m_NPCState(0)
+	: m_NPCState(0)
 	, m_startTime(0)
 	, m_measureDistanceFlag(false)
-
+	, KeyPush(false)
 {
 	for (int i = 0; i <= NPC_NUMBER - 1; i++)
 	{
 		m_modelHandle[i][0] = MV1LoadModel("data/model/npc/dive.mv1");
 		m_modelHandle[i][1] = MV1LoadModel("data/model/npc/Swimming01.mv1");
-		m_modelHandle[i][2] = MV1LoadModel("data/model/npc/taisou.mv1");
-		m_modelHandle[i][3] = MV1LoadModel("data/model/npc/result.mv1");
+		//m_modelHandle[i][2] = MV1LoadModel("data/model/npc/taisou.mv1");
+		//m_modelHandle[i][3] = MV1LoadModel("data/model/npc/result.mv1");
 		m_modelHandle[i][4] = MV1LoadModel("data/model/npc/dive.mv1");
 		m_modelHandle[i][5] = MV1LoadModel("data/model/npc/dive.mv1");
 		m_modelHandle[i][6] = MV1LoadModel("data/model/npc/Swimming01.mv1");
@@ -59,13 +59,21 @@ NPC::NPC()
 	}
 	m_rankcount = 0;
 
-	// NPCの加速変化用変数初期化
-	m_npcGoalAccel[0] = 0.15f;
-	m_npcGoalAccel[1] = 0.05f;
-	m_npcGoalAccel[2] = 0.03f;
-	m_npcGoalAccel[3] = 0.05f;
-	m_npcGoalAccel[4] = 0.1f;
+	for (int i = 0; i < NPC_NUMBER; i++)
+	{
+		// NPCの加速変化用変数初期化
+		m_npcGoalAccel[i] = 0.0f;
 
+		// 移動する力を（すべての座標）ゼロにする
+		velocity[i] = VGet(0, 0, 0);
+
+		// ３Dモデルのポジション設定
+		MV1SetPosition(m_modelHandle[i][m_NPCState], pos[i]);
+
+		//モーションを加速するための変数初期化
+		m_npcMotionAccelTmp[i] = 0.0f;
+
+	}
 
 	pos[0] = VGet(27, 30, 20);
 	pos[1] = VGet(53, 30, 20);
@@ -73,22 +81,13 @@ NPC::NPC()
 	pos[3] = VGet(-28, 30, 20);
 	pos[4] = VGet(-52, 30, 20);
 
-	// ３Dモデルのポジション設定
-	MV1SetPosition(m_modelHandle[0][m_NPCState], pos[0]);
-	MV1SetPosition(m_modelHandle[1][m_NPCState], pos[1]);
-	MV1SetPosition(m_modelHandle[2][m_NPCState], pos[2]);
-	MV1SetPosition(m_modelHandle[3][m_NPCState], pos[3]);
-	MV1SetPosition(m_modelHandle[4][m_NPCState], pos[4]);
+	//NPCのスピードの土台。プレイヤーで言うスコアと同じ立ち位置
+	m_npcScoreSpeed[0] = 30;
+	m_npcScoreSpeed[1] = 10;
+	m_npcScoreSpeed[2] = 50;
+	m_npcScoreSpeed[3] = 40;
+	m_npcScoreSpeed[4] = 60;
 
-	// 移動する力を（すべての座標）ゼロにする
-	velocity[0] = VGet(0, 0, 0);
-	velocity[1] = VGet(0, 0, 0);
-	velocity[2] = VGet(0, 0, 0);
-	velocity[3] = VGet(0, 0, 0);
-	velocity[4] = VGet(0, 0, 0);
-
-	// キーを押されていない状態にする
-	KeyPush = false;
 
 	// 開始時のタイムを取得
 	m_startTime = GetNowCount() / 100;
@@ -156,16 +155,26 @@ void NPC::Update(float _deltaTime)
 
 	if (KeyPush && m_NPCState != COMPE_FIRST)
 	{
+				// 再生時間の初期化
+				for (int i = 0; i < NPC_NUMBER; i++)
+				{
+					// 泳ぐ速度によってモーションのスピードを調整する
+					m_motionSpeed[i] = 0.4f + m_npcMptionAccel[i];
+			
+					// 最新の加速分を格納
+					m_npcMotionAccelTmp[10+i] = m_npcScoreSpeed[i] / 10 + m_npcGoalAccel[i];
 
-			//再生時間の初期化
-			for (int i = 0; i < NPC_NUMBER; i++)
-			{
-				//泳ぐ速度によってモーションのスピードを調整する
-				m_motionSpeed[i] = 0.4f + m_npcGoalAccel[i];
+				// 前回の比較より1増えてたら
+				if (m_npcMotionAccelTmp[10 + i] - m_npcMotionAccelTmp[i] > 2.0f)
+				{
+					m_npcMotionAccelTmp[i] = m_npcScoreSpeed[i] / 10 + m_npcGoalAccel[i];
+					m_npcMptionAccel[i] += 0.1f;
+				}
 			}
 
 		for (int i = 0; i < NPC_NUMBER; i++)
 		{
+
 			if (m_NPCState == COMPE_DIVE)
 			{
 				// 再生時間を進める
@@ -181,16 +190,18 @@ void NPC::Update(float _deltaTime)
 
 		if (m_NPCState == SWIM || m_NPCState == COMPE_SWIM)
 		{
-			//NPCのスピードに変化をつける
-			m_npcGoalAccel[0] += 0.002f;
-			m_npcGoalAccel[1] += 0.006f;
-			m_npcGoalAccel[2] += 0.01f;
-			m_npcGoalAccel[3] += 0.002f;
-			m_npcGoalAccel[4] += 0.015f;
+
+				//NPCのスピードに変化をつける(プレイヤーで言うコンボと同じ)
+				m_npcGoalAccel[0] += 0.002f;
+				m_npcGoalAccel[1] += 0.002f;
+				m_npcGoalAccel[2] += 0.004f;
+				m_npcGoalAccel[3] += 0.002f;
+				m_npcGoalAccel[4] += 0.001f;
 
 
 			for (int i = 0; i < NPC_NUMBER; i++)
 			{
+
 				// z座標が320を超えたら所定の位置に戻る
 				if (pos[i].z > 320)
 				{
@@ -256,7 +267,7 @@ void NPC::Update(float _deltaTime)
 			{
 				if (!m_goalFlag[i])
 				{
-					accelVec[i] = VScale(dir[i], ACCEL + (i + 2) + m_npcGoalAccel[i]);
+					accelVec[i] = VScale(dir[i], (ACCEL  +  m_npcScoreSpeed[i]/10)+m_npcGoalAccel[i]);
 
 				}
 			}
