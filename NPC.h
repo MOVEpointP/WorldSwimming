@@ -62,6 +62,9 @@ private:
 	bool efkFlag;
 	int m_efkTime;
 	int m_efkstartTime;
+	float m_npcScoreSpeed[NPC_NUMBER];
+	float m_npcMotionAccelTmp[NPC_NUMBER + 10];
+	float m_npcMptionAccel[NPC_NUMBER];
 
 };
 

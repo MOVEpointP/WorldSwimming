@@ -86,6 +86,10 @@ private:
 	bool    m_moveFlag;
 	int		m_trainingMaxCount;			//　練習での往復最大数
 	float   m_motionSpeed;				//　モデルのモーションスピード
+	float   m_comboAccel;				//コンボによる加速度格納変数
+	float   m_playerMptionAccel;
+	float   m_playerComboAccel;
+	float   m_playerMotionAccelTmp[2];
 	VECTOR	pos;			// ポジション.
 	VECTOR	velocity;		// 移動力.
 	VECTOR	dir;			// 回転方向.

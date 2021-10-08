@@ -5,6 +5,7 @@ class Combo
 private:
 	static int m_combo;
 	static int m_tenCombo;
+	static int m_maxCombo;
 
 public:
 	Combo();														//コンストラクタ
@@ -14,4 +15,6 @@ public:
 
 	static void AddTenCombo(int _setTenCombo) { m_tenCombo += _setTenCombo; }
 	static int GetTenCombo() { return m_tenCombo; }
+
+	static int MaxCombo();
 };

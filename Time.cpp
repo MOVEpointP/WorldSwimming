@@ -11,7 +11,7 @@ void Time::calcTime(int& m_oneTime, int& m_tenTime,int& m_decimalTime)
 {
 	m_decimalTime = m_time % 10;								//¬”“_‘æˆêˆÊ
 	m_tenTime = m_time / 100;									//\‚ÌˆÊ
-	m_oneTime = (m_time % 100- m_decimalTime)/10;        //ˆê‚ÌˆÊ
+	m_oneTime = (m_time % 100- m_decimalTime)/10;				//ˆê‚ÌˆÊ
 
 	if (m_time < 0)
 	{
