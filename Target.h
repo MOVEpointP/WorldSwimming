@@ -47,8 +47,6 @@ public:
 
 	// あたり判定半径の取得.
 	float GetHitRadius() { return hitRadius; }
-	int m_countTime;
-	int m_drawTargetFlag;
 
 
 private:
@@ -108,6 +106,11 @@ private:
 	int efkHandle;
 	int m_startTime;
 	int m_targetStandby;//半透明の足アイコンの画像ハンドル
+	int m_countTime;
+	int m_drawTargetFlag;
+	int m_shotCountTime;//弾を打つ時間を図る
+	int m_startShotTime;
+
 };
 
 #endif // _TARGET_H_

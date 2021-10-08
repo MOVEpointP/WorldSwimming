@@ -57,11 +57,8 @@ private:
 	int m_rankSoundFlag[3];
 	int m_rankSound;
 
-	int m_spaceHandle;
 	int m_enterHandle;
 	bool m_enterPushFlag;
-	bool m_spacePushFlag;
-	int m_spacePushHandle;
 	int m_enterPushHandle;
 	int m_diveSpaceHandle;
 	int m_diveSpacePushHandle;

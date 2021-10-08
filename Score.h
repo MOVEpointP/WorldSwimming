@@ -12,6 +12,7 @@ public:
 	static int GetScore() { return m_score; }			 //スコアをリザルトに渡す
 	static int SetRank();
 	static void calcScore(int &m_oneScore,int &m_tenScore);
-	
+	static void ResetScore(int _resetScore) { m_score = _resetScore; }
+
 };
 

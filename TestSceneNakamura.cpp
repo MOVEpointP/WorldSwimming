@@ -49,7 +49,6 @@ TestSceneNakamura::TestSceneNakamura()
 	, m_rankBHandle(false)
 	, m_rankSound(0)
 	, m_enterPushFlag(false)
-	, m_spacePushFlag(false)
 {
 	// 次のシーンへ移行するかどうか
 	m_finishFlag = FALSE;
@@ -105,18 +104,8 @@ SceneBase* TestSceneNakamura::Update(float _deltaTime)
 	case GAME_SCENE_STATE::GAME:
 		// エネミー射出管理
 		//if (GetNowCount() / 1000 - m_startTime > COUNTDOWN)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する
-		if (m_player->GetPlayerState() == SWIM)
+		if (m_player->GetPlayerState() == SWIM&& m_finishFlag == FALSE)
 		{
-			//スペースキーを押した間画像(アイコン射出ボタンの画像）表示が変わる
-			if (CheckHitKey(KEY_INPUT_SPACE))
-			{
-				m_spacePushFlag = true;
-
-			}
-			else
-			{
-				m_spacePushFlag = false;
-			}
 
 			//エンターキーを押した間画像(アイコン判定ボタンの画像）表示が変わる
 			if (CheckHitKey(KEY_INPUT_RETURN))
@@ -189,17 +178,12 @@ void TestSceneNakamura::Draw()
 	{
 		DrawGraph(0, 0, m_timingImgHandle, TRUE);
 
-		DrawGraph(0, 0, m_spaceHandle, TRUE);
 
 		DrawGraph(0, 0, m_enterHandle, TRUE);
 
 		// ターゲット(アイコン)
 		m_target->Draw();
 
-		if (m_spacePushFlag)
-		{
-			DrawGraph(0, 0, m_spacePushHandle, TRUE);
-		}
 		if (m_enterPushFlag)
 		{
 			DrawGraph(0, 0, m_enterPushHandle, TRUE);
@@ -299,8 +283,6 @@ void TestSceneNakamura::Load()
 	m_soundHandle = LoadSoundMem("data/sound/Game/rensyuu.mp3");		//練習BGMハンドル
 	m_timingImgHandle = LoadGraph("data/img/gameScene/timing2.png");		//判定バーの画像ハンドル
 	m_scoreHandle = LoadGraph("data/img/gameScene/score.png");
-	m_spaceHandle= LoadGraph("data/img/gameScene/space.png");
-	m_spacePushHandle= LoadGraph("data/img/gameScene/spacePush.png");
 	m_enterHandle= LoadGraph("data/img/gameScene/enter.png");
 	m_enterPushHandle = LoadGraph("data/img/gameScene/enterPush.png");
 	m_rankBHandle = LoadSoundMem("data/sound/Game/01.mp3");		//スコアの効果音ハンドル

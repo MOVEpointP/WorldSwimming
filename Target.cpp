@@ -44,6 +44,8 @@ Target::Target()
 	, m_startTime(0)
 	, efkHandle(-1)
 	,efkFlag(false)
+	, m_shotCountTime(0)
+	,m_startShotTime(0)
 {
 	// 画像の読み込み
 	m_legImgHandle=LoadGraph("data/img/target/legs.png");
@@ -73,6 +75,7 @@ Target::Target()
 	m_badOrbitEfk = LoadEffekseerEffect("data/effects/swim/bad.efk", 25.0f);
 
 	srand(time(NULL));//乱数の種を初期化
+	m_startShotTime = GetNowCount() / 100;//NO＿SHOTになった時間を図る	
 
 }
 
@@ -107,14 +110,16 @@ void Target::Update(float _deltaTime)
 		accelVec = VScale(dir, m_target_accel);		
 	}
 
-
-	
- 	if (m_drawTargetFlag == false)
+	if (m_targetState == NO_SHOT)
 	{
-
+		m_shotCountTime = GetNowCount() / 100 - m_startShotTime;
+	}
+	
+ 	if (m_shotCountTime>30-(Combo::GetCombo()+3)-(Combo::GetTenCombo()*10+3))//コンボの数が上がるほど発射する時間が短くなる
+	{
 		if (m_targetState == NO_SHOT)//NO_SHOTの場合
 		{
-			m_targetSpeed = rand() % 20+10;//ターゲットの速度を変える
+			m_targetSpeed = 10+Score::GetScore();//ターゲットの速度を変える
 
 			m_targetState = NOW_SHOT;//ステータスにNOW_SHOTをセット 
 		}
@@ -125,6 +130,8 @@ void Target::Update(float _deltaTime)
 		pos = VGet(m_target_X, m_target_Y, m_target_Z);
 
 		m_targetState = NO_SHOT;//ステータスにNOW_SHOTをセット 
+
+		m_startShotTime = GetNowCount() / 100;//NO＿SHOTになった時間を図る	
 
 	}
 
@@ -166,17 +173,20 @@ void Target::Update(float _deltaTime)
 //-----------------------------------------------------------------------------
 void Target::Draw()
 {
+	//DrawExtendFormatString(1920 - 600, 1080 - 100, 4.0, 4.0, GetColor(255, 255, 255), "m_startShotTime:%d", m_startShotTime);
+	//DrawExtendFormatString(1920 - 600, 1080 - 200, 4.0, 4.0, GetColor(255, 255, 255), "m_shotCountTime:%d", m_shotCountTime);
 
+	//待機時は半透明で描画される
 	if (m_targetState == NOW_SHOT)
 	{
 		// 足のアイコンを描画
 		DrawGraph(pos.x, 400, m_legImgHandle, TRUE);
-
 	}
 	else
 	{
 		DrawGraph(pos.x, 400, m_targetStandby, TRUE);
 	}
+
 	//判定を描画する時間が一秒経ったら消えるようにする
 	if (m_drawTargetFlag&& m_targerJadgeWord == 2)
 	{

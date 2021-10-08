@@ -5,9 +5,9 @@ int Score::m_score = 0;
 int Score::m_rank = 0;			 
 
 
-const int B_P = 10;				 //ランクBのスコア
-const int A_P = 20;				//ランクAのスコア
-const int S_P = 30;				//ランクSのスコア
+const int B_P = 20;				 //ランクBのスコア
+const int A_P = 40;				//ランクAのスコア
+const int S_P = 50;				//ランクSのスコア
 
 
 Score::Score()

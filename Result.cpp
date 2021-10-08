@@ -2,6 +2,7 @@
 #include "Score.h"
 #include "Time.h"
 #include "Title.h"
+#include "Combo.h"
 const int TRANSP_MODERATION = -1;
 const int LOGO_X = 0;
 const int LOGO_Y = 0;
@@ -53,11 +54,14 @@ Result::~Result()
 	DeleteSoundMem(m_bgmSoundHandle);
 	DeleteSoundMem(m_evaluationSoundHandle[m_evaluation]);
 	DeleteSoundMem(m_click_sound_handle);					//	ENTERで進むときのサウンドメモリを解放
+	Combo::ResetCombo(0);
+	Combo::ResetTenCombo(0);
+	Score::ResetScore(0);
+
 }
 
 SceneBase* Result::Update(float _deltaTime)
 {
-
 
 	if (CheckHitKey(KEY_INPUT_UP))
 	{
