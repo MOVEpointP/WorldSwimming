@@ -105,11 +105,11 @@ Player::Player()
 
 
 	// 水しぶきエフェクト読み込み
-	m_playerOrbitEfk[0] = new PlayEffect("data/effects/swim/hamon.efk");
-	m_playerOrbitEfk[1] = new PlayEffect("data/effects/swim/hamon.efk");
-	m_playerOrbitEfk[2] = new PlayEffect("data/effects/swim/hamon.efk");
+	m_playerOrbitEfk[0] = new PlayEffect("data/effects/swim/hamon.efk",2);
+	m_playerOrbitEfk[1] = new PlayEffect("data/effects/swim/hamon.efk",2);
+	m_playerOrbitEfk[2] = new PlayEffect("data/effects/swim/hamon.efk",2);
 
-	m_efkDir = VGet(0.0f, 2.0f, 0.0f);
+	m_efkDir = VGet(0.0f, 3.0f, 0.0f);
 	//m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 	m_efkstartTime = GetNowCount() / 1000;
 
@@ -210,6 +210,7 @@ void Player::Update(float _deltaTime)
 			if (VSize(pos) > VSize(VGet(0, 0, 320.0f)))
 			{
 				dir = VGet(0, 0, -1);
+				m_efkDir = VGet(0, 0, 0);
 				playerDir = VGet(0.0f, 0.0f, 0.0f);
 
 				if (m_moveFlag == true)//本番だったら
@@ -373,8 +374,8 @@ void Player::Draw()
 		MV1SetRotationXYZ(m_modelHandle[m_playerState], playerDir);
 		// ３Ｄモデルの描画
 		MV1DrawModel(m_modelHandle[m_playerState]);
-		DrawExtendFormatString(1920 - 600, 1080 - 100, 4.0, 4.0, GetColor(255, 255, 255), "m_countTime:%d", m_countTime);
-		DrawExtendFormatString(1920 - 600, 1080 - 200, 4.0, 4.0, GetColor(255, 255, 255), "startTime:%d", m_startTime);
+		//DrawExtendFormatString(1920 - 600, 1080 - 100, 4.0, 4.0, GetColor(255, 255, 255), "m_countTime:%d", m_countTime);
+		//DrawExtendFormatString(1920 - 600, 1080 - 200, 4.0, 4.0, GetColor(255, 255, 255), "startTime:%d", m_startTime);
 
 
 	//キラキラエフェクト描画
@@ -383,6 +384,8 @@ void Player::Draw()
 		m_rankEfk[2]->SetPlayingEffectRotation(m_rankEfkDir);
 		m_rankEfk[1]->SetPlayingEffectRotation(m_rankEfkDir);
 		m_rankEfk[0]->SetPlayingEffectRotation(m_rankEfkDir);
+		m_playerOrbitEfk[0]->SetPlayingEffectRotation(m_efkDir);
+
 
 		if (m_playerOrbitEfk[0]->GetNowPlaying() != 0)
 		{
@@ -390,14 +393,14 @@ void Player::Draw()
 
 		}
 		//一秒遅れて水の波紋エフェクトを表示させる	
-		if (m_countTime >3)
-		{
-			if (m_playerOrbitEfk[1]->GetNowPlaying() != 0)
-			{
-				m_playerOrbitEfk[1]->PlayEffekseer(VAdd(pos, VGet(0, 0, -7)));
-			}
+		//if (m_countTime >3)
+		//{
+		//	if (m_playerOrbitEfk[1]->GetNowPlaying() != 0)
+		//	{
+		//		m_playerOrbitEfk[1]->PlayEffekseer(VAdd(pos, VGet(0, 0, -7)));
+		//	}
 
-		}
+		//}
 		//if (m_countTime > 10)
 		//{
 		//	if (m_playerOrbitEfk[2]->GetNowPlaying() != 0)

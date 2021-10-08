@@ -56,7 +56,7 @@ private:
 	bool m_measureDistanceFlag;
 
 	//水しぶきのエフェクト
-	class PlayEffect* m_playerOrbitEfk;
+	class PlayEffect* m_playerOrbitEfk[NPC_NUMBER];
 	VECTOR m_efkDir;
 	VECTOR m_efkPos;
 	bool efkFlag;

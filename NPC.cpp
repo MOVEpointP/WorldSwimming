@@ -56,6 +56,10 @@ NPC::NPC()
 		dir[i] = VGet(0, 0, 1);
 		m_goalFlag[i] = false;
 		NPCDir[i] = VGet(0.0f, 180.0f * DX_PI_F / 180.0f, 0.0f);
+
+		// 水しぶきエフェクト読み込み
+		m_playerOrbitEfk[i] = new PlayEffect("data/effects/swim/hamon.efk");
+
 	}
 	m_rankcount = 0;
 
@@ -92,12 +96,8 @@ NPC::NPC()
 	// 開始時のタイムを取得
 	m_startTime = GetNowCount() / 100;
 
-	// 水しぶきエフェクト読み込み
-	m_playerOrbitEfk = new PlayEffect("data/effects/swim/sibuki.efk");
-	m_efkDir = VGet(0.0f, 2.0f, 0.0f);
-	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
+	m_efkDir = VGet(0.0f, 3.0f, 0.0f);
 	m_efkstartTime = GetNowCount() / 1000;
-	m_playerOrbitEfk->SetPlayingEffectRotation(m_efkDir);
 
 }
 
@@ -114,6 +114,12 @@ NPC::~NPC()
 		MV1DeleteModel(m_modelHandle[i][3]);
 		MV1DeleteModel(m_modelHandle[i][4]);
 		MV1DeleteModel(m_modelHandle[i][5]);
+
+		// エフェクトのアンロード
+		m_playerOrbitEfk[i]->Delete();
+
+		delete m_playerOrbitEfk[i];
+
 	}
 }
 
@@ -206,14 +212,10 @@ void NPC::Update(float _deltaTime)
 				if (pos[i].z > 320)
 				{
 					m_measureDistanceFlag = true;
-					//スタート地点は50
-					// つまりゴールはposZ<50になればよい？
-					// それかposz(50）で押し戻しする or アクセルストップ
-					//if(posZ>320)
-					//なんか309のじてんで反転してる子がいる
-					//posZ=0(初期化
 					dir[i] = VGet(0, 0, -1);
 					NPCDir[i] = VGet(0.0f, 0.0f, 0.0f);
+					m_efkDir = VGet(0, 0, 0);
+
 				}
 			}
 			//　プール右端についたらゴールをしたフラグを返す　NPC一体目
@@ -388,6 +390,19 @@ void NPC::Draw()
 		MV1SetRotationXYZ(m_modelHandle[i][m_NPCState], NPCDir[i]);
 		// ３Ｄモデルの描画
 		MV1DrawModel(m_modelHandle[i][m_NPCState]);
+
+		m_playerOrbitEfk[i]->SetPlayingEffectRotation(m_efkDir);
+		if (m_NPCState == COMPE_SWIM)
+		{
+			if (m_playerOrbitEfk[i]->GetNowPlaying() != 0)
+			{
+				m_playerOrbitEfk[i]->PlayEffekseer(VAdd(pos[i], VGet(0, 0, -3)));
+
+			}
+
+
+		}
+
 	}
 }
 //-----------------------------------------------------------------------------
