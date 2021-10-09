@@ -26,6 +26,8 @@ public:
 	//カメラの角度のgetter
 	static const VECTOR& GetDir()  { return dir; }
 
+	static bool GetCompeDiveFlag() { return m_compeDiveFlag; }
+
 private:
 
 	VECTOR	pos;						// ポジション.
@@ -34,6 +36,7 @@ private:
 	float m_cameraPosX;
 	float m_cameraPosY;
 	float m_cameraPosZ;
+	static bool m_compeDiveFlag;
 };
 
 #endif // _CAMERA_H_

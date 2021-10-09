@@ -94,8 +94,6 @@ void Title::Draw()
 
 				// グラフィックを描画
 				DrawGraph(0, 0, m_backGraphHandle, TRUE);
-				DrawGraph(m_TitleLogox, 0, m_logoGraphHandle, TRUE);
-				DrawGraph(m_Waterx, 0, m_water, TRUE);
 
 				ScreenFlip();
 			}
@@ -119,6 +117,9 @@ void Title::Draw()
 		DrawGraph(0, m_guidanceY, m_guidanceGraphHandle, TRUE);		//	PUSH ENTER
 		// 透過を元に戻す
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		DrawGraph(m_TitleLogox, 0, m_logoGraphHandle, TRUE);
+		DrawGraph(m_Waterx, 0, m_water, TRUE);
 
 	}
 }

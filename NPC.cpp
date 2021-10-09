@@ -86,11 +86,11 @@ NPC::NPC()
 	pos[4] = VGet(-52, 30, 20);
 
 	//NPCのスピードの土台。プレイヤーで言うスコアと同じ立ち位置
-	m_npcScoreSpeed[0] = 30;
-	m_npcScoreSpeed[1] = 10;
-	m_npcScoreSpeed[2] = 50;
-	m_npcScoreSpeed[3] = 40;
-	m_npcScoreSpeed[4] = 60;
+	m_npcScoreSpeed[0] = 20;
+	m_npcScoreSpeed[1] = 0;
+	m_npcScoreSpeed[2] = 40;
+	m_npcScoreSpeed[3] = 30;
+	m_npcScoreSpeed[4] = 35;
 
 
 	// 開始時のタイムを取得

@@ -180,8 +180,8 @@ void Player::Update(float _deltaTime)
 		pos = VGet(0, 30, 20);
 	}
 
-	//COMPE_FIRST　且つ　○秒経ったらモード切り替え
-	if (m_playerState == COMPE_FIRST && m_cameraPosX == -70)
+	//COMPE_FIRST　且つ compe最初のカメラを回し終わったら
+	if (Camera::GetCompeDiveFlag())
 	{
 		m_playerState = COMPE_DIVE;
 		NPC::SetDiveFlag(true);
