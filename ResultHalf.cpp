@@ -115,7 +115,7 @@ SceneBase* ResultHalf::Update(float _deltaTime)
 	}
 	// 毎透過量を透過量に加算する
 	transParent += (permeationAmount * 3);
-	if (CheckHitKey(KEY_INPUT_RETURN) && m_checkKeyFlag == FALSE)
+	if (CheckHitKey(KEY_INPUT_RETURN) && m_checkKeyFlag == FALSE && m_checkResultFlag>=3)
 	{
 		ChangeVolumeSoundMem(m_volumePal + VOLUME_PAL_SUP, m_click_sound_handle);
 		PlaySoundMem(m_click_sound_handle, DX_PLAYTYPE_NORMAL);		//	音が再生し終わるまで待機
@@ -157,12 +157,12 @@ void ResultHalf::Draw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	if (m_checkResultFlag >= 1)
 	{
-		DrawGraph(SCREEN_SIZE_W / 2 , SCREEN_SIZE_H / 3, m_mapChip[m_score - (m_score / 10) * 10], TRUE);
-		DrawGraph(SCREEN_SIZE_W / 2 -100, SCREEN_SIZE_H / 3, m_mapChip[m_score / 10], TRUE);
+		DrawGraph(SCREEN_SIZE_W / 2 , SCREEN_SIZE_H / 3+20, m_mapChip[m_score - (m_score / 10) * 10], TRUE);
+		DrawGraph(SCREEN_SIZE_W / 2 -100, SCREEN_SIZE_H / 3 + 20, m_mapChip[m_score / 10], TRUE);
 	}
 	if (m_checkResultFlag >= 3)
 	{
-		DrawGraph(0, 0, m_evaluationGraphHandle[m_evaluation], TRUE);				//	リザルト画面のロゴを表示
+		DrawGraph(-25, 40, m_evaluationGraphHandle[m_evaluation], TRUE);				//	リザルト画面のロゴを表示
 	}
 	// フェードアウト処理
 	if (m_fadeOutFlag)

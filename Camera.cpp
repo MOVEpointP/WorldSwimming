@@ -9,6 +9,7 @@
 #define USE_LERP_CAMERA 1
 
 VECTOR Camera::dir = VGet(0, 0, 0);
+bool Camera::m_compeDiveFlag = false;
 
 //-----------------------------------------------------------------------------
 // @brief  コンストラクタ.
@@ -96,12 +97,17 @@ void Camera::Update(const Player& player)
 
 		SetCameraPositionAndTarget_UpVecY(VGet(m_cameraPosX+50, 70, player.GetPos().z - 35), /*player.GetPos()*/VGet(m_cameraPosX + 50, -10, player.GetPos().z + 50));
 
-		Player::SetCameraPos(m_cameraPosX);
+		if (m_cameraPosX < -70)
+		{
+			m_compeDiveFlag = true;
+
+		}
 		break;
 
 	case COMPE_DIVE:
 
  			SetCameraPositionAndTarget_UpVecY(VGet(-100, 70, player.GetPos().z + 50), /*player.GetPos()*/VGet(0, -10, player.GetPos().z + 50));
+			m_compeDiveFlag = false;
 
 		break;
 

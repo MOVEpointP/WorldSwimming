@@ -6,6 +6,8 @@ private:
 	static int m_combo;
 	static int m_tenCombo;
 	static int m_maxCombo;
+	static int m_tmpMaxCombo;
+
 public:
 	Combo();														//コンストラクタ
 	~Combo();														//デストラクタ
@@ -17,4 +19,5 @@ public:
 	static void ResetCombo(int _resetCombo) { m_combo = _resetCombo; }
 	static void ResetTenCombo(int _resetCombo) { m_tenCombo = _resetCombo; }
 	static int MaxCombo();
+
 };
