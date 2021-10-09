@@ -104,6 +104,13 @@ SceneBase* TestSceneNakamura::Update(float _deltaTime)
 	case GAME_SCENE_STATE::GAME:
 		// エネミー射出管理
 		//if (GetNowCount() / 1000 - m_startTime > COUNTDOWN)//TARGET_SHOT_INTERVALを変えて射出タイミングを調整する
+
+		if (CheckHitKey(KEY_INPUT_SPACE))
+		{
+			m_diveSpacePushFlag = true;
+
+		}
+
 		if (m_player->GetPlayerState() == SWIM&& m_finishFlag == FALSE)
 		{
 
@@ -138,11 +145,6 @@ SceneBase* TestSceneNakamura::Update(float _deltaTime)
 
 		m_camera->Update(*m_player);
 
-		if (CheckHitKey(KEY_INPUT_F))
-		{
-			return new ResultHalf();        //    リザルトシーンに切り替える
-
-		}
 
 		//　練習量分往復が完了したら
 		if (m_player->ResultSceneFlag)
@@ -219,10 +221,9 @@ void TestSceneNakamura::Draw()
 
 	if (!m_player->GetPlayerState() == SWIM)
 	{
-		DrawGraph(0, 0, m_diveSpaceHandle, TRUE);
-		if (CheckHitKey(KEY_INPUT_SPACE))
+		if (m_diveSpacePushFlag==false)
 		{
-			DrawGraph(0, 0, m_diveSpacePushHandle, TRUE);
+			DrawGraph(0, 0, m_diveSpaceHandle, TRUE);
 		}
 	}
 }

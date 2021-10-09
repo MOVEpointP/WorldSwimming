@@ -46,6 +46,7 @@ Target::Target()
 	,efkFlag(false)
 	, m_shotCountTime(0)
 	,m_startShotTime(0)
+	, m_targetShotCount(0)
 {
 	// 画像の読み込み
 	m_legImgHandle=LoadGraph("data/img/target/legs.png");
@@ -113,13 +114,15 @@ void Target::Update(float _deltaTime)
 	if (m_targetState == NO_SHOT)
 	{
 		m_shotCountTime = GetNowCount() / 100 - m_startShotTime;
+		m_targetShotCount +=1+(Combo::GetCombo()) + (Combo::GetTenCombo() * 10 );
 	}
 	
- 	if (m_shotCountTime>30-(Combo::GetCombo()+3)-(Combo::GetTenCombo()*10+3))//コンボの数が上がるほど発射する時間が短くなる
+ 	if (m_targetShotCount>=340)//コンボの数が上がるほど発射する時間が短くなる
 	{
+		m_targetShotCount = 0;
 		if (m_targetState == NO_SHOT)//NO_SHOTの場合
 		{
-			m_targetSpeed = 10+Score::GetScore();//ターゲットの速度を変える
+			m_targetSpeed = 10+ (Combo::GetCombo()) + (Combo::GetTenCombo() * 10);//ターゲットの速度を変える
 
 			m_targetState = NOW_SHOT;//ステータスにNOW_SHOTをセット 
 		}
@@ -184,6 +187,8 @@ void Target::Draw()
 	}
 	else
 	{
+		DrawRectGraph(pos.x, 400, 0, 0, m_targetShotCount, 440, m_legImgHandle, TRUE, FALSE);
+
 		DrawGraph(pos.x, 400, m_targetStandby, TRUE);
 	}
 

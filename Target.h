@@ -111,6 +111,8 @@ private:
 	int m_shotCountTime;//’e‚ğ‘Å‚ÂŠÔ‚ğ}‚é
 	int m_startShotTime;
 
+	int m_targetShotCount;
+
 };
 
 #endif // _TARGET_H_
